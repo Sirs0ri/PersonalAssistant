@@ -269,6 +269,12 @@ if __name__ == "__main__":
                 blueIn = 0
             daemon.restart()
             daemon.set(r=redIn, g=greenIn, b=blueIn)
+        elif 'dim' == sys.argv[1]:
+            daemon.restart()
+            try:
+                daemon.dim(brightness=int(sys.argv[2])
+            except IndexError:
+                daemon.dim()
         else:
             print "Unknown command"
             sys.exit(2)
