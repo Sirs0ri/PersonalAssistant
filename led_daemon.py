@@ -26,12 +26,12 @@ class LightDaemon(Daemon):
             pf.close()
         except IOError:
             pid = None
-   
+
         if pid:
             message = "pidfile %s already exist. Daemon already running?\n"
             sys.stderr.write(message % self.pidfile)
             sys.exit(1)
-       
+
         # Start the daemon
         self.daemonize()
         self.run()
@@ -147,7 +147,7 @@ class LightDaemon(Daemon):
         else:
             self.crossFade(255,85,17)
         self.run()
-        
+
     def set(self, r=-1, g=-1, b=-1, brightness=-1, delay=0):
         """
         crossfades to a given color and then keeps the daemon alive
@@ -165,7 +165,7 @@ class LightDaemon(Daemon):
         
         self.crossFade(r, g, b, delay)
         self.run()
-    
+
     def dim(self, brightness=255, delay=0):
         """
         change the brightness of the light. possible inputs are -x and +x to add/substract values and x to set a new brightness independendly of the current one.
@@ -174,7 +174,7 @@ class LightDaemon(Daemon):
         r = pi.get_PWM_dutycycle(20)
         g = pi.get_PWM_dutycycle(25)
         b= pi.get_PWM_dutycycle(23)
-        
+
         if "-" in str(brightness) or "+" in str(brightness):
             #get current brightness
             limit=max(r, g, b)
@@ -191,9 +191,9 @@ class LightDaemon(Daemon):
             g *= factor
             b *= factor
             self.crossFade(r, g, b, delay)
-        
+
         self.run()
-        
+
     def create(self):
         """
         crossfades over the major colors, then turns off again; Mostly for debugging
@@ -207,21 +207,21 @@ class LightDaemon(Daemon):
         self.crossFade(255,0,0)      #r=255,  g=0,    b=0,    red
         self.crossFade(0,0,0)
         self.run()
-      
+
     def destroy(self):
         """
         turns the light off and stops the daemon
         """
         self.crossFade(0,0,0)
         self.stop()
-        
+
     def run(self):
         """
         keeps the daemon alive
         """
         while 1:
             time.sleep(1)
- 
+
 if __name__ == "__main__":
     daemon = LightDaemon(pidfile='/tmp/lightDaemon.pid')
     if len(sys.argv) >= 2:
