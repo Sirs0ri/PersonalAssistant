@@ -278,10 +278,11 @@ class Daemon:
                 brightness = 255
 
         if 0 <= brightness <= 255:
+            current_max = max(r, g, b)
             factor = (brightness/max(r, g, b))
-            r *= factor
-            g *= factor
-            b *= factor
+            r = (r * brightness) / current_max
+            g = (g * brightness) / current_max
+            b = (b * brightness) / current_max
             self.crossFade(r, g, b, delay)
 
         self.run()
