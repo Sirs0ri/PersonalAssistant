@@ -11,10 +11,10 @@ bluePins=[23,18]
  
 class Daemon:
     """
-   A generic daemon class.
+    A generic daemon class.
    
-   Usage: subclass the Daemon class and override the run() method
-   """
+    Usage: subclass the Daemon class and override the run() method
+    """
     def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
         self.stdin = stdin
         self.stdout = stdout
@@ -23,10 +23,10 @@ class Daemon:
  
     def daemonize(self):
         """
-       do the UNIX double-fork magic, see Stevens' "Advanced
-       Programming in the UNIX Environment" for details (ISBN 0201563177)
-       http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
-       """
+        do the UNIX double-fork magic, see Stevens' "Advanced
+        Programming in the UNIX Environment" for details (ISBN 0201563177)
+        http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
+        """
         try:
             pid = os.fork()
             if pid > 0:
@@ -71,8 +71,8 @@ class Daemon:
  
     def start(self):
         """
-       Start the daemon
-       """
+        Start the daemon
+        """
         # Check for a pidfile to see if the daemon already runs
         try:
             pf = file(self.pidfile,'r')
@@ -129,6 +129,9 @@ class Daemon:
         self.start()
  
     def setPins(self, r=-1, g=-1, b=-1):
+        """
+        write values between 0 (=off) and 255 (=completely on) to the pins controlling the Lights
+        """
         if 0 <= r <= 255:
             for pin in redPins:
                 pi.set_PWM_dutycycle(pin, r)
@@ -140,6 +143,10 @@ class Daemon:
                 pi.set_PWM_dutycycle(pin, b)
  
     def spread(self, m, n=256):
+        """
+        Spread m 'ones' ebenly in a list with the length n
+        example: spread(3, 5) returns [1,0,1,0,1]
+        """
         if m < 0:
             m *= -1
         result = [0 for i in range (n)]
@@ -157,6 +164,10 @@ class Daemon:
         return result
  
     def crossFade(self, r=-1, g=-1, b=-1, delay=0):
+        """
+        crossfade from the current color to the civen values.
+        If a value is not between 0 and 255, it won't be changed
+        """
         if 0 <= r <= 255:
             redIs = pi.get_PWM_dutycycle(20)
             redDiff = r - redIs
@@ -193,6 +204,9 @@ class Daemon:
                 time.sleep(delay)
  
     def fade(self):
+        """
+        fades smoothly between different colors
+        """
         self.crossFade(255,0,0,0.01)     	 #r=255,  g=0     b=0,    red
         while 1:
             self.crossFade(255,255,0,0.01)    #r=255,  g=255,  b=0,    yellow
@@ -203,6 +217,9 @@ class Daemon:
             self.crossFade(255,0,0,0.01)      #r=255,  g=0,    b=0,    red
  
     def strobe(self):
+        """
+        flashes red, green and blue quickly
+        """
         while 1:
             self.setPins(255,0,0)
             time.sleep(0.1)
@@ -212,6 +229,9 @@ class Daemon:
             time.sleep(0.1)
  
     def toggle(self):
+        """
+        turns on a warm-white light if the LEDs are completely off and turns them off otherwise
+        """
         if (abs(pi.get_PWM_dutycycle(20)) + abs(pi.get_PWM_dutycycle(25)) + abs(pi.get_PWM_dutycycle(23))):
             self.crossFade(0,0,0)
         else:
@@ -219,10 +239,16 @@ class Daemon:
         self.run()
         
     def set(self, r=-1, g=-1, b=-1, delay=0):
+        """
+        crossfades to a given color and then keeps the daemon alive
+        """
         self.crossFade(r, g, b, delay)
         self.run()
         
     def create(self):
+        """
+        crossfades over the major colors, then turns off again; Mostly for debugging
+        """
         self.crossFade(255,0,0)  	 #r=255,  g=0     b=0,    red
         self.crossFade(255,255,0)    #r=255,  g=255,  b=0,    yellow
         self.crossFade(0,255,0)      #r=0,    g=255,  b=0,    green
@@ -234,10 +260,16 @@ class Daemon:
         self.run()
       
     def destroy(self):
+        """
+        turns the light off and stops the daemon
+        """
         self.crossFade(0,0,0)
         self.stop()
         
     def run(self):
+        """
+        keeps the daemon alive
+        """
         while 1:
             time.sleep(1)
  
