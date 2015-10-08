@@ -367,6 +367,7 @@ if __name__ == "__main__":
                 brightness = int(sys.argv[2])
             except IndexError:
                 brightness = 255
+            print("Changing Brightness to %d" % brightness)
             daemon.restart()
             daemon.dim(brightness)
         else:
