@@ -20,4 +20,4 @@ The home for Sam, Glyph, Will and all the other assistants out there
         -> Music/Photos Upload
         -> Plex
         -> Input Director
-        -> Maus- und Taststurdriver (Bei Geräteanschluss?)
+        -> Maus- und Taststurdriver (When Device connected?)
