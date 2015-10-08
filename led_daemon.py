@@ -2,6 +2,7 @@
  
 import sys, os, time, atexit, pigpio
 from signal import SIGTERM
+from daemon import Daemon
  
 pi = pigpio.pi()
  
@@ -9,7 +10,7 @@ redPins=[20,21]
 greenPins=[25,12]
 bluePins=[23,18]
  
-class Daemon:
+class LightDaemon(Daemon):
     """
     A generic daemon class.
    
@@ -316,7 +317,7 @@ class Daemon:
             time.sleep(1)
 
 if __name__ == "__main__":
-    daemon = Daemon(pidfile='/tmp/lightDaemon.pid')
+    daemon = LightDaemon(pidfile='/tmp/lightDaemon.pid')
     if len(sys.argv) >= 2:
         if 'start' == sys.argv[1]:
             print('Starting..')
