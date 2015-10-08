@@ -34,6 +34,7 @@ class LightDaemon(Daemon):
         # Start the daemon
         self.daemonize()
         #self.run()
+        #self.run() must not be called here, because info is always transmitted via the call of another method. this won't work, if the daemon is already running
 
     def setPins(self, r=-1, g=-1, b=-1):
         """
