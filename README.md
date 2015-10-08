@@ -16,12 +16,8 @@ The home for Sam, Glyph, Will and all the other assistants out there
 
 * Eventghost 
     - magage autostart programs 
-        -> Dell Display Manager
-        
-        -> Music/Photos Upload
-        
-        -> Plex
-        
-        -> Input Director
-        
-        -> Maus- und Taststurdriver (When Device connected?)
+        - Dell Display Manager
+        - Music/Photos Upload
+        - Plex
+        - Input Director
+        - Maus- und Taststurdriver (When Device connected?)
