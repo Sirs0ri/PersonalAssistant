@@ -3,6 +3,10 @@ The home for Sam, Glyph, Will and all the other assistants out there
 
 ## To Do
 
+* light
+    - dim(): use float as factor 
+    - store original color, always start dimming with that color
+
 * Network
     - Framework in which our different PA'a communicate?
 
