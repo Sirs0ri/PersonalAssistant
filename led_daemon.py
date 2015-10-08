@@ -270,11 +270,13 @@ if __name__ == "__main__":
             daemon.restart()
             daemon.set(r=redIn, g=greenIn, b=blueIn)
         elif 'dim' == sys.argv[1]:
+            print("Changing Brightness")
             try:
                 brightness = int(sys.argv[2])
             except IndexError:
                 brightness = 255
             daemon.restart()
+            daemon.dim(brightness)
         else:
             print "Unknown command"
             sys.exit(2)
