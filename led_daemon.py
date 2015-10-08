@@ -166,19 +166,32 @@ class LightDaemon(Daemon):
         self.crossFade(r, g, b, delay)
         self.run()
     
-    def dim(self, brightness):
+    def dim(self, brightness=255, delay=0):
+        """
+        change the brightness of the light. possible inputs are -x and +x to add/substract values and x to set a new brightness independendly of the current one.
+        """
         #get current values
         r = pi.get_PWM_dutycycle(20)
         g = pi.get_PWM_dutycycle(25)
         b= pi.get_PWM_dutycycle(23)
-    
+        
+        if "-" in str(brightness) or "+" in str(brightness):
+            #get current brightness
+            limit=max(r, g, b)
+            #set new threshold, negative values will be substracted, positive ones will be added
+            brightness = limit + brightness
+            if brightness < 0:
+                brightness = 0
+            elif brightness > 255:
+                brightness = 255
+
         if 0 <= brightness <= 255:
             factor = (brightness/max(r, g, b))
             r *= factor
             g *= factor
             b *= factor
-
-        self.crossFade(r, g, b, delay)
+            self.crossFade(r, g, b, delay)
+        
         self.run()
         
     def create(self):
