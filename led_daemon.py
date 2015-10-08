@@ -75,6 +75,8 @@ class LightDaemon(Daemon):
         """
         crossfade from the current color to the civen values.
         If a value is not between 0 and 255, it won't be changed
+        
+        the script can be slowed sown via the variable "delay". It'll pause for the specified amount of seconds via time.sleep(delay) after setting each pin. 0 is used by default, 0.01 is used for example by fade()
         """
         if 0 <= r <= 255:
             redIs = pi.get_PWM_dutycycle(20)
@@ -146,10 +148,36 @@ class LightDaemon(Daemon):
             self.crossFade(255,85,17)
         self.run()
         
-    def set(self, r=-1, g=-1, b=-1, delay=0):
+    def set(self, r=-1, g=-1, b=-1, brightness=-1, delay=0):
         """
         crossfades to a given color and then keeps the daemon alive
+        if a color is not specified (or -1) it won't be changed
+        
+        if a value for brightness is set, a brightness of 255 (=100%) means that the 3 values for R, G and B will be as high as possible while their original ratio stays the same.
+        
+        Example: set(r=10, brightness=255) equals set(r=255), set(r=10, brightness=0) equals set(r=0)
         """
+        if 0 <= brightness <= 255:
+            factor = (brightness/max(r, g, b))
+            r *= factor
+            g *= factor
+            b *= factor
+        
+        self.crossFade(r, g, b, delay)
+        self.run()
+    
+    def dim(self, brightness):
+        #get current values
+        r = pi.get_PWM_dutycycle(20)
+        g = pi.get_PWM_dutycycle(25)
+        b= pi.get_PWM_dutycycle(23)
+    
+        if 0 <= brightness <= 255:
+            factor = (brightness/max(r, g, b))
+            r *= factor
+            g *= factor
+            b *= factor
+
         self.crossFade(r, g, b, delay)
         self.run()
         
