@@ -3,13 +3,10 @@
 import sys, os, time, atexit, pigpio
 from signal import SIGTERM
 from daemon import Daemon
+import global_variables as gvars
  
 pi = pigpio.pi()
- 
-redPins=[20,21]
-greenPins=[25,12]
-bluePins=[23,18]
- 
+
 class LightDaemon(Daemon):
     """
     
@@ -41,13 +38,13 @@ class LightDaemon(Daemon):
         write values between 0 (=off) and 255 (=completely on) to the pins controlling the Lights
         """
         if 0 <= r <= 255:
-            for pin in redPins:
+            for pin in gvars.redPins:
                 pi.set_PWM_dutycycle(pin, r)
         if 0 <= g <= 255:
-            for pin in greenPins:
+            for pin in gvars.greenPins:
                 pi.set_PWM_dutycycle(pin, g)
         if 0 <= b <= 255:
-            for pin in bluePins:
+            for pin in gvars.bluePins:
                 pi.set_PWM_dutycycle(pin, b)
  
     def spread(self, m, n=256):
@@ -155,10 +152,12 @@ class LightDaemon(Daemon):
         
         if a value for brightness is set, a brightness of 255 (=100%) means that the 3 values for R, G and B will be as high as possible while their original ratio stays the same.
         
-        Example: set(r=10, brightness=255) equals set(r=255), set(r=10, brightness=0) equals set(r=0)
+        Example: set(r=10, brightness=1) equals set(r=255), set(r=10, brightness=0) equals set(r=0)
         """
-        if 0 <= brightness <= 255:
-            factor = (brightness/max(r, g, b))
+        if 0 <= brightness <= 1:
+            #factor = (brightness/max(r, g, b))
+            #use max. possible value for r, g, b
+            factor = brightness
             r *= factor
             g *= factor
             b *= factor
@@ -166,7 +165,7 @@ class LightDaemon(Daemon):
         self.crossFade(r, g, b, delay)
         self.run()
 
-    def dim(self, brightness=255, delay=0):
+    def dim(self, brightness=1.0, delay=0):
         """
         change the brightness of the light. possible inputs are -x and +x to add/substract values and x to set a new brightness independendly of the current one.
         """
@@ -179,18 +178,21 @@ class LightDaemon(Daemon):
             #get current brightness
             limit=max(r, g, b)
             #set new threshold, negative values will be substracted, positive ones will be added
-            brightness = limit + brightness
-            if brightness < 0:
-                brightness = 0
-            elif brightness > 255:
-                brightness = 255
+            brightness = (limit/255) + brightness
+            if brightness < 0.0:
+                brightness = 0.0
+            elif brightness > 1.0:
+                brightness = 1.0
 
-        if 0 <= brightness <= 255:
+        if 0.0 <= brightness <= 1.0:
             current_max = max(r, g, b)
-            factor = (brightness/max(r, g, b))
-            r = (r * brightness) / current_max
-            g = (g * brightness) / current_max
-            b = (b * brightness) / current_max
+            if current_max:
+                factor = (max(r, g, b)/255) * brightness
+            else:
+                factor = brightness
+            r *= factor
+            g *= factor
+            b *= factor
             self.crossFade(r, g, b, delay)
 
         self.run()
@@ -262,21 +264,27 @@ if __name__ == "__main__":
                 blueIn = int(sys.argv[4])
             except IndexError:
                 blueIn = 0
+            try:
+                brightness = float(sys.argv[5])
+            except IndexError:
+                brightness = 1.0
             if not (0 <= redIn <= 255):
                 redIn = 0
             if not (0 <= greenIn <= 255):
                 greenIn = 0
             if not (0 <= blueIn <= 255):
                 blueIn = 0
+            if not (0.0 <= brightness <= 1.0):
+                brightness = 1.0
             daemon.restart()
-            daemon.set(r=redIn, g=greenIn, b=blueIn)
+            daemon.set(r=redIn, g=greenIn, b=blueIn, brightness=brightness)
         elif 'dim' == sys.argv[1]:
             print("Changing Brightness")
             try:
-                brightness = int(sys.argv[2])
+                brightness = float(sys.argv[2])
             except IndexError:
-                brightness = 255
-            print("Changing Brightness to %d" % brightness)
+                brightness = 1.0
+            print("Changing Brightness to %f" % brightness)
             daemon.restart()
             daemon.dim(brightness)
         else:
