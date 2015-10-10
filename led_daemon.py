@@ -11,13 +11,7 @@ class LightDaemon(Daemon):
     """
     
     """
-    
-    def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
-        self.stdin = stdin
-        self.stdout = stdout
-        self.stderr = stderr
-        self.pidfile = pidfile
-        
+
     def start(self):
         """
         Start the daemon
@@ -152,27 +146,15 @@ class LightDaemon(Daemon):
             self.crossFade(255,85,17)
         self.run()
 
-    def set(self, r=-1, g=-1, b=-1, brightness=-1, delay=0):
+    def set(self, r=-1, g=-1, b=-1, delay=0):
         """
         crossfades to a given color and then keeps the daemon alive
         if a color is not specified (or -1) it won't be changed
-        
-        if a value for brightness is set, a brightness of 255 (=100%) means that the 3 values for R, G and B will be as high as possible while their original ratio stays the same.
-        
-        Example: set(r=10, brightness=1) equals set(r=255), set(r=10, brightness=0) equals set(r=0)
         """
-        """
-        if 0 <= brightness <= 1:
-            #factor = (brightness/max(r, g, b))
-            #use max. possible value for r, g, b
-            factor = brightness
-            r *= factor
-            g *= factor
-            b *= factor
-        """
+
         self.crossFade(r, g, b, delay)
         self.run()
-
+'''
     def dim(self, brightness=1.0, delay=0):
         """
         change the brightness of the light. possible inputs are -x and +x to add/substract values and x to set a new brightness independendly of the current one.
@@ -204,7 +186,7 @@ class LightDaemon(Daemon):
             self.crossFade(r, g, b, delay)
 
         self.run()
-
+'''
     def create(self):
         """
         crossfades over the major colors, then turns off again; Mostly for debugging
@@ -272,20 +254,15 @@ if __name__ == "__main__":
                 blueIn = int(sys.argv[4])
             except IndexError:
                 blueIn = 0
-            try:
-                brightness = float(sys.argv[5])
-            except IndexError:
-                brightness = 1.0
             if not (0 <= redIn <= 255):
                 redIn = 0
             if not (0 <= greenIn <= 255):
                 greenIn = 0
             if not (0 <= blueIn <= 255):
                 blueIn = 0
-            if not (0.0 <= brightness <= 1.0):
-                brightness = 1.0
             daemon.restart()
-            daemon.set(r=redIn, g=greenIn, b=blueIn, brightness=brightness)
+            daemon.set(r=redIn, g=greenIn, b=blueIn)
+'''
         elif 'dim' == sys.argv[1]:
             print("Changing Brightness")
             try:
@@ -295,6 +272,7 @@ if __name__ == "__main__":
             print("Changing Brightness to %f" % brightness)
             daemon.restart()
             daemon.dim(brightness)
+'''
         else:
             print "Unknown command"
             sys.exit(2)
