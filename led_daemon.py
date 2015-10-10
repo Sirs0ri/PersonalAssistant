@@ -9,7 +9,10 @@ pi = pigpio.pi()
 
 class LightDaemon(Daemon):
     """
+    Deamon to control LED's using the "pigpio" Library (http://abyz.co.uk/rpi/pigpio/python.html)
+    Offers functions to set a specific color, fade and strobe as well as a function to toggle the light.
     
+    Credit for the Daemon to http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
     """
 
     def start(self):
@@ -33,10 +36,20 @@ class LightDaemon(Daemon):
         self.daemonize()
         #self.run()
         #self.run() must not be called here, because info is always transmitted via the call of another method. this won't work, if the daemon is already running
-
+        
+    def run(self):
+        """
+        Endless loop to keep the daemon alive after non-endless actions like setting the light to a specifiv color instead of for example fading indefinitely.
+        This way, the daemon is always running and new states can be started via daemon.restart(); daemon.do_something_new()
+        """
+        while 1:
+            time.sleep(1)
+            
     def setPins(self, r=-1, g=-1, b=-1):
         """
         write values between 0 (=off) and 255 (=completely on) to the pins controlling the Lights
+        
+        gvars.<color>Pins is a list that holds the pinnumbers I'm currently using.
         """
         if 0 <= r <= 255:
             for pin in gvars.redPins:
@@ -53,9 +66,14 @@ class LightDaemon(Daemon):
         Spread m "ones" ebenly in a list with the length n
         example: spread(3, 5) returns [1,0,1,0,1]
         """
+        #first of all, catch negative values
         if m < 0:
             m *= -1
+
+        #create an "empty" list filled with only zeroes
         result = [0 for i in range (n)]
+
+        #Create a list with all the indices of items that will be set to 1. The code I'm using works perfectly while the number of entries to be spreaded over the whole list is less than half of the list's length. If that's not the case, the algorithm creates at first the inverse of the list and then inverts it. The 3rd case (m = n/2 for even n and m = (n+1)/2 for uneven n) simply creates a list with all even numbers between 0 and n.
         if m < (n+1)//2:
             l = [i*n//m + n//(2*m) for i in range(m)]
         elif m > (n+1)//2:
@@ -65,18 +83,23 @@ class LightDaemon(Daemon):
                 l.remove(item)
         else:
             l = [i*2 for i in range(m)]
+
+        #Change every entry in the list to be returned of which the index is in the newly generated list to 1
         for j in l:
             result[j] = 1
         return result
  
     def crossFade(self, r=-1, g=-1, b=-1, delay=0):
         """
-        crossfade from the current color to the civen values.
+        crossfade from the current color to the given values in 255 steps.
         If a value is not between 0 and 255, it won't be changed
         
-        the script can be slowed sown via the variable "delay". It'll pause for the specified amount of seconds via time.sleep(delay) after setting each pin. 0 is used by default, 0.01 is used for example by fade()
+        the script can be slowed down via the variable "delay". It'll pause for the specified amount of seconds via time.sleep(delay) after setting each pin. 0 is used by default, 0.01 is used for example in fade(). 
+        
+        Be careful not to use too large values because the delay will be applied 255 times!
         """
         if 0 <= r <= 255:
+            #calculate how many steps the single colors have to be turned up/down
             redIs = pi.get_PWM_dutycycle(20)
             redDiff = r - redIs
             redList = self.spread(m=redDiff)
@@ -88,6 +111,8 @@ class LightDaemon(Daemon):
             blueIs = pi.get_PWM_dutycycle(23)
             blueDiff = b - blueIs
             blueList = self.spread(m=blueDiff)
+            
+        #then add/substract 1 for every 1 in the lists
         for i in range (256):
             if redList[i]:
                 if redDiff < 0:
@@ -114,6 +139,7 @@ class LightDaemon(Daemon):
     def fade(self):
         """
         fades smoothly between different colors
+        this is an endless loop which will be paused by stopping/restarting the daemon
         """
         self.crossFade(255,0,0,0.01)     	 #r=255,  g=0     b=0,    red
         while 1:
@@ -127,6 +153,7 @@ class LightDaemon(Daemon):
     def strobe(self):
         """
         flashes red, green and blue quickly
+        this is an endless loop which will be paused by stopping/restarting the daemon
         """
         while 1:
             self.setPins(255,0,0)
@@ -140,10 +167,13 @@ class LightDaemon(Daemon):
         """
         turns on a warm-white light if the LEDs are completely off and turns them off otherwise
         """
+        #get the values of the pins for each color, if all 3 are 0 the light is completely off, otherwise it will be turned off.
         if (abs(pi.get_PWM_dutycycle(20)) + abs(pi.get_PWM_dutycycle(25)) + abs(pi.get_PWM_dutycycle(23))):
             self.crossFade(0,0,0)
         else:
             self.crossFade(255,85,17)
+
+        #keep the daemon alive. For a more detailed explanation, see the comments to the run()-method itself!
         self.run()
 
     def set(self, r=-1, g=-1, b=-1, delay=0):
@@ -153,6 +183,8 @@ class LightDaemon(Daemon):
         """
 
         self.crossFade(r, g, b, delay)
+
+        #keep the daemon alive. For a more detailed explanation, see the comments to the run()-method itself!
         self.run()
 '''
     def dim(self, brightness=1.0, delay=0):
@@ -199,6 +231,8 @@ class LightDaemon(Daemon):
         self.crossFade(255,0,255)    #r=255   g=0,    b=255,  magenta
         self.crossFade(255,0,0)      #r=255,  g=0,    b=0,    red
         self.crossFade(0,0,0)
+
+        #keep the daemon alive. For a more detailed explanation, see the comments to the run()-method itself!
         self.run()
 
     def destroy(self):
@@ -207,13 +241,6 @@ class LightDaemon(Daemon):
         """
         self.crossFade(0,0,0)
         self.stop()
-
-    def run(self):
-        """
-        keeps the daemon alive
-        """
-        while 1:
-            time.sleep(1)
 
 if __name__ == "__main__":
     daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
@@ -242,6 +269,7 @@ if __name__ == "__main__":
             daemon.restart()
             daemon.toggle()
         elif "set" == sys.argv[1]:
+            #check that the values the light will be set to are valid as numbers between 0 and 255.
             try:
                 redIn = int(sys.argv[2])
             except IndexError:
