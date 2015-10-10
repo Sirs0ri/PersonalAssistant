@@ -12,11 +12,11 @@ class LightDaemon(Daemon):
     
     """
     
-	def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
-		self.stdin = stdin
-		self.stdout = stdout
-		self.stderr = stderr
-		self.pidfile = pidfile
+    def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+        self.stdin = stdin
+        self.stdout = stdout
+        self.stderr = stderr
+        self.pidfile = pidfile
         
     def start(self):
         """
