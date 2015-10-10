@@ -161,6 +161,7 @@ class LightDaemon(Daemon):
         
         Example: set(r=10, brightness=1) equals set(r=255), set(r=10, brightness=0) equals set(r=0)
         """
+        """
         if 0 <= brightness <= 1:
             #factor = (brightness/max(r, g, b))
             #use max. possible value for r, g, b
@@ -168,7 +169,7 @@ class LightDaemon(Daemon):
             r *= factor
             g *= factor
             b *= factor
-        
+        """
         self.crossFade(r, g, b, delay)
         self.run()
 
