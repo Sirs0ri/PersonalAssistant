@@ -18,7 +18,7 @@ class LightDaemon(Daemon):
         """
         # Check for a pidfile to see if the daemon already runs
         try:
-            pf = file(self.pidfile,'r')
+            pf = file(self.pidfile,"r")
             pid = int(pf.read().strip())
             pf.close()
         except IOError:
@@ -50,7 +50,7 @@ class LightDaemon(Daemon):
  
     def spread(self, m, n=256):
         """
-        Spread m 'ones' ebenly in a list with the length n
+        Spread m "ones" ebenly in a list with the length n
         example: spread(3, 5) returns [1,0,1,0,1]
         """
         if m < 0:
@@ -216,32 +216,32 @@ class LightDaemon(Daemon):
             time.sleep(1)
 
 if __name__ == "__main__":
-    daemon = LightDaemon(pidfile='/tmp/lightDaemon.pid')
+    daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
     if len(sys.argv) >= 2:
-        if 'start' == sys.argv[1]:
-            print('Starting..')
+        if "start" == sys.argv[1]:
+            print("Starting..")
             daemon.restart()
             daemon.create()
-        elif 'stop' == sys.argv[1]:
-            print('Stopping..')
+        elif "stop" == sys.argv[1]:
+            print("Stopping..")
             daemon.restart()
             daemon.destroy()
-        elif 'Pause' == sys.argv[1]:
-            print('Pausing..')
+        elif "Pause" == sys.argv[1]:
+            print("Pausing..")
             daemon.restart()
-        elif 'fade' == sys.argv[1]:
-            print('Fading')
+        elif "fade" == sys.argv[1]:
+            print("Fading")
             daemon.restart()
             daemon.fade()
-        elif 'strobe' == sys.argv[1]:
-            print('Party Hard!')
+        elif "strobe" == sys.argv[1]:
+            print("Party Hard!")
             daemon.restart()
             daemon.strobe()
-        elif 'toggle' == sys.argv[1]:
-            print('Toggling')
+        elif "toggle" == sys.argv[1]:
+            print("Toggling")
             daemon.restart()
             daemon.toggle()
-        elif 'set' == sys.argv[1]:
+        elif "set" == sys.argv[1]:
             try:
                 redIn = int(sys.argv[2])
             except IndexError:
@@ -263,7 +263,7 @@ if __name__ == "__main__":
             daemon.restart()
             daemon.set(r=redIn, g=greenIn, b=blueIn)
 '''
-        elif 'dim' == sys.argv[1]:
+        elif "dim" == sys.argv[1]:
             print("Changing Brightness")
             try:
                 brightness = float(sys.argv[2])
