@@ -4,8 +4,11 @@ The home for Sam, Glyph, Will and all the other assistants out there
 ## To Do
 
 * light
-    - dim(): use float as factor 
+    - Save {"red":<redValue[0-255]>, "green":<greenValue[0-255]>, "blue":<blueValue[0-255]>, "brightness":<redValue[Decimal(0-1)]>}
+    - dim(): use Decimal() as factor 
     - store original color, always start dimming with that color
+    - Get brightest possible color while set()
+    - apply brightness while crossFade(), when generating the spreaded List
 
 * Network
     - Framework in which our different PA'a communicate?
@@ -19,9 +22,11 @@ The home for Sam, Glyph, Will and all the other assistants out there
     - example: Force light to be off, if phone is not at home
 
 * Eventghost 
-    - magage autostart programs 
-        - Dell Display Manager
-        - Music/Photos Upload
-        - Plex
-        - Input Director
-        - Maus- und Taststurdriver (When Device connected?)
+    - magage autostart programs
+        - while home
+            - Dell Display Manager (detect when the monitor is plugged in?)
+            - Music/Photos Upload
+            - Plex
+            - Input Director (only while PC is running as well)
+        - When Device connected?
+            - Mouse- and Keyboarddriver
