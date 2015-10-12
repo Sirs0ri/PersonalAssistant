@@ -95,9 +95,4 @@ The home for Sam, Glyph, Will and all the other assistants out there
 * Eventghost 
     - magage autostart programs
         - while home
-            - Dell Display Manager (detect when the monitor is plugged in?)
-            - Music/Photos Upload
-            - Plex
             - Input Director (only while PC is running as well)
-        - When Device connected?
-            - Mouse- and Keyboarddriver
