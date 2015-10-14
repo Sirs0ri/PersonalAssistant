@@ -75,7 +75,7 @@ The home for Sam, Glyph, Will and all the other assistants out there
 
 
 * light
-    - Save {"red":<redValue[0-255]>, "green":<greenValue[0-255]>, "blue":<blueValue[0-255]>, "brightness":<redValue[Decimal(0-1)]>}
+    - Save {"red":redValue[0-255], "green":greenValue[0-255], "blue":blueValue[0-255], "brightness":redValue[Decimal(0-1)]}
     - dim(): use Decimal() as factor 
     - store original color, always start dimming with that color
     - Get brightest possible color while set()
