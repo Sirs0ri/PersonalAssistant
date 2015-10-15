@@ -1,13 +1,18 @@
 #!/usr/bin/env python
-import glob
+import glob, os, imp
 
 def import_plugins():
     filenames = glob.glob("/plugins/*_plugin.py")
     plugins = []
+    for i in range(0,len(filenames)):
     for f in filenames:
-        import f
-        if f.is_sam_plugin:
-            plugins.append(f.Plugin())
+        try:
+            filenames[i] = imp.load_source("plugin", filenames[i])
+            if filenames[i].is_sam_plugin:
+            plugins.append(filenames[i].Plugin())  #Automatically starts the plugins via __init__()
+            log("Plugin %s imported successfully." % (f))
+        except: ImportError:
+            log("Error while importing plugin %s" % (f))
 
 def start_interfaces():
     interfaces = []
@@ -31,10 +36,12 @@ def set_config(key, value):
             #replace with key:value
 
 if __name__ == "__main__":
+    path = os.getcwd()
     import_plugins()
     start_interfaces()
     log("Plugins imported")
     log("Interfaces started")
+
     
     
 '''
