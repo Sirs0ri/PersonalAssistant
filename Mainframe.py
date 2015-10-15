@@ -6,13 +6,10 @@ def import_plugins():
     plugins = []
     for i in range(0,len(filenames)):
     for f in filenames:
-        try:
-            filenames[i] = imp.load_source("plugin", filenames[i])
-            if filenames[i].is_sam_plugin:
-            plugins.append(filenames[i].Plugin())  #Automatically starts the plugins via __init__()
-            log("Plugin %s imported successfully." % (f))
-        except: ImportError:
-            log("Error while importing plugin %s" % (f))
+        filenames[i] = imp.load_source("plugin", filenames[i])
+        if filenames[i].is_sam_plugin:
+        plugins.append(filenames[i].Plugin())  #Automatically starts the plugins via __init__()
+        log("Plugin %s imported successfully." % (f))
 
 def start_interfaces():
     interfaces = []
