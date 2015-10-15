@@ -1,15 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class Plugin_Base:
-    
-    def __init__(self):
-        self.name = "Plugin"
-        self.keywords = []
-        self.is_sam_plugin = 1
-        self.has_toggle = 0
-        self.has_set = 0
-        self.run()
+class PluginBase:
 
     def set(object, target_state):
         #set object to target_state
@@ -24,3 +16,12 @@ class Plugin_Base:
             return 1
         else: 
             return "Error. This shouldn't have happened!"  
+
+    def run(self):
+        print("running")
+        
+    def __init__(self):
+        keywords = []
+        has_toggle = 0
+        has_set = 0
+        self.run()

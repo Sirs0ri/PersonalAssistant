@@ -11,22 +11,39 @@ def start_interfaces(interfaces):
     for i in interfaces:
         i.start()
 
-def log(content, interfaces):
+def log(interfaces, content=""):
     print(content)
     for i in interfaces:
-        i.log(content=content, interfaces=interfaces)
+        i.log(content)
 
 def import_plugins(interfaces):
+    
+    log(interfaces)
+    #list files in /plugin folder
     filenames = glob.glob("plugins/*_plugin.py")
-    print(filenames)
+    log(interfaces, "Importing Plugins: \n" + str(filenames))
+    
     for i in range(0,len(filenames)):
-        log(content="found %s" % (filenames[i]), interfaces=interfaces)
-        filenames[i] = imp.load_source("plugin", filenames[i])
-        if filenames[i].is_sam_plugin:
-            plugins.append(filenames[i].Plugin())  #Automatically starts the plugins via __init__()
-            log(content="Plugin %s imported successfully." % (f), interfaces=interfaces)
+        log(interfaces)
+        log(interfaces, "Found %s" % (filenames[i]))
+        new_plugin = "samplugin" + str(i)
+        #filenames[i] = imp.load_source("samplugin", filenames[i])
+        #imp.load_source(new_plugin, filenames[i])
+        try:
+            new_plugin = imp.load_source(new_plugin, filenames[i])
+            #import new_plugin
+            log(interfaces,"%s imported successfully." % (filenames[i]))
+            try:
+                if new_plugin.is_sam_plugin:
+                    plugins.append(new_plugin)  #Automatically starts the plugins via __init__()
+                    log(interfaces, "%s imported successfully as a Plugin." % (new_plugin.name))
+            except AttributeError:
+                log(interfaces, "%s is not a valid Plugin." % (filenames[i]))
+        except ImportError:
+            log(interfaces, "%s could not be imported successfully." % (filenames[i]))
+        log(interfaces)
     return plugins
-
+        
 def output(interfaces, content):
     for i in interfaces:
         i.output(content)
@@ -39,14 +56,16 @@ def set_config(interfaces, key, value):
             #replace with key:value
 
 if __name__ == "__main__":
-    path = os.getcwd()
     interfaces = []
+    plugins = []
+    log(interfaces)
+    log(interfaces, "Starting up!")
+    path = os.getcwd()
     #import interfaces
     start_interfaces(interfaces=interfaces)
-    plugins = []
     plugins = import_plugins(interfaces=interfaces)
-    log(content="Plugins imported", interfaces=interfaces)
-    log("Interfaces started",interfaces=interfaces)
+    log(interfaces, "Plugins imported")
+    log(interfaces,"Interfaces started")
 
     
     
