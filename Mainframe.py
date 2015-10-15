@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import glob
-import os
-import imp
+#import libraries
+import glob, os, imp
+#import Sam-related things
 import core
+import global_variables as VARS
 
 def start_interfaces(interfaces):
     #read config
@@ -13,20 +14,22 @@ def start_interfaces(interfaces):
         i.start()
 
 def import_plugins(interfaces):
-    
-    core.log(interfaces)
+    """
+    Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
+    """
     #list files in /plugin folder
     filenames = glob.glob("plugins/*_plugin.py")
+    core.log(interfaces)
     core.log(interfaces, name, "Importing Plugins: \n" + str(filenames))
-    
+
+    #try importing each plugin
     for i in range(0,len(filenames)):
         core.log(interfaces)
         core.log(interfaces, name, "Found %s" % (filenames[i]))
-        #new_plugin = "samplugin" + str(i)
         try:
             new_plugin = imp.load_source("samplugin" + str(i), filenames[i])
-            #import new_plugin
             core.log(interfaces, name, "%s imported successfully." % (filenames[i]))
+            #Test if the imported file is a valid Plugin
             try:
                 if new_plugin.is_sam_plugin:
                     plugins.append(new_plugin)
@@ -55,12 +58,14 @@ if __name__ == "__main__":
     name = "Mainframe"
     interfaces = []
     plugins = []
+
     core.log(interfaces)
     core.log(interfaces, name, "Starting up!")
-    path = os.getcwd()
+
     #import interfaces
     start_interfaces(interfaces=interfaces)
     plugins = import_plugins(interfaces=interfaces)
+
     core.log(interfaces, name, "Plugins imported")
     core.log(interfaces)
     core.log(interfaces, name, "Interfaces started")
