@@ -1,43 +1,52 @@
 #!/usr/bin/env python
-import glob, os, imp
+# -*- coding: utf-8 -*-
 
-def import_plugins():
-    filenames = glob.glob("/plugins/*_plugin.py")
-    plugins = []
-    for i in range(0,len(filenames)):
-    for f in filenames:
-        filenames[i] = imp.load_source("plugin", filenames[i])
-        if filenames[i].is_sam_plugin:
-        plugins.append(filenames[i].Plugin())  #Automatically starts the plugins via __init__()
-        log("Plugin %s imported successfully." % (f))
+import glob
+import os
+import imp
 
-def start_interfaces():
-    interfaces = []
+def start_interfaces(interfaces):
     #read config
     #import Interfaces according to config
     for i in interfaces:
         i.start()
 
-def log(content):
+def log(content, interfaces):
+    print(content)
     for i in interfaces:
-        i.log(content)
+        i.log(content=content, interfaces=interfaces)
 
-def output(content):
+def import_plugins(interfaces):
+    filenames = glob.glob("plugins/*_plugin.py")
+    print(filenames)
+    for i in range(0,len(filenames)):
+        log(content="found %s" % (filenames[i]), interfaces=interfaces)
+        filenames[i] = imp.load_source("plugin", filenames[i])
+        if filenames[i].is_sam_plugin:
+            plugins.append(filenames[i].Plugin())  #Automatically starts the plugins via __init__()
+            log(content="Plugin %s imported successfully." % (f), interfaces=interfaces)
+    return plugins
+
+def output(interfaces, content):
     for i in interfaces:
         i.output(content)
 
-def set_config(key, value):
+def set_config(interfaces, key, value):
     #read config file
     for l in config_file:
         if key in l:
+            pass
             #replace with key:value
 
 if __name__ == "__main__":
     path = os.getcwd()
-    import_plugins()
-    start_interfaces()
-    log("Plugins imported")
-    log("Interfaces started")
+    interfaces = []
+    #import interfaces
+    start_interfaces(interfaces=interfaces)
+    plugins = []
+    plugins = import_plugins(interfaces=interfaces)
+    log(content="Plugins imported", interfaces=interfaces)
+    log("Interfaces started",interfaces=interfaces)
 
     
     
