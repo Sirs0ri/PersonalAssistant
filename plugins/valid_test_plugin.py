@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#from plugin import PluginBase
+import core
 
 is_sam_plugin = 1
-name="Test2"
-keywords=[]
+name="Test_Plugin"
+keywords=["test", "demo"]
 has_toggle = 0
 has_set = 0
+interfaces = []
 
-'''
-class Plugin(PluginBase):
-
-    def __init__(self):
-        print("I could do sth now")
-        print("Hello World!")
-'''
-def __init__(self):
-    print("I could do sth now")
-    print("Hello World!")
+def initialize(i):
+    interfaces = i
+    core.log(interfaces)
+    core.log(interfaces, name, "Startup")
+    core.log(interfaces, name, "I could do sth now")
+    core.log(interfaces, name, "Hello World!")
