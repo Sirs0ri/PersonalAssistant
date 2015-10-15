@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+import glob
 
 def import_plugins():
-    #get filenames of python files in /plugins
+    filenames = glob.glob("/plugins/*_plugin.py")
     plugins = []
     for f in filenames:
         import f
