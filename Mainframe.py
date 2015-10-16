@@ -64,14 +64,15 @@ if __name__ == "__main__":
 
     #import interfaces
     start_interfaces(interfaces=interfaces)
+    #import plugins
     plugins = import_plugins(interfaces=interfaces)
 
     core.log(interfaces, name, "Plugins imported")
     core.log(interfaces)
     core.log(interfaces, name, "Interfaces started")
 
-    
-    
+
+
 '''
 def set_something(plugin_keyword, object, target_state):
     for p in plugins:
