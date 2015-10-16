@@ -1,6 +1,35 @@
 # PersonalAssistant
 The home for Sam, Glyph, Will and all the other assistants out there
 
+## What is what?
+
+### Mainframe
+
+The "Mainframe" is the framework in which Samantha operates.
+It manages plugins and interfaces and the communication between the independent components. Some important functions which can be called by both, the mainframe and imported plugins are handled by a separate core which can be imported by the Mainframe and both, plugins and interfaces. An example is the "log()" function which is used to transfer data from every part of Sam to the active interfaces.
+
+The mainframe's function is to receive data from an Interface, distribute it to the correct plugin(s), collect the answers and direct the answers back to the Interface it came from as "output" and to ecery other interface as part of the log.
+
+### Interfaces
+
+The second biggest part next to the Mainframe are Interfaces. They are used to receive data from the user, preprocess it into a standardized format, forward it to the mainframe and finally bring a result (might be for example a confirmation, refining question or an answer) back to the user.
+
+Interfaces should have functions to:
+- receive data from the user
+- forward the preprocessed data to the mainframe
+- log data from different modules
+- display data directly to the user
+
+### Plugins
+
+Plugins finally process the data received by interfaces. Each Plugin has a list of certain keywords. If a command matches any of these keywords, the plugin will be activated during the processing of the command by the mainframe.
+
+Plugins can have different function such as:
+- Interacting with other Soft-/Hardware (example: Home Automation)
+- Communicate
+- Researching (example: looking something up on Google, Wolfram Alpha, etc)
+- Controlling (starting or manipulating the playback) Media
+
 ## To Do
 
 - "Mainframe" that reads a folder and imports .py files
