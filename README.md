@@ -48,7 +48,7 @@ Plugins can have different function such as:
     - light
         - Transfer daemon to plugin 
         - Save {"red":redValue[0-255], "green":greenValue[0-255], "blue":blueValue[0-255], "brightness":redValue[Decimal(0-1)]}
-        - dim(): use Decimal() as factor 
+        - dim(): use Decimal() as factor while crossFade()
         - store original color, always start dimming with that color
         - Get brightest possible color while set()
         - apply brightness while crossFade(), when generating the spreaded List
@@ -58,6 +58,14 @@ Plugins can have different function such as:
     - Presence
         - Pings devices every couple of minutes and manages which ones are available
         - example: Force light to be off, if phone is not at home
+    - 433
+        - http://www.princetronics.com/how-to-read-433-mhz-codes-w-raspberry-pi-433-mhz-receiver/
+        - react to incoming 433MHz signals (via RC)
+        - send commands to devices using 433MHz signals
+    - Chromecast
+        - https://github.com/balloob/pychromecast
+        - Remote Controls?
+        - Dim Light while casting is active
 
 * Eventghost 
     - magage autostart programs
