@@ -38,8 +38,9 @@ Plugins can have different function such as:
 
 - Interfaces
     - bring input back to the Mainframe
-        - > Interrupt?
-        - > Call to 127.0.0.1:XYZ?
+        -  Interrupt?
+        -  Call to 127.0.0.1:5000?
+        -  WILL! - Flask webserver der in Mainframe.py läuft
     - CMD
     - GUI?
     - Will, Glyph?
