@@ -41,6 +41,7 @@ Plugins can have different function such as:
         -  Interrupt?
         -  Call to 127.0.0.1:5000?
         -  WILL! - Flask webserver der in Mainframe.py läuft
+        -  http://flask.pocoo.org/
     - CMD
     - GUI?
     - Will, Glyph?
