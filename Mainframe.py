@@ -3,6 +3,7 @@
 
 #import libraries
 import glob, os, imp
+from flask import Flask
 #import Sam-related things
 import core
 import global_variables as VARS
@@ -64,6 +65,8 @@ def import_plugins(interfaces):
         core.log(interfaces)
     return plugins
 
+'''
+#Do I still need this?
 def output(interfaces, content):
     for i in interfaces:
         i.output(content)
@@ -74,12 +77,16 @@ def set_config(interfaces, key, value):
         if key in l:
             pass
             #replace with key:value
+'''
 
 if __name__ == "__main__":
     name = "Mainframe"
     interfaces = []
     plugins = []
-
+    
+    app = Flask(__name__)
+    
+    app.run()
     core.log(interfaces)
     core.log(interfaces, name, "Starting up!")
 
@@ -89,8 +96,11 @@ if __name__ == "__main__":
     plugins = import_plugins(interfaces=interfaces)
 
     core.log(interfaces, name, "Plugins imported")
-    core.log(interfaces)
     core.log(interfaces, name, "Interfaces started")
+    
+@app.route("/")
+def respond():
+    return("I received your request.")
 
 
 
