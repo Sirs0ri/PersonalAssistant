@@ -7,24 +7,45 @@ import glob, os, imp
 import core
 import global_variables as VARS
 
-def start_interfaces(interfaces):
-    #read config
-    #import Interfaces according to config
-    for i in interfaces:
-        i.start()
+def load_interfaces():
+    """
+    loads and starts available interfaces
+    """
+    
+    interfaces = []
+    #list files in the /interfaces folder
+    filenames = glob.glob("interfaces/*_interface.py")
+    core.log(interfaces, name, "Importing Interfaces: \n" + str(filenames))
+
+    for i in range(0,len(filenames)):
+        core.log(interfaces, name, "Found %s" % (filenames[i]))
+        try:
+            new_interface = imp.load_source("saminterface" + str(i), filenames[i])
+            core.log(interfaces, name, "%s imported successfully." % (filenames[i]))
+            #Test if the imported file is a valid Plugin
+            try:
+                if new_interface.is_sam_interface:
+                    interfaces.append(new_interface)
+                    core.log(interfaces, name, "  Name:\t\t" + new_interface.name)
+                    new_interface.initialize()
+            except AttributeError:
+                core.log(interfaces, name, "%s is not a valid Interface." % (filenames[i]))
+        except ImportError:
+            core.log(interfaces, name, "%s could not be imported successfully." % (filenames[i]))
+
+    return interfaces
 
 def import_plugins(interfaces):
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
     """
+    plugins = []
     #list files in /plugin folder
     filenames = glob.glob("plugins/*_plugin.py")
-    core.log(interfaces)
     core.log(interfaces, name, "Importing Plugins: \n" + str(filenames))
 
     #try importing each plugin
     for i in range(0,len(filenames)):
-        core.log(interfaces)
         core.log(interfaces, name, "Found %s" % (filenames[i]))
         try:
             new_plugin = imp.load_source("samplugin" + str(i), filenames[i])
@@ -42,7 +63,7 @@ def import_plugins(interfaces):
             core.log(interfaces, name, "%s could not be imported successfully." % (filenames[i]))
         core.log(interfaces)
     return plugins
-        
+
 def output(interfaces, content):
     for i in interfaces:
         i.output(content)
@@ -63,7 +84,7 @@ if __name__ == "__main__":
     core.log(interfaces, name, "Starting up!")
 
     #import interfaces
-    start_interfaces(interfaces=interfaces)
+    interfaces = load_interfaces()
     #import plugins
     plugins = import_plugins(interfaces=interfaces)
 
