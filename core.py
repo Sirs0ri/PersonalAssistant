@@ -4,10 +4,11 @@
 import urllib, datetime
 
 def log(interfaces, name="", content=""):
-    '''
-    #print to the script calling .log(); usually Mainframe.py
-    print(str(datetime.datetime.now()) + "\n\t" + name + "\t" + str(content))
     
+    #print to the script calling .log(); usually Mainframe.py
+    print(str(datetime.datetime.now()) + "\n" + name + "\t" + str(content))
+    print
+    '''
     #log in file
     logfile=open("log.txt", 'r+')
     logfile.write(str(datetime.datetime.now()) + "\n\t" + name + "\t" + str(content))
