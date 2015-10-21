@@ -35,6 +35,7 @@ Plugins can have different function such as:
 - "Mainframe" that reads a folder and imports .py files
     - start interfaces
     - react to input
+    - Maybe run the Mainframe as daemon?
 
 - Interfaces
     - bring input back to the Mainframe
