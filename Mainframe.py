@@ -8,6 +8,8 @@ from flask import Flask
 import core
 import global_variables as VARS
 
+app = Flask(__name__)
+
 def load_interfaces():
     """
     loads and starts available interfaces
@@ -78,29 +80,26 @@ def set_config(interfaces, key, value):
             pass
             #replace with key:value
 '''
+    
+@app.route("/")
+def respond():
+    return("I received your request.")
 
 if __name__ == "__main__":
     name = "Mainframe"
     interfaces = []
     plugins = []
-    
-    app = Flask(__name__)
-    
-    app.run()
-    core.log(interfaces)
+
     core.log(interfaces, name, "Starting up!")
 
     #import interfaces
-    interfaces = load_interfaces()
+    #interfaces = load_interfaces()
     #import plugins
     plugins = import_plugins(interfaces=interfaces)
 
     core.log(interfaces, name, "Plugins imported")
     core.log(interfaces, name, "Interfaces started")
-    
-@app.route("/")
-def respond():
-    return("I received your request.")
+    app.run()
 
 
 
