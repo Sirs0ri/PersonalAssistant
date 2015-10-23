@@ -118,10 +118,13 @@ if __name__ == "__main__":
     plugins = []
     daemon = Mainframe_Daemon(pidfile="/tmp/MainframeDaemon.pid")
     print("running")
-    if 'stop' == sys.argv[1]:
-        daemon.stop()
-    else:
-        daemon.start()
+    try:
+        if 'stop' == sys.argv[1]:
+            daemon.stop()
+        else:
+            daemon.restart()
+        except IndexError:
+            daemon.restart()
     print("daemon started")
     app.run()
     print("Flask started")
