@@ -106,7 +106,7 @@ def set_config(interfaces, key, value):
     
 
 app = Flask(__name__)
-daemon = Mainframe_Daemon(pidfile="/pids/lightDaemon.pid")
+daemon = Mainframe_Daemon(pidfile="MainframeDaemon.pid")
 daemon.start()
 
 @app.route("/")
