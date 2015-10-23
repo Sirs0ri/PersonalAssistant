@@ -290,7 +290,7 @@ if __name__ == "__main__":
                 blueIn = 0
             daemon.restart()
             daemon.set(r=redIn, g=greenIn, b=blueIn)
-'''
+        '''
         elif "dim" == sys.argv[1]:
             print("Changing Brightness")
             try:
@@ -300,7 +300,7 @@ if __name__ == "__main__":
             print("Changing Brightness to %f" % brightness)
             daemon.restart()
             daemon.dim(brightness)
-'''
+        '''
         else:
             print "Unknown command"
             sys.exit(2)
