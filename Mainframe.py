@@ -9,6 +9,7 @@ import core
 from daemon import Daemon
 import global_variables as VARS
 
+app = Flask(__name__)
 
 class Mainframe_Daemon(Daemon):
     
@@ -69,7 +70,7 @@ class Mainframe_Daemon(Daemon):
         return plugins
 
     def run(self):
-        name = "Mainframe:_Daemon"
+        name = "Mainframe_Daemon"
         interfaces = []
         plugins = []
         
@@ -105,17 +106,14 @@ def set_config(interfaces, key, value):
 '''
     
 
-app = Flask(__name__)
-daemon = Mainframe_Daemon(pidfile="/tmp/MainframeDaemon.pid")
-daemon.start()
-
 @app.route("/")
 def respond():
     #return("I received your request.")
     return(daemon.process())
 
 if __name__ == "__main__":
-    #daemon.start()
+    daemon = Mainframe_Daemon(pidfile="/tmp/MainframeDaemon.pid")
+    daemon.start()
     print("running")
     name = "Mainframe"
     interfaces = []
