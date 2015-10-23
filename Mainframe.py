@@ -122,9 +122,9 @@ if __name__ == "__main__":
         if 'stop' == sys.argv[1]:
             daemon.stop()
         else:
-            daemon.restart()
+            daemon.start()
     except IndexError:
-        daemon.restart()
+        daemon.start()
     print("daemon started")
     app.run()
     print("Flask started")
