@@ -123,8 +123,8 @@ if __name__ == "__main__":
             daemon.stop()
         else:
             daemon.restart()
-        except IndexError:
-            daemon.restart()
+    except IndexError:
+        daemon.restart()
     print("daemon started")
     app.run()
     print("Flask started")
