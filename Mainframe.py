@@ -104,7 +104,7 @@ def set_config(interfaces, key, value):
             pass
             #replace with key:value
 '''
-    
+
 
 @app.route("/")
 def respond():
