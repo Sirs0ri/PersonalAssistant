@@ -186,7 +186,7 @@ class LightDaemon(Daemon):
 
         #keep the daemon alive. For a more detailed explanation, see the comments to the run()-method itself!
         self.run()
-'''
+    '''
     def dim(self, brightness=1.0, delay=0):
         """
         change the brightness of the light. possible inputs are -x and +x to add/substract values and x to set a new brightness independendly of the current one.
@@ -218,7 +218,7 @@ class LightDaemon(Daemon):
             self.crossFade(r, g, b, delay)
 
         self.run()
-'''
+    '''
     def create(self):
         """
         crossfades over the major colors, then turns off again; Mostly for debugging
