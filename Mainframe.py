@@ -12,17 +12,17 @@ import global_variables as VARS
 app = Flask(__name__)
 
 class Mainframe_Daemon(Daemon):
-    
+
     def load_interfaces(self):
         """
         loads and starts available interfaces
         """
-        
+
         interfaces = []
         #list files in the /interfaces folder
         filenames = glob.glob("interfaces/*_interface.py")
         core.log(interfaces, name, "Importing Interfaces: \n" + str(filenames))
-    
+
         for i in range(0,len(filenames)):
             core.log(interfaces, name, "Found %s" % (filenames[i]))
             try:
@@ -39,7 +39,7 @@ class Mainframe_Daemon(Daemon):
             except ImportError:
                 core.log(interfaces, name, "%s could not be imported successfully." % (filenames[i]))
         return interfaces
-        
+
     def import_plugins(interfaces):
         """
         Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
@@ -48,7 +48,7 @@ class Mainframe_Daemon(Daemon):
         #list files in /plugin folder
         filenames = glob.glob("plugins/*_plugin.py")
         core.log(interfaces, name, "Importing Plugins: \n" + str(filenames))
-    
+
         #try importing each plugin
         for i in range(0,len(filenames)):
             core.log(interfaces, name, "Found %s" % (filenames[i]))
@@ -81,7 +81,6 @@ class Mainframe_Daemon(Daemon):
         while 1:
             time.sleep(1)
 
-
     def process(self):
         return "klappt."
 
@@ -90,7 +89,6 @@ class Mainframe_Daemon(Daemon):
         
     def get_plugins(self):
         return plugins
-
 
 '''
 #Do I still need this?
@@ -105,7 +103,6 @@ def set_config(interfaces, key, value):
             pass
             #replace with key:value
 '''
-
 
 @app.route("/")
 def respond():
@@ -141,7 +138,7 @@ if __name__ == "__main__":
     daemon.get_interfaces()
     plugins = daemon.get_plugins()
     daemon.get_plugins()
-    
+
     core.log(interfaces, name, "Starting up!")
     core.log(interfaces, name, daemon)
 
@@ -155,8 +152,6 @@ if __name__ == "__main__":
 
     #core.log(interfaces, name, "Plugins imported")
     #core.log(interfaces, name, "Interfaces started")
-
-
 
 '''
 def set_something(plugin_keyword, object, target_state):
