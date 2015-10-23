@@ -33,6 +33,7 @@ Plugins can have different function such as:
 ## To Do
 
 - "Mainframe" that reads a folder and imports .py files
+    - Rewrite core to start Daemon and Flask
     - start interfaces
     - react to input
     - Maybe run the Mainframe as daemon?
