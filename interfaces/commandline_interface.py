@@ -4,7 +4,7 @@
 import sys, urllib
 #import core
 
-is_sam_interface = 1
+is_sam_interface = 0
 name = "Commandline Interface"
 
 def log(content):
