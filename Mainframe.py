@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #import libraries
-import glob, os, imp, time
+import glob, os, imp, time, sys
 from flask import Flask
 #import Sam-related things
 import core
@@ -118,7 +118,10 @@ if __name__ == "__main__":
     plugins = []
     daemon = Mainframe_Daemon(pidfile="/tmp/MainframeDaemon.pid")
     print("running")
-    daemon.start()
+    if 'stop' == sys.argv[1]:
+        daemon.stop()
+    else:
+        daemon.start()
     print("daemon started")
     app.run()
     print("Flask started")
