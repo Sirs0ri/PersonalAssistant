@@ -107,6 +107,7 @@ def set_config(interfaces, key, value):
 
 app = Flask(__name__)
 daemon = Mainframe_Daemon(pidfile="/pids/lightDaemon.pid")
+daemon.start()
 
 @app.route("/")
 def respond():
@@ -119,8 +120,7 @@ if __name__ == "__main__":
     name = "Mainframe"
     interfaces = []
     plugins = []
-    
-    daemon.start()
+
     print("daemon started")
 #    interfaces = daemon.get_interfaces()
 #    plugins = daemon.get_plugins()
