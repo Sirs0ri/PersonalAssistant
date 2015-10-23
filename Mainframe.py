@@ -142,8 +142,8 @@ if __name__ == "__main__":
     core.log(interfaces, name, "Starting up!")
     core.log(interfaces, name, daemon)
 
-    #core.log(interfaces, name, interfaces)
-    #core.log(interfaces, name, plugins)
+    core.log(interfaces, name, interfaces)
+    core.log(interfaces, name, plugins)
 
     #import interfaces
     #interfaces = load_interfaces()
