@@ -70,13 +70,14 @@ class Mainframe_Daemon(Daemon):
         return plugins
 
     def run(self):
+        '''
         name = "Mainframe_Daemon"
         interfaces = []
         plugins = []
         
         interfaces = load_interfaces()
         plugins = import_plugins()
-
+        '''
         while 1:
             time.sleep(1)
 
@@ -113,8 +114,8 @@ def respond():
 
 if __name__ == "__main__":
     daemon = Mainframe_Daemon(pidfile="/tmp/MainframeDaemon.pid")
-    daemon.start()
     print("running")
+    daemon.start()
     name = "Mainframe"
     interfaces = []
     plugins = []
