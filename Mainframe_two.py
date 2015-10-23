@@ -40,6 +40,13 @@ def load_interfaces():
             core.log(interfaces, name, "%s could not be imported successfully." % (filenames[i]))
     return interfaces
 
+def stop_interfaces(interfaces):
+    """
+    kills all interface-daemons
+    """
+    for i in interfaces:
+        i.stop()
+
 def import_plugins(interfaces):
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
@@ -88,6 +95,8 @@ if __name__ == "__main__":
     core.log(interfaces, name, "Finished.")
     
     app.run()
+    
+    stop_interfaces(interfaces)
 
     
     
