@@ -115,13 +115,13 @@ def respond():
 
 if __name__ == "__main__":
     #daemon.start()
-    
+    print("running")
     name = "Mainframe"
     interfaces = []
     plugins = []
     
     daemon.start()
-    
+    print("daemon started")
 #    interfaces = daemon.get_interfaces()
 #    plugins = daemon.get_plugins()
 
