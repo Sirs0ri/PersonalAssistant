@@ -113,14 +113,16 @@ def respond():
     return(daemon.process())
 
 if __name__ == "__main__":
-    daemon = Mainframe_Daemon(pidfile="/tmp/MainframeDaemon.pid")
-    print("running")
-    daemon.start()
     name = "Mainframe"
     interfaces = []
     plugins = []
-
+    daemon = Mainframe_Daemon(pidfile="/tmp/MainframeDaemon.pid")
+    print("running")
+    daemon.start()
     print("daemon started")
+    app.run()
+    print("Flask started")
+
 #    interfaces = daemon.get_interfaces()
 #    plugins = daemon.get_plugins()
 
@@ -134,7 +136,7 @@ if __name__ == "__main__":
 
     #core.log(interfaces, name, interfaces)
     #core.log(interfaces, name, plugins)
-    app.run()
+
     #import interfaces
     #interfaces = load_interfaces()
     #import plugins
