@@ -32,9 +32,9 @@ def load_interfaces():
             try:
                 if new_interface.is_sam_interface:
                     core.log(interfaces, name, "Starting " + new_interface.name)
-                    d = new_interface.create(interfaces=interfaces, pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
-#                    core.log(interfaces, name, new_interface.name + " created: " + str(d))
-#                    d.start()
+                    d = new_interface.Interface(pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
+                    core.log(interfaces, name, new_interface.name + " created: " + str(d))
+                    d.start()
                     core.log(interfaces, name, new_interface.name + " started.")
                     interfaces.append(d)
                     core.log(interfaces, name, "  Name:\t\t" + new_interface.name)
