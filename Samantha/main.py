@@ -19,7 +19,7 @@ def import_plugins():
     plugins = []
     #list files in /plugin folder
     #filenames = glob.glob("plugins/*_plugin.py")
-    filenames = glob.glob("*_plugin.py")
+    filenames = glob.glob("plugins/*_plugin.py")
     core.log(name, "Importing Plugins: \n" + str(filenames))
 
     #try importing each plugin
@@ -44,7 +44,7 @@ def import_plugins():
 
 @app.route("/")
 def process():
-    return "works."
+    return "Running"
 
 @app.route('/shutdown')
 def shutdown():

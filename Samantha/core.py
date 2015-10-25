@@ -7,12 +7,13 @@ import urllib, datetime
 def log(name="", content=""):
     
     #print to the script calling .log(); usually Mainframe.py
-    print(str(datetime.datetime.now()) + "\n" + name + "\t" + str(content))
+    s = "{name} \t {content} \n  {time}".format(name=name, content=content, time=datetime.datetime.now())
+    print(s)
     print
     '''
     #log in file
     logfile=open("log.txt", 'r+')
-    logfile.write(str(datetime.datetime.now()) + "\n\t" + name + "\t" + str(content))
+    logfile.write(s)
     '''
 
 def get_answer(command, keyword=None, parameter=None):
@@ -24,6 +25,3 @@ def get_answer(command, keyword=None, parameter=None):
         return answer
     else:
         return "Error"
-
-if __name__ == "__main__":
-    print("This file is meant to be implemented by Samantha's Mainframe!")
