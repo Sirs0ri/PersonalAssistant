@@ -6,9 +6,17 @@ import core
 from daemon import Daemon
 
 is_sam_interface = 1
-name = "Example"
+name = "Schedule"
 
 class Interface(Daemon):
+
+    def __init__(self, pidfile, stdin="/dev/null", stdout="/dev/null", stderr="/dev/null", interfaces=[]):
+        self.stdin = stdin
+        self.stdout = stdout
+        self.stderr = stderr
+        self.pidfile = pidfile
+        self.interfaces = interfaces
+        core.log(self.interfaces, name, "Created myself.")
 
     def log(content):
         pass

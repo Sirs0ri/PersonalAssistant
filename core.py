@@ -13,10 +13,11 @@ def log(interfaces, name="", content=""):
     logfile=open("log.txt", 'r+')
     logfile.write(str(datetime.datetime.now()) + "\n\t" + name + "\t" + str(content))
     '''
-    
+    '''
     #log via interfaces
     for i in interfaces:
         i.log(content)
+    '''
 
 def get_answer(command, keyword=None, parameter=None):
     command = urllib.urlencode({"command":command})

@@ -19,7 +19,8 @@ class Interface(Daemon):
         core.log(self.interfaces, name, "Created myself.")
 
     def log(self, content):
-        easygui.msgbox(content)
+        #easygui.msgbox(content)
+        pass
 
     def run(self):
         core.log(self.interfaces, name, "Started myself.")
