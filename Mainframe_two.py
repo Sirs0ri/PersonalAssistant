@@ -30,10 +30,13 @@ def load_interfaces():
             #Test if the imported file is a valid Plugin
             try:
                 if new_interface.is_sam_interface:
-                    d = new_interface.Interface(pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
+                    core.log(interfaces, name, "Starting " + new_interface.name)
+                    d = new_interface.create(pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
                     d.start()
                     interfaces.append(d)
                     core.log(interfaces, name, "  Name:\t\t" + new_interface.name)
+                else:
+                    core.log(interfaces, name, "%s won't be started." % (filenames[i]))
             except AttributeError:
                 core.log(interfaces, name, "%s is not a valid Interface." % (filenames[i]))
         except ImportError:

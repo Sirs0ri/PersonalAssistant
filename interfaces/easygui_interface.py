@@ -23,3 +23,7 @@ class Interface(Daemon):
             else:
                 core.get_answer(command)
                 easygui.msgbox(answer)
+
+def create(pidfile):
+    d = Interface(pidfile)
+    return d
