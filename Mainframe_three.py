@@ -63,5 +63,5 @@ if __name__ == "__main__":
 
     core.log(name, "Finished.")
 
-    app.run(host="192.168.178.0")
+    app.run(host="0.0.0.0")
 
