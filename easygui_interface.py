@@ -21,7 +21,7 @@ class Interface(Daemon):
     def log(content):
         easygui.msgbox(content)
 
-    def run():
+    def run(self):
         core.log(self.interfaces, name, "Started myself.")
         while True:
             '''
