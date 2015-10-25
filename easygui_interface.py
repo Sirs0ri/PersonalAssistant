@@ -25,6 +25,7 @@ class Interface(Daemon):
                 easygui.msgbox(answer)
 
 def create(interfaces, pidfile):
-    core
+    core.log(interfaces, name, "Starting up. " + pidfile)
     d = Interface(pidfile)
+    d.start()
     return d
