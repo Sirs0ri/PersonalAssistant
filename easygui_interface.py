@@ -24,7 +24,6 @@ class Interface(Daemon):
     def run(self):
         core.log(self.interfaces, name, "Started myself.")
         while True:
-            '''
             command=easygui.enterbox(title="W.I.L.L.", msg="Please enter a command")
             if command=="exit":
                 sys.exit()
@@ -33,8 +32,7 @@ class Interface(Daemon):
             else:
                 core.get_answer(command)
                 easygui.msgbox(answer)
-            '''
-            time.sleep(1)
+
 
 def create(interfaces, pidfile):
     core.log(interfaces, name, "Starting up. " + pidfile)
