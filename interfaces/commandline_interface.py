@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys, urllib
-from daemon import Daemon
+from .daemon import Daemon
 #import core
 
 is_sam_interface = 0
