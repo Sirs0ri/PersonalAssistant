@@ -108,7 +108,7 @@ if __name__ == "__main__":
     interfaces = load_interfaces()
     core.log(interfaces, name, interfaces)
     core.log(interfaces, name, "Finished loading Interfaces.")
-    start_interfaces()
+    start_interfaces(interfaces)
     core.log(interfaces, name, "Finished starting Interfaces.")
     plugins = import_plugins(interfaces)
     core.log(interfaces, name, plugins)
