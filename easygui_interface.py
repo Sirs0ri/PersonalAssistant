@@ -27,5 +27,7 @@ class Interface(Daemon):
 def create(interfaces, pidfile):
     core.log(interfaces, name, "Starting up. " + pidfile)
     d = Interface(pidfile)
+    core.log(interfaces, name, "Created.")
     d.start()
+    core.log(interfaces, name, "Started.")
     return d
