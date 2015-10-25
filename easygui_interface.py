@@ -24,6 +24,7 @@ class Interface(Daemon):
                 core.get_answer(command)
                 easygui.msgbox(answer)
 
-def create(pidfile):
+def create(interfaces, pidfile):
+    core
     d = Interface(pidfile)
     return d

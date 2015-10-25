@@ -19,7 +19,8 @@ def load_interfaces():
     """
     interfaces = []
     #list files in the /interfaces folder
-    filenames = glob.glob("interfaces/*_interface.py")
+    #filenames = glob.glob("interfaces/*_interface.py")
+    filenames = glob.glob("*_interface.py")
     core.log(interfaces, name, "Importing Interfaces: \n" + str(filenames))
 
     for i in range(0,len(filenames)):
@@ -31,8 +32,10 @@ def load_interfaces():
             try:
                 if new_interface.is_sam_interface:
                     core.log(interfaces, name, "Starting " + new_interface.name)
-                    d = new_interface.create(pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
+                    d = new_interface.Interface(pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
+                    core.log(interfaces, name, new_interface.name + " created.")
                     d.start()
+                    core.log(interfaces, name, new_interface.name + " started.")
                     interfaces.append(d)
                     core.log(interfaces, name, "  Name:\t\t" + new_interface.name)
                 else:
@@ -56,7 +59,8 @@ def import_plugins(interfaces):
     """
     plugins = []
     #list files in /plugin folder
-    filenames = glob.glob("plugins/*_plugin.py")
+    #filenames = glob.glob("plugins/*_plugin.py")
+    filenames = glob.glob("*_plugin.py")
     core.log(interfaces, name, "Importing Plugins: \n" + str(filenames))
 
     #try importing each plugin
