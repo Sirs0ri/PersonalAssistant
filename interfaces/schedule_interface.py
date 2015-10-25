@@ -3,7 +3,7 @@
 
 import time
 import core
-from ..daemon import Daemon
+from daemon import Daemon
 
 is_sam_interface = 1
 name = "Example"
