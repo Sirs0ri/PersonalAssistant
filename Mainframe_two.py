@@ -34,8 +34,7 @@ def load_interfaces():
                     core.log(interfaces, name, "Starting " + new_interface.name)
                     d = new_interface.Interface(pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
                     core.log(interfaces, name, new_interface.name + " created: " + str(d))
-                    d.start()
-                    core.log(interfaces, name, new_interface.name + " started.")
+                    #d.start()
                     interfaces.append(d)
                     core.log(interfaces, name, "  Name:\t\t" + new_interface.name)
                 else:
@@ -52,6 +51,13 @@ def stop_interfaces(interfaces):
     """
     for i in interfaces:
         i.stop()
+
+def start_interfaces(interfaces):
+    """
+    starts all interface-daemons
+    """
+    for i in interfaces:
+        i.start()
 
 def import_plugins(interfaces):
     """
@@ -101,6 +107,9 @@ if __name__ == "__main__":
 
     interfaces = load_interfaces()
     core.log(interfaces, name, interfaces)
+    core.log(interfaces, name, "Finished loading Interfaces.")
+    start_interfaces()
+    core.log(interfaces, name, "Finished starting Interfaces.")
     plugins = import_plugins(interfaces)
     core.log(interfaces, name, plugins)
 
