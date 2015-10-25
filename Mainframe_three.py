@@ -6,7 +6,6 @@ import core
 
 app = Flask(__name__)
 
-
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
@@ -47,7 +46,7 @@ def import_plugins():
 def process():
     return "works."
 
-@app.route('/shutdown', methods=['POST'])
+@app.route('/shutdown')
 def shutdown():
     shutdown_server()
     return 'Server shutting down...'
