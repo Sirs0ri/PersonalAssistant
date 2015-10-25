@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, time, easygui
+import time
 import core
 from daemon import Daemon
 

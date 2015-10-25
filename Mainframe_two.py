@@ -28,7 +28,6 @@ def load_interfaces():
             new_interface = imp.load_source("saminterface" + str(i), filenames[i])
             core.log(interfaces, name, "%s imported successfully." % (filenames[i]))
             #Test if the imported file is a valid Plugin
-            '''
             try:
                 if new_interface.is_sam_interface:
                     d = new_interface.Interface(pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
@@ -37,12 +36,6 @@ def load_interfaces():
                     core.log(interfaces, name, "  Name:\t\t" + new_interface.name)
             except AttributeError:
                 core.log(interfaces, name, "%s is not a valid Interface." % (filenames[i]))
-            '''
-            if new_interface.is_sam_interface:
-                d = new_interface.Interface(pidfile="/tmp/Samantha_Interface_%s.pid" % new_interface.name)
-                d.start()
-                interfaces.append(d)
-                core.log(interfaces, name, "  Name:\t\t" + new_interface.name)
         except ImportError:
             core.log(interfaces, name, "%s could not be imported successfully." % (filenames[i]))
     return interfaces
