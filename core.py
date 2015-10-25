@@ -3,7 +3,8 @@
 
 import urllib, datetime
 
-def log(interfaces, name="", content=""):
+#def log(interfaces, name="", content=""):
+def log(name="", content=""):
     
     #print to the script calling .log(); usually Mainframe.py
     print(str(datetime.datetime.now()) + "\n" + name + "\t" + str(content))
@@ -12,11 +13,6 @@ def log(interfaces, name="", content=""):
     #log in file
     logfile=open("log.txt", 'r+')
     logfile.write(str(datetime.datetime.now()) + "\n\t" + name + "\t" + str(content))
-    '''
-    '''
-    #log via interfaces
-    for i in interfaces:
-        i.log(content)
     '''
 
 def get_answer(command, keyword=None, parameter=None):
