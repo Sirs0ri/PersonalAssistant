@@ -96,22 +96,16 @@ if __name__ == "__main__":
     name = "Mainframe"
     interfaces = []
     plugins = []
-    
+
     core.log(interfaces, name, "Starting up!")
-    
+
     interfaces = load_interfaces()
     core.log(interfaces, name, interfaces)
     plugins = import_plugins(interfaces)
     core.log(interfaces, name, plugins)
 
     core.log(interfaces, name, "Finished.")
-    
-    app.run()
-    
-    stop_interfaces(interfaces)
 
-    
-    
-    
-    
-    
+    app.run()
+
+    stop_interfaces(interfaces)
