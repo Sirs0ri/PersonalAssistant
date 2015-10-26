@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<EventGhost Version="1700" Guid="{E86F1CCA-019D-452D-9014-5FA97336A8DA}" Time="1444994493.05">
+<EventGhost Version="1700" Guid="{A458CC47-5B46-4864-80B3-F21C4A663306}" Time="1445860286.13">
     <Passwords>
         TJ1t8e1EOPdlYMxmuSweKaeKei2k8WYXOgNk6gzIusG54TEXIX0OWOSwzZYYFnP+Eym3/34kHQfU
         qfknQYdt2/uknyLQUErXnnaaUFu26BM4wptS8+R+SDtxe9y9JSMOBJwuPPDKHgq/UmTHXAm/CH9S
         LrobYv2GE1hHZA28tuocBoJb0v6mbZjqyE7oH7Uy9p7ZLdi8FAaTrIYtmdN/ONuai74eYZhsZFsm
         aOVzlSzLekt0vcCY9gTsZHA2N5Fi
     </Passwords>
-    <Autostart Name="Autostart" Expanded="True">
+    <Autostart Name="Autostart">
         <Action>
             EventGhost.PythonScript(u'eg.globals.network = ""\nprint "Globale Variable \'network\' initialisiert"\neg.globals.lightstatus = ""\nprint "Globale Variable \'lightstatus\' initialisiert"\neg.globals.NULL = None\nprint "Globale Variable \'NULL\' initialisiert"\neg.globals.Music_Album = ""\neg.globals.Music_Title = ""\neg.globals.Music_Artist = ""\neg.globals.Music_Playstate = ""\neg.globals.Music_Coverpath = ""\nprint "Musik initialisiert"\neg.globals.clipboard = ""\nprint "Globale Variable \'clipboard\' initialisiert"\neg.globals.ardevice = "G2"\nprint "AR-Hauptgeraet gesetzt"\neg.globals.pblist = []\nprint "Pushbullet-Liste initialisiert"\n')
         </Action>
@@ -1654,7 +1654,7 @@
             </Action>
         </Macro>
     </Folder>
-    <Folder Name="Samantha">
+    <Folder Name="Samantha" Expanded="True">
         <Macro Name="Starte Anwendung: ident.cmd">
             <Event Name="Main.sam.cmd.start" />
             <Action>
@@ -1678,6 +1678,12 @@
             </Action>
             <Action>
                 System.PowerDown(False)
+            </Action>
+        </Macro>
+        <Macro Name="&lt;Unbenanntes Makro&gt;">
+            <Event Name="System.Suspend" />
+            <Action>
+                EventGhost.PythonScript(u'print("This\'ll now send a message to the RasPi")')
             </Action>
         </Macro>
         <Macro Name="Ruhezustand">
