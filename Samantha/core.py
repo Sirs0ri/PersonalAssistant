@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib, datetime
+import urllib
+from time import strftime, localtime
 
 #def log(interfaces, name="", content=""):
-def log(name="", content=""):
+def log(name="None", content=""):
     
     #print to the script calling .log(); usually Mainframe.py
-    s = "{name}\t{time}: {content}".format(name=name, time=datetime.time.now(), content=content)
+    s = "{name}\t{time}: {content}".format(name=name, time=strftime("%H:%M:%S", localtime()), content=content)
     print(s)
-    print
     '''
     #log in file
     logfile=open("log.txt", 'r+')
