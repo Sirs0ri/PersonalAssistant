@@ -4,6 +4,8 @@ import glob, imp, sys
 from flask import Flask,request
 import core
 
+name = "Mainframe"
+
 app = Flask(__name__)
 
 def shutdown_server():
@@ -57,12 +59,10 @@ def restart():
     return 'Server restarting...'
 
 def main():
-    name = "Mainframe"
     print(sys.argv[0])
     core.log(name, "Starting up!")
     plugins = import_plugins()
     core.log(name, "Finished.")
-
     app.run(host="0.0.0.0")
 
 if __name__ == "__main__":
