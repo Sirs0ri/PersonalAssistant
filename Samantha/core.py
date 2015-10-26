@@ -7,7 +7,7 @@ import urllib, datetime
 def log(name="", content=""):
     
     #print to the script calling .log(); usually Mainframe.py
-    s = "{name} \t {content} \n  {time}".format(name=name, content=content, time=datetime.datetime.now())
+    s = "{name}\t{time}: {content}".format(name=name, time=datetime.time.now(), content=content)
     print(s)
     print
     '''
