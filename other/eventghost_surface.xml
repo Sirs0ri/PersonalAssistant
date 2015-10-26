@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<EventGhost Version="1700" Guid="{A458CC47-5B46-4864-80B3-F21C4A663306}" Time="1445860286.13">
+<EventGhost Version="1700" Guid="{7DD1E653-239B-4943-9D0C-069546DBDEBA}" Time="1445860747.82">
     <Passwords>
         TJ1t8e1EOPdlYMxmuSweKaeKei2k8WYXOgNk6gzIusG54TEXIX0OWOSwzZYYFnP+Eym3/34kHQfU
         qfknQYdt2/uknyLQUErXnnaaUFu26BM4wptS8+R+SDtxe9y9JSMOBJwuPPDKHgq/UmTHXAm/CH9S
@@ -1654,50 +1654,14 @@
             </Action>
         </Macro>
     </Folder>
-    <Folder Name="Samantha" Expanded="True">
-        <Macro Name="Starte Anwendung: ident.cmd">
-            <Event Name="Main.sam.cmd.start" />
-            <Action>
-                System.Execute(u'C:\\scripts\\ident.cmd', u'', 0, False, 2, u'', False, True)
-            </Action>
+    <Folder Name="Samantha">
+        <Macro Name="OnInit">
+            <Event Name="Main.OnInit" />
         </Macro>
-        <Macro Name="AutoRemote: Sending recognize to G2">
-            <Event Name="Keyboard.Ctrl+Alt+R" />
+        <Macro Name="OnClose">
+            <Event Name="Main.OnClose" />
             <Action>
-                AutoRemote.SendMessage(u'G2', u'http://goo.gl/NC6gB4', u'APA91bHsFrE7AflIxvqjEGEV8aJhIwSDAwLXlmVS0dsUOKpkkrnJo3LOvkZLPAUjAR7UXugAckUgl7yHvkPohduZLON1DAvbNhBY-yWXiaANwRIo67JY_F4Yns1oyS_kCNXTzPpV6wteunj66_wxH6IK3QktWgHRBzO71rLhcq3ASxqmd_C-OYU', u'recognize', u'', u'', u'', '', u'', u'{eg.globals.ardevice}')
-            </Action>
-        </Macro>
-        <Macro Name="Rechner ausschalten">
-            <Event Name="Main.shutdown" />
-            <Event Name="AutoRemote.Message.shutdown" />
-            <Action Enabled="False">
-                AutoRemote.SendMessage(u'G2', u'http://goo.gl/NC6gB4', u'APA91bHsFrE7AflIxvqjEGEV8aJhIwSDAwLXlmVS0dsUOKpkkrnJo3LOvkZLPAUjAR7UXugAckUgl7yHvkPohduZLON1DAvbNhBY-yWXiaANwRIo67JY_F4Yns1oyS_kCNXTzPpV6wteunj66_wxH6IK3QktWgHRBzO71rLhcq3ASxqmd_C-OYU', u'setvar=:=Monitor_Surface=:=off', u'', u'', u'', '', u'', u'{eg.globals.ardevice}')
-            </Action>
-            <Action Enabled="False">
-                EventGhost.Wait(10.0)
-            </Action>
-            <Action>
-                System.PowerDown(False)
-            </Action>
-        </Macro>
-        <Macro Name="&lt;Unbenanntes Makro&gt;">
-            <Event Name="System.Suspend" />
-            <Action>
-                EventGhost.PythonScript(u'print("This\'ll now send a message to the RasPi")')
-            </Action>
-        </Macro>
-        <Macro Name="Ruhezustand">
-            <Event Name="Main.standby" />
-            <Action>
-                AutoRemote.SendMessage(u'G2', u'http://goo.gl/NC6gB4', u'APA91bHsFrE7AflIxvqjEGEV8aJhIwSDAwLXlmVS0dsUOKpkkrnJo3LOvkZLPAUjAR7UXugAckUgl7yHvkPohduZLON1DAvbNhBY-yWXiaANwRIo67JY_F4Yns1oyS_kCNXTzPpV6wteunj66_wxH6IK3QktWgHRBzO71rLhcq3ASxqmd_C-OYU', u'setvar=:=EGMonitoring=:=off', u'', u'', u'', '', u'', u'{eg.globals.ardevice}')
-            </Action>
-            <Action>
-                System.Hibernate(False)
-            </Action>
-        </Macro>
-        <Macro Name="Ident Insert">
-            <Action>
-                System.Execute(u'C:\\scripts\\test.cmd', u'flash hallo', 0, False, 2, u'', False, False)
+                EventGhost.PythonScript(u'import time\nprint("This\'ll now send a message to the RasPi")\ntime.sleep(5)')
             </Action>
         </Macro>
         <Folder Name="Wifi">
@@ -2023,7 +1987,7 @@
     <Folder Name="Ping">
         <Macro Name="AutoRemote: Sending ping to G2" Enabled="False">
             <Event Name="Main.MotoG.ping" />
-            <Action id="920" Enabled="False">
+            <Action id="923" Enabled="False">
                 AutoRemote.SendMessage(u'Moto G', u'goo.gl/TK5cqg', u'APA91bH8kibs_sxi5UaTJobPyoogtHymnj2tBV8kKjjsYv_bwvTviQO2BzdOKG_NwvhmLHoZ6WymtSrpSyiBOJRoAp1mJ0LMcdO_2dTKiY0qqJrbfBFMZTI8EPcMcoT39WU-y10FKJA1mH1jRdu1Agyn79XnAZFLJfd8_YjUkz3xgiakbM7A6qs', u'ping', u'', u'', u'', '', u'', u'{eg.globals.ardevice}')
             </Action>
             <Action>
@@ -2033,7 +1997,7 @@
         <Macro Name="Aktiviere: AutoRemote: Sending ping to Moto G">
             <Event Name="Ping.MotoG.alive" />
             <Action>
-                EventGhost.EnableItem(XmlIdLink(920))
+                EventGhost.EnableItem(XmlIdLink(923))
             </Action>
             <Action>
                 EventGhost.TriggerEvent(u'MotoG.ping', 0.0)
@@ -2042,7 +2006,7 @@
         <Macro Name="Deaktiviere: AutoRemote: Sending ping to Moto G">
             <Event Name="Ping.MotoG.dead" />
             <Action>
-                EventGhost.DisableItem(XmlIdLink(920))
+                EventGhost.DisableItem(XmlIdLink(923))
             </Action>
         </Macro>
     </Folder>
