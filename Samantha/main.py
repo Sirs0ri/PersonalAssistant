@@ -49,13 +49,13 @@ def process():
 def shutdown():
     shutdown_server()
     return 'Server shutting down...'
-    
+'''
 @app.route('/restart')
 def shutdown():
     shutdown_server()
     main()
     return 'Server restarting...'
-
+'''
 def main():
     name = "Mainframe"
     print(sys.argv[0])
