@@ -38,7 +38,7 @@ def import_plugins():
             except AttributeError:
                 core.log(name, "{} is not a valid Plugin.".format(filenames[i]))
         except ImportError:
-            core.log(name, "{} could not be imported successfully.".format(filenames[i]))
+            core.log(name, "{} wasn't imported successfully.".format(filenames[i]))
     return plugins
 
 @app.route("/")
@@ -57,7 +57,6 @@ def restart():
     return 'Server restarting...'
 
 def main():
-    print(sys.argv[0])
     core.log(name, "Starting up!")
     plugins = import_plugins()
     core.log(name, "Finished.")
