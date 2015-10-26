@@ -9,9 +9,9 @@ name = "Mainframe"
 app = Flask(__name__)
 
 def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
+    func = request.environ.get("werkzeug.server.shutdown")
     if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
+        raise RuntimeError("Not running with the Werkzeug Server")
     func()
 
 def import_plugins():
@@ -21,26 +21,24 @@ def import_plugins():
     plugins = []
     #list files in /plugin folder
     filenames = glob.glob("plugins/*_plugin.py")
-    core.log(name, "Importing Plugins: \n" + str(filenames))
+    core.log(name, "Importing Plugins: \n {filenames}".format(filenames = filenames))
 
     #try importing each plugin
     for i in range(0,len(filenames)):
-        core.log(name, "Found %s" % (filenames[i]))
+        core.log(name, "Found {}".format(filenames[i]))
         try:
-            new_plugin = imp.load_source("samplugin" + str(i), filenames[i])
-            core.log(name, "%s imported successfully." % (filenames[i]))
+            new_plugin = imp.load_source("samplugin{}".format(i), filenames[i])
+            core.log(name, "{} imported successfully.".format(filenames[i]))
             #Test if the imported file is a valid Plugin
             try:
                 if new_plugin.is_sam_plugin:
                     plugins.append(new_plugin)
-                    core.log(name, "  Name:\t\t" + new_plugin.name)
-                    core.log(name, "  Keywords:\t" + str(new_plugin.keywords))
+                    core.log(name, "  Name:\t{}\n  Keywords:\t{}".format(new_plugin.name, new_plugin.keywords))
                     new_plugin.initialize()
             except AttributeError:
-                core.log(name, "%s is not a valid Plugin." % (filenames[i]))
+                core.log(name, "{} is not a valid Plugin.".format(filenames[i]))
         except ImportError:
-            core.log(name, "%s could not be imported successfully." % (filenames[i]))
-        core.log()
+            core.log(name, "{} could not be imported successfully.".format(filenames[i]))
     return plugins
 
 @app.route("/")
