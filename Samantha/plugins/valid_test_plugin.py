@@ -8,7 +8,7 @@ name = "Test_Plugin"
 keywords = ["test", "demo"]
 has_toggle = 0
 has_set = 0
-
+interfaces = []
 
 def initialize():
     core.log()

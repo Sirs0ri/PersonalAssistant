@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import glob, imp, sys
+import glob, imp
 from flask import Flask,request
 import core
 
@@ -18,6 +18,7 @@ def import_plugins():
     """
     plugins = []
     #list files in /plugin folder
+    #filenames = glob.glob("plugins/*_plugin.py")
     filenames = glob.glob("plugins/*_plugin.py")
     core.log(name, "Importing Plugins: \n" + str(filenames))
 
@@ -49,22 +50,18 @@ def process():
 def shutdown():
     shutdown_server()
     return 'Server shutting down...'
-    
-@app.route('/restart')
-def shutdown():
-    shutdown_server()
-    main()
-    return 'Server restarting...'
 
-def main():
+if __name__ == "__main__":
     name = "Mainframe"
-    print(sys.argv[0])
+    plugins = []
+
     core.log(name, "Starting up!")
+
+    
     plugins = import_plugins()
+    core.log(name, plugins)
+
     core.log(name, "Finished.")
 
     app.run(host="0.0.0.0")
-
-if __name__ == "__main__":
-    main()
 
