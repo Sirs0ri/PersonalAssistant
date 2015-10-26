@@ -2,7 +2,7 @@
  
 import sys, os, time, atexit, pigpio
 from signal import SIGTERM
-from tools.daemon import Daemon
+from .tools.daemon import Daemon
 import global_variables as gvars
 import core
  
