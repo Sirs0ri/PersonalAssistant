@@ -229,6 +229,7 @@ class LightDaemon(core.Daemon):
         """
         crossfades over the major colors, then turns off again; Mostly for debugging
         """
+        self.start()
         self.crossFade(255,0,0)  	 #r=255,  g=0     b=0,    red
         self.crossFade(255,255,0)    #r=255,  g=255,  b=0,    yellow
         self.crossFade(0,255,0)      #r=0,    g=255,  b=0,    green
@@ -251,8 +252,6 @@ class LightDaemon(core.Daemon):
 def initialize():
     daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
     core.log(name, "Initializing 1")
-    daemon.start()
-    core.log(name, "Initializing 2")
     daemon.create()
     core.log(name, "Initialized")
 
