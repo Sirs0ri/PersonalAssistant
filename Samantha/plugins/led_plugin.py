@@ -250,8 +250,11 @@ class LightDaemon(core.Daemon):
 
 def initialize():
     daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
+    core.log(name, "Initializing 1")
     daemon.start()
+    core.log(name, "Initializing 2")
     daemon.create()
+    core.log(name, "Initialized")
 
 if __name__ == "__main__":
     daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
