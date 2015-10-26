@@ -2,7 +2,6 @@
  
 import sys, os, time, atexit, pigpio
 from signal import SIGTERM
-from .tools.daemon import Daemon
 import global_variables as gvars
 import core
  
@@ -14,7 +13,7 @@ keywords = ["led"]
 has_toggle = 1
 has_set = 1
 
-class LightDaemon(Daemon):
+class LightDaemon(core.Daemon):
     """
     Deamon to control LED's using the "pigpio" Library (http://abyz.co.uk/rpi/pigpio/python.html)
     Offers functions to set a specific color, fade and strobe as well as a function to toggle the light.
