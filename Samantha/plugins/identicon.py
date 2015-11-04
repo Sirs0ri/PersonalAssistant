@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+plugin to create identicons
+Reference: https://github.com/azaghal/pydenticon/blob/master/docs/usage.rst
+Might be used to create a colored overlay over a b/w wallpaper
+"""
+
 import pydenticon, core
 
 is_sam_plugin = 1
