@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # External module imports
 import RPi.GPIO as GPIO
 
