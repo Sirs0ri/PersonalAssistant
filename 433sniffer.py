@@ -3,6 +3,7 @@
 
 # External module imports
 import RPi.GPIO as GPIO
+import time
 
 # Pin Definitons:
 
@@ -19,7 +20,9 @@ try:
         if GPIO.input(butPin): # button is released
             print("in 1")
             print(GPIO.input(butPin))
+            time.sleep(0.5)
         else: # button is pressed:
             print("in 2")
+            time.sleep(0.5)
 except KeyboardInterrupt: # If CTRL+C is pressed, exit cleanly:
     exit()
