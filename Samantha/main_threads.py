@@ -17,9 +17,9 @@ class flask_thread (threading.Thread):
         self.name = "Flask_Thread"
     def run(self):
         global app
-        print "Starting " + self.name
+        core.log(self.name, "Starting")
         app.run(host="0.0.0.0")
-        print "Exiting " + self.name
+        core.log(self.name, "Exiting")
     def stop(self):
         urllib.urlopen("http://127.0.0.1:5000/shutdown")
 
@@ -83,5 +83,5 @@ if __name__ == "__main__":
     time.sleep(30)
     for t in threads:
         t.stop()
-    print("Shutdown completed.")
+    core.log(name, "Shutdown completed.")
 
