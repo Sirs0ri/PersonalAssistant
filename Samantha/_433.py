@@ -18,7 +18,7 @@ class rx():
    wireless fobs.
    """
    def __init__(self, pi, gpio, callback=None,
-                      min_bits=8, max_bits=1024, glitch=50):
+                      min_bits=0, max_bits=1024, glitch=0):
       """
       Instantiate with the Pi and the GPIO connected to the wireless
       receiver.
