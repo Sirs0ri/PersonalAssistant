@@ -256,16 +256,16 @@ class Plugin_Thread(threading.Thread):
         self.name = name + "_Thread"
         
     def run(self):
-        print "Starting " + self.name
         daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
+        core.log(self.name, "Starting")
         core.log(self.name, "Initializing 1")
         daemon.create()
         core.log(self.name, "Initialized")
         
     def stop(self):
-        print "Exiting " + self.name
         daemon.restart()
         daemon.destroy()
+        core.log(self.name, "Exiting")
         
 t = Plugin_Thread(name)
 
