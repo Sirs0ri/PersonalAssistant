@@ -31,7 +31,7 @@ def import_plugins():
     plugins = []
     #list files in /plugin folder
     filenames = glob.glob("plugins/*_plugin.py")
-    core.log(name, "Importing Plugins: \n {filenames}".format(filenames = filenames))
+    core.log(name, "Importing Plugins.")
 
     #try importing each plugin
     for i in range(0,len(filenames)):
