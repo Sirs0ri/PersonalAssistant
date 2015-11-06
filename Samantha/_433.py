@@ -130,7 +130,7 @@ class rx():
       edge_len = pigpio.tickDiff(self._last_edge_tick, t)
       self._last_edge_tick = t
 
-      if edge_len > 5000: # 5000 us, 5 ms.
+      if edge_len > 1000: # 5000 us, 5 ms.
 
          if self._in_code:
             if self.min_bits <= self._bits <= self.max_bits:
