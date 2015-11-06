@@ -3,7 +3,7 @@
 import sys, os, time, atexit, pigpio
 from signal import SIGTERM
 from daemon import Daemon
-import global_variables as gvars
+import Samantha.global_variables as gvars
  
 pi = pigpio.pi()
 
