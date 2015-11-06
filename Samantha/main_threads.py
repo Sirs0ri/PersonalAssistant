@@ -8,15 +8,17 @@ name = "Mainframe"
 
 app = Flask(__name__)
 
+threadID = 1
+threads = []
+
 class flask_thread (threading.Thread):
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
-        self.counter = counter
     def run(self):
         print "Starting " + self.name
-        print_time(self.name, self.counter, 5)
+        app.run(host="0.0.0.0")
         print "Exiting " + self.name
 
 def shutdown_server():
@@ -60,19 +62,27 @@ def process():
 def shutdown():
     shutdown_server()
     return 'Server shutting down...'
-
+'''
 @app.route('/restart')
 def restart():
     shutdown_server()
     main()
     return 'Server restarting...'
-
+'''
 def main():
     core.log(name, "Starting up!")
-    plugins = import_plugins()
+    t = flask_thread(threadID, "Flask")
+    t.start()
+    threads.append(t)
+    threadID += 1
+    #plugins = import_plugins()
     core.log(name, "Finished.")
-    app.run(host="0.0.0.0")
+    
 
 if __name__ == "__main__":
     main()
+    time.sleep(30)
+    for t in threads:
+        t.stop()
+    
 
