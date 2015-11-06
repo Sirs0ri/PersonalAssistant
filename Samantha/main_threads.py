@@ -8,26 +8,21 @@ name = "Mainframe"
 
 app = Flask(__name__)
 
-threadID = 1
+
 threads = []
 
 class flask_thread (threading.Thread):
-    def __init__(self, threadID, name):
+    def __init__(self):
         threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
+        self.name = "Flask_Thread"
     def run(self):
         global app
         print "Starting " + self.name
         app.run(host="0.0.0.0")
         print "Exiting " + self.name
-'''
-def shutdown_server():
-    func = request.environ.get("werkzeug.server.shutdown")
-    if func is None:
-        raise RuntimeError("Not running with the Werkzeug Server")
-    func()
-'''
+    def stop(self):
+        urllib.urlopen("http://127.0.0.1:5000/shutdown")
+
 def import_plugins():
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
@@ -76,10 +71,9 @@ def restart():
 def main():
     global threadID
     core.log(name, "Starting up!")
-    t = flask_thread(threadID, "Flask")
+    t = flask_thread()
     t.start()
     threads.append(t)
-    threadID += 1
     #plugins = import_plugins()
     core.log(name, "Startup finished.")
     
@@ -87,6 +81,7 @@ def main():
 if __name__ == "__main__":
     main()
     time.sleep(30)
-    urllib.urlopen("http://127.0.0.1:5000/shutdown")
+    for t in threads:
+        t.stop()
     print("Shutdown completed.")
 
