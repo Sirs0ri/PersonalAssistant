@@ -71,6 +71,7 @@ def restart():
     return 'Server restarting...'
 '''
 def main():
+    global threadID
     core.log(name, "Starting up!")
     t = flask_thread(threadID, "Flask")
     t.start()
