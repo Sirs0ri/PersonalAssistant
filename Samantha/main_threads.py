@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 
 threads = []
+plugins = []
 
 class flask_thread (threading.Thread):
     def __init__(self):
@@ -69,7 +70,7 @@ def restart():
     return 'Server restarting...'
 '''
 def main():
-    global threadID
+    global plugins
     core.log(name, "Starting up!")
     t = flask_thread()
     t.start()
@@ -81,7 +82,7 @@ def main():
 if __name__ == "__main__":
     main()
     time.sleep(30)
-    for t in threads:
+    for t in threads + plugins:
         t.stop()
     core.log(name, "Shutdown completed.")
 
