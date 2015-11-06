@@ -21,13 +21,13 @@ class flask_thread (threading.Thread):
         print "Starting " + self.name
         app.run(host="0.0.0.0")
         print "Exiting " + self.name
-
+'''
 def shutdown_server():
     func = request.environ.get("werkzeug.server.shutdown")
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
-
+'''
 def import_plugins():
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
@@ -61,7 +61,10 @@ def process():
 
 @app.route('/shutdown')
 def shutdown():
-    shutdown_server()
+    func = request.environ.get("werkzeug.server.shutdown")
+    if func is None:
+        raise RuntimeError("Not running with the Werkzeug Server")
+    func()
     return 'Server shutting down...'
 '''
 @app.route('/restart')
@@ -84,5 +87,6 @@ def main():
 if __name__ == "__main__":
     main()
     time.sleep(30)
-    shutdown_server()
+    urllib.urlopen("http://127.0.0.1:5000/shutdown")
+    print("Shutdown completed.")
 
