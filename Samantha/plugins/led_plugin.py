@@ -254,18 +254,18 @@ class Plugin_Thread(threading.Thread):
     def __init__(self, name):
         threading.Thread.__init__(self)
         self.name = name + "_Thread"
+        self.daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
         
     def run(self):
-        daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
         core.log(self.name, "Starting")
         core.log(self.name, "Initializing 1")
-        daemon.create()
+        self.daemon.create()
         core.log(self.name, "Initialized")
         
     def stop(self):
-        daemon.restart()
-        daemon.destroy()
         core.log(self.name, "Exiting")
+        self.daemon.restart()
+        self.daemon.destroy()
         
 t = Plugin_Thread(name)
 
