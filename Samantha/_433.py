@@ -319,6 +319,8 @@ if __name__ == "__main__":
    import pigpio
    import _433
 
+   pigpio.exceptions = False
+  
    RX=27
    TX=17
 
@@ -354,3 +356,4 @@ if __name__ == "__main__":
 
    pi.stop() # Disconnect from local Pi.
 
+   pigpio.exceptions = True
