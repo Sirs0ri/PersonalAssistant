@@ -1,6 +1,6 @@
 #!/usr/bin/env python
  
-import sys, os, time, atexit, pigpio
+import sys, os, time, atexit, pigpio, threading
 from signal import SIGTERM
 import global_variables as gvars
 import core
@@ -249,11 +249,34 @@ class LightDaemon(core.Daemon):
         self.crossFade(0,0,0)
         self.stop()
 
+class Plugin_Thread(threading.Thread):
+    
+    def __init__(self, name):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name + "_Thread"
+        
+    def run(self):
+        print "Starting " + self.name
+        daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
+        core.log(self.name, "Initializing 1")
+        daemon.create()
+        core.log(self.name, "Initialized")
+        
+    def stop(self):
+        print "Exiting " + self.name
+        daemon.restart()
+        daemon.destroy()
+        
+t = Plugin_Thread(name)
+
 def initialize():
-    daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
-    core.log(name, "Initializing 1")
-    daemon.create()
-    core.log(name, "Initialized")
+    global t
+    t.start()
+
+def stop():
+    global t
+    t.stop()
 
 if __name__ == "__main__":
     daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
