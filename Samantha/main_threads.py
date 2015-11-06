@@ -74,7 +74,7 @@ def main():
     t = flask_thread()
     t.start()
     threads.append(t)
-    #plugins = import_plugins()
+    plugins = import_plugins()
     core.log(name, "Startup finished.")
     
 
