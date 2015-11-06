@@ -78,13 +78,11 @@ def main():
     threads.append(t)
     threadID += 1
     #plugins = import_plugins()
-    core.log(name, "Finished.")
+    core.log(name, "Startup finished.")
     
 
 if __name__ == "__main__":
     main()
     time.sleep(30)
-    for t in threads:
-        t.stop()
-    
+    shutdown_server()
 
