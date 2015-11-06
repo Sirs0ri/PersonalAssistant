@@ -17,6 +17,7 @@ class flask_thread (threading.Thread):
         self.threadID = threadID
         self.name = name
     def run(self):
+        global app
         print "Starting " + self.name
         app.run(host="0.0.0.0")
         print "Exiting " + self.name
