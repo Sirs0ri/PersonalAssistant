@@ -253,7 +253,6 @@ class Plugin_Thread(threading.Thread):
     
     def __init__(self, name):
         threading.Thread.__init__(self)
-        self.threadID = threadID
         self.name = name + "_Thread"
         
     def run(self):
