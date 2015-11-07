@@ -142,7 +142,7 @@ def log(name="None", content=""):
     logfile.write(s)
     '''
 
-def get_answer(command, keyword=None, parameter=None):
+def get_answer(keyword, parameter=None, command=None):
     command = urllib.urlencode({"command":command})
     keyword = urllib.urlencode({"keyword":keyword})
     parameter = urllib.urlencode({"parameter":parameter})
