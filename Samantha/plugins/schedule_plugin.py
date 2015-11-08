@@ -18,6 +18,7 @@ class Plugin_Thread(threading.Thread):
         
     def run(self):
         core.log(self.name, "Started")
+        #initialisation
         nexttime=time.time()
         i = 0
         delay = 5
