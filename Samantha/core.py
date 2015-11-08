@@ -134,6 +134,9 @@ name="Core"
 def log(name="None", content=""):
     
     #print to the script calling .log(); usually Mainframe.py
+    l = len(name)
+    if l < 9:
+        name += " " * (9-l)
     s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content=content)
     print(s)
     '''
