@@ -142,16 +142,20 @@ def log(name="None", content=""):
     logfile.write(s)
     '''
 
-def get_answer(key, param=None, comm=None):
-    try:
-        answer = urllib.urlopen("http://127.0.0.1:5000?%s&%s&%s" % (comm, key, param)).read()
-    except IOError:
-        log(name, "Couldn't connect to Flask. Retrying in 5 seconds.")
-        time.sleep(5)
-        answer = get_answer(key, param, comm)
+def get_answer(k, p=None, c=None, attempt=1):
     key = urllib.urlencode({"key":k})
     param = urllib.urlencode({"param":p})
     comm = urllib.urlencode({"comm":c})
+    if attempt < 5:
+        try:
+            answer = urllib.urlopen("http://127.0.0.1:5000?%s&%s&%s" % (comm, key, param)).read()
+        except IOError:
+            log(name, "Couldn't connect to Flask. Retrying in 5 seconds.")
+            time.sleep(5)
+            attempt += 1
+            answer = get_answer(k, p, c, attempt)
+    else:
+        log(name, aborted command "{}, {}, {}".format(k, p, c))
     if answer:
         return answer
     else:
