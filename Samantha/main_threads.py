@@ -55,10 +55,10 @@ def import_plugins():
 @app.route("/")
 def process():
     core.log(
-        name, "Keyword {keyword}, Parameter {parameter}, Command {command}".format(
-            keyword=request.args.get('keyword', ''), 
-            parameter=request.args.get('parameter', ''), 
-            command=request.args.get('command', '')
+        name, "Keyword {key}, Parameter {param}, Command {comm}".format(
+            key=request.args.get('key', ''), 
+            param=request.args.get('param', ''), 
+            comm=request.args.get('comm', '')
             )
         )
     return "Running"

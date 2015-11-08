@@ -142,10 +142,10 @@ def log(name="None", content=""):
     logfile.write(s)
     '''
 
-def get_answer(keyword, parameter=None, command=None):
-    command = urllib.urlencode({"command":command})
-    keyword = urllib.urlencode({"keyword":keyword})
-    parameter = urllib.urlencode({"parameter":parameter})
+def get_answer(key, param=None, comm=None):
+    command = urllib.urlencode({"comm":command})
+    keyword = urllib.urlencode({"key":keyword})
+    parameter = urllib.urlencode({"param":parameter})
     answer = urllib.urlopen("http://127.0.0.1:5000?%s&%s&%s" % (command, keyword, parameter)).read()
     if answer:
         return answer
