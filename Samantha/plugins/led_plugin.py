@@ -9,7 +9,7 @@ import core
 pi = pigpio.pi()
 
 is_sam_plugin = 1
-name = "LED"
+name = "LED_Plugin"
 keywords = ["led"]
 has_toggle = 1
 has_set = 1
