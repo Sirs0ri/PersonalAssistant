@@ -45,7 +45,7 @@ def import_plugins():
             try:
                 if new_plugin.is_sam_plugin:
                     plugins.append(new_plugin)
-                    core.log(name, "  Name:\t{}\n  Keywords:\t{}".format(new_plugin.name, new_plugin.keywords))
+                    core.log(name, "  Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
                     new_plugin.initialize()
             except AttributeError:
                 core.log(name, "{} is not a valid Plugin.".format(filenames[i]))
