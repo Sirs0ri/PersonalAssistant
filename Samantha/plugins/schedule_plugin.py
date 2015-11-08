@@ -10,7 +10,7 @@ has_toggle = 0
 has_set = 0
 
 class Plugin_Thread(threading.Thread):
-    
+
     def __init__(self, name):
         threading.Thread.__init__(self)
         self.name = name + "_Thread"
