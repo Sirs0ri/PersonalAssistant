@@ -28,7 +28,7 @@ class Plugin_Thread(threading.Thread):
             if not self.hour == self.old_hour:
                 core.get_answer("schedule_h", self.hour)
                 self.old_hour = self.hour
-            time.sleep(30.0 - ((time.time() - starttime) % 60.0))
+            time.sleep(30.0 - ((time.time() - starttime) % 30.0))
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
