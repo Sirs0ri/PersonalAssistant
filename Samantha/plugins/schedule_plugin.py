@@ -24,7 +24,7 @@ class Plugin_Thread(threading.Thread):
         while self.running:
             core.get_answer("schedule_min", i, "schedule_min {}".format(i % 60))
             i += 5
-            self.hour = int(strftime("%H", localtime()))
+            self.hour = int(time.strftime("%H", time.localtime()))
             if not self.hour == self.old_hour:
                 core.get_answer("schedule_h", self.hour)
                 self.old_hour = self.hour
