@@ -93,7 +93,7 @@ def main():
     plugins = import_plugins()
     core.log(name, "Startup finished.")
     core.log(name, "Starting Flask")
-    app.debug = True
+    #app.debug = True
     app.run(host="0.0.0.0")
     core.log(self.name, "Exiting")
 
