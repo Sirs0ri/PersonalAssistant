@@ -18,16 +18,17 @@ class Plugin_Thread(threading.Thread):
         
     def run(self):
         core.log(self.name, "Started")
+        starttime=time.time()
         i = 0
         self.old_hour = None
         while self.running:
             core.get_answer("schedule_min", i, "schedule_min {}".format(i % 60))
             i += 5
-            time.sleep(300)
             self.hour = int(strftime("%H", localtime()))
             if not self.hour == self.old_hour:
                 core.get_answer("schedule_h", self.hour)
                 self.old_hour = self.hour
+            time.sleep(30.0 - ((time.time() - starttime) % 60.0))
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
