@@ -23,19 +23,21 @@ class Plugin_Thread(threading.Thread):
         i = 0
         delay = 5
         self.old_hour = None
-        while self.running:
-            nexttime += 300
-            core.get_answer("schedule_min", i, "schedule_min {}".format(i % 60))
-            i += 5
-            self.hour = int(time.strftime("%H", time.localtime()))
-            if not self.hour == self.old_hour:
-                core.get_answer("schedule_h", self.hour)
-                self.old_hour = self.hour
-            while time.time() < nexttime and self.running:
-                time.sleep(1)
-
+        try:
+            while self.running == 1:
+                core.get_answer("schedule_min", i, "schedule_min {}".format(i % 60))
                 i += delay
                 nexttime += 60 * delay
+                while time.time() < nexttime and self.running == 1:
+                    #check if the hour has changed
+                    self.hour = int(time.strftime("%H", time.localtime()))
+                    if not self.hour == self.old_hour:
+                        core.get_answer("schedule_h", self.hour)
+                        self.old_hour = self.hour
+                        #sleep to take work from the CPU
+                        time.sleep(1)
+        except:
+            core.log(name, "Something went wrong. Aborting.")
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
