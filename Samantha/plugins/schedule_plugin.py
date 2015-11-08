@@ -40,7 +40,7 @@ if is_sam_plugin:
 
 def initialize():
     global t
-    core.log(name, "Starting")
+    core.log(name, "Starting thread.")
     t.start()
 
 def stop():
