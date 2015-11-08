@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import urllib, sys, os, time, atexit
-from time import strftime, localtime
 from signal import SIGTERM
 
 class Daemon:
@@ -130,11 +129,12 @@ class Daemon:
         daemonized by start() or restart().
         """
 
+name="Core"
 #def log(interfaces, name="", content=""):
 def log(name="None", content=""):
     
     #print to the script calling .log(); usually Mainframe.py
-    s = "{name}\t{time}: {content}".format(name=name, time=strftime("%H:%M:%S", localtime()), content=content)
+    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", timelocaltime()), content=content)
     print(s)
     '''
     #log in file
@@ -146,8 +146,13 @@ def get_answer(key, param=None, comm=None):
     comm = urllib.urlencode({"comm":comm})
     key = urllib.urlencode({"key":key})
     param = urllib.urlencode({"param":param})
-    answer = urllib.urlopen("http://127.0.0.1:5000?%s&%s&%s" % (comm, key, param)).read()
+    try:
+        answer = urllib.urlopen("http://127.0.0.1:5000?%s&%s&%s" % (comm, key, param)).read()
+    except IOError:
+        log(name, "Couldn't connect to Flask. Retrying in 5 seconds.")
+        time.sleep(5)
+        answer = get_answer(key, param, comm)
     if answer:
         return answer
     else:
-        return "Error"
+        return None
