@@ -92,10 +92,11 @@ def main():
     '''
     plugins = import_plugins()
     core.log(name, "Startup finished.")
-    core.log(name, "Starting Flask")
     #app.debug = True
+    app.logger.disabled = True
+    core.log(name, "Starting Flask")
     app.run(host="0.0.0.0")
-    core.log(self.name, "Exiting")
+    core.log(name, "Exiting")
 
 if __name__ == "__main__":
     main()
