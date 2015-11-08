@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import glob, imp, sys, threading, time, urllib
+import glob, imp, sys, threading, time, urllib, logging
 from flask import Flask,request
 import core
 
@@ -92,8 +92,11 @@ def main():
     '''
     plugins = import_plugins()
     core.log(name, "Startup finished.")
-    #app.debug = True
-    app.logger.disabled = True
+    
+    #don't log "INFO"-messages from Flask/werkzeug
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.WARNING)
+    
     core.log(name, "Starting Flask")
     app.run(host="0.0.0.0")
     core.log(name, "Exiting")
