@@ -143,10 +143,10 @@ def log(name="None", content=""):
     '''
 
 def get_answer(key, param=None, comm=None):
-    command = urllib.urlencode({"comm":command})
-    keyword = urllib.urlencode({"key":keyword})
-    parameter = urllib.urlencode({"param":parameter})
-    answer = urllib.urlopen("http://127.0.0.1:5000?%s&%s&%s" % (command, keyword, parameter)).read()
+    comm = urllib.urlencode({"comm":comm})
+    key = urllib.urlencode({"key":key})
+    param = urllib.urlencode({"param":param})
+    answer = urllib.urlopen("http://127.0.0.1:5000?%s&%s&%s" % (comm, key, param)).read()
     if answer:
         return answer
     else:
