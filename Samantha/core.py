@@ -155,7 +155,7 @@ def get_answer(k, p=None, c=None, attempt=1):
             attempt += 1
             answer = get_answer(k, p, c, attempt)
     else:
-        log(name, aborted command "{}, {}, {}".format(k, p, c))
+        log(name, "aborted command {}, {}, {}".format(k, p, c))
     if answer:
         return answer
     else:
