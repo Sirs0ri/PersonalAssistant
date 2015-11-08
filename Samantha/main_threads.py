@@ -69,6 +69,9 @@ def shutdown():
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
+    for t in threads + plugins:
+        t.stop()
+    core.log(name, "Shutdown completed.")
     return 'Server shutting down...'
 '''
 @app.route('/restart')
@@ -86,11 +89,8 @@ def main():
     plugins = import_plugins()
     core.log(name, "Startup finished.")
     
+    
 
 if __name__ == "__main__":
     main()
-    time.sleep(30)
-    for t in threads + plugins:
-        t.stop()
-    core.log(name, "Shutdown completed.")
 
