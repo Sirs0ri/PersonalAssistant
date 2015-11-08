@@ -4,7 +4,7 @@
 import core, threading, time
 
 is_sam_plugin = 1
-name = "Schedule_Plugin"
+name = "Schedule"
 keywords = []
 has_toggle = 0
 has_set = 0

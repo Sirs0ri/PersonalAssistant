@@ -10,7 +10,7 @@ Might be used to create a colored overlay over a b/w wallpaper
 import pydenticon, core
 
 is_sam_plugin = 1
-name = "Identicon_Plugin"
+name = "Identicon"
 keywords = ["identicon"]
 has_toggle = 0
 has_set = 0

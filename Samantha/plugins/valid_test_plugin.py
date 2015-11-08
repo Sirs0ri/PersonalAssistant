@@ -4,7 +4,7 @@
 import core
 
 is_sam_plugin = 1
-name = "Test_Plugin"
+name = "Test"
 keywords = ["test", "demo"]
 has_toggle = 0
 has_set = 0
