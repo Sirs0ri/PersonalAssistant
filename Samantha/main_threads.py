@@ -19,6 +19,7 @@ class flask_thread (threading.Thread):
     def run(self):
         global app
         core.log(self.name, "Starting")
+        app.debug = True
         app.run(host="0.0.0.0")
         core.log(self.name, "Exiting")
     def stop(self):
