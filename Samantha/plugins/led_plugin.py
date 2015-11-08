@@ -5,14 +5,16 @@ import sys, os, time, atexit, pigpio, threading
 from signal import SIGTERM
 import global_variables as gvars
 import core
- 
-pi = pigpio.pi()
+
 
 is_sam_plugin = 0
 name = "LED"
 keywords = ["led"]
 has_toggle = 1
 has_set = 1
+
+if is_sam_plugin:
+    pi = pigpio.pi()
 
 class LightDaemon(core.Daemon):
     """

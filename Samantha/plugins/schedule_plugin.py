@@ -34,8 +34,9 @@ class Plugin_Thread(threading.Thread):
     def stop(self):
         self.running = 0
         core.log(self.name, "Exited")
-        
-t = Plugin_Thread(name)
+
+if is_sam_plugin:
+    t = Plugin_Thread(name)
 
 def initialize():
     global t
