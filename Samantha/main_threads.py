@@ -54,6 +54,10 @@ def import_plugins():
     return plugins
 
 @app.route("/")
+def running():
+    return "Running!"
+
+@app.route("/process/")
 def process():
     core.log(
         name, "Keyword {key}, Parameter {param}, Command {comm}".format(
@@ -64,7 +68,7 @@ def process():
         )
     return "Running"
 
-@app.route('/shutdown')
+@app.route('/shutdown/')
 def shutdown():
     core.log(name, "Received the request to shut down.")
     func = request.environ.get("werkzeug.server.shutdown")
@@ -75,13 +79,17 @@ def shutdown():
         t.stop()
     core.log(name, "Shutdown completed. Waiting for plugins to stop.")
     return 'Server shutting down...'
-'''
-@app.route('/restart')
+
+@app.route('/restart/')
 def restart():
     shutdown_server()
     main()
     return 'Server restarting...'
-'''
+
+@app.errorhandler(404)
+def not_found(error):
+    return "Page not found", 404
+
 def main():
     global plugins
     global app
