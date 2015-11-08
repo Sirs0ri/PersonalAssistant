@@ -54,6 +54,13 @@ def import_plugins():
 
 @app.route("/")
 def process():
+    core.log(
+        name, "Keyword {keyword}, Parameter {parameter}, Command {command}".format(
+            keyword=request.args.get('keyword', ''), 
+            parameter=request.args.get('parameter', ''), 
+            command=request.args.get('command', '')
+            )
+        )
     return "Running"
 
 @app.route('/shutdown')
