@@ -143,15 +143,15 @@ def log(name="None", content=""):
     '''
 
 def get_answer(key, param=None, comm=None):
-    comm = urllib.urlencode({"comm":comm})
-    key = urllib.urlencode({"key":key})
-    param = urllib.urlencode({"param":param})
     try:
         answer = urllib.urlopen("http://127.0.0.1:5000?%s&%s&%s" % (comm, key, param)).read()
     except IOError:
         log(name, "Couldn't connect to Flask. Retrying in 5 seconds.")
         time.sleep(5)
         answer = get_answer(key, param, comm)
+    key = urllib.urlencode({"key":k})
+    param = urllib.urlencode({"param":p})
+    comm = urllib.urlencode({"comm":c})
     if answer:
         return answer
     else:
