@@ -131,7 +131,7 @@ class Daemon:
 
 name="Core"
 #def log(interfaces, name="", content=""):
-def log(name="None", content=""):
+def log(name="None", content="None"):
     
     #print to the script calling .log(); usually Mainframe.py
     l = len(name)
