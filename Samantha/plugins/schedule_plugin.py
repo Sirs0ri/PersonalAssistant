@@ -20,6 +20,7 @@ class Plugin_Thread(threading.Thread):
         core.log(self.name, "Started")
         nexttime=time.time()
         i = 0
+        delay = 5
         self.old_hour = None
         while self.running:
             nexttime += 300
@@ -32,6 +33,8 @@ class Plugin_Thread(threading.Thread):
             while time.time() < nexttime and self.running:
                 time.sleep(1)
 
+                i += delay
+                nexttime += 60 * delay
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
