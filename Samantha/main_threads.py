@@ -66,13 +66,14 @@ def process():
 
 @app.route('/shutdown')
 def shutdown():
+    core.log(name, "Received the request to shut down.")
     func = request.environ.get("werkzeug.server.shutdown")
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
     for t in threads + plugins:
         t.stop()
-    core.log(name, "Shutdown completed.")
+    core.log(name, "Shutdown completed. Waiting for plugins to stop.")
     return 'Server shutting down...'
 '''
 @app.route('/restart')
@@ -99,7 +100,7 @@ def main():
     
     core.log(name, "Starting Flask")
     app.run(host="0.0.0.0")
-    core.log(name, "Exiting")
+    core.log(name, "Flask shut down successfully")
 
 if __name__ == "__main__":
     main()
