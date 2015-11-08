@@ -134,7 +134,7 @@ name="Core"
 def log(name="None", content=""):
     
     #print to the script calling .log(); usually Mainframe.py
-    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", timelocaltime()), content=content)
+    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content=content)
     print(s)
     '''
     #log in file
