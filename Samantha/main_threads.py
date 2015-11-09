@@ -64,6 +64,7 @@ def shutdown():
 def restart():
     core.log(name, "Received the request to restart.")
     shutdown()
+    time.sleep(2)
     main()
     return 'Server restarting...'
 
