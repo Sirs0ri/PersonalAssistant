@@ -33,8 +33,8 @@ class Plugin_Thread(threading.Thread):
             i += 5
             nexttime += 300
             while time.time() < nexttime and self.running == 1:
-                    #sleep to take work from the CPU
-                    time.sleep(1)
+                #sleep to take work from the CPU
+                time.sleep(1)
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
