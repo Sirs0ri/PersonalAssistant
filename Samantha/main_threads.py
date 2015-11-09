@@ -11,20 +11,7 @@ app = Flask(__name__)
 
 threads = []
 plugins = []
-'''
-class flask_thread (threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.name = "Flask_Thread"
-    def run(self):
-        global app
-        core.log(self.name, "Starting")
-        app.debug = True
-        app.run(host="0.0.0.0")
-        core.log(self.name, "Exiting")
-    def stop(self):
-        urllib.urlopen("http://127.0.0.1:5000/shutdown")
-'''
+
 def import_plugins():
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
@@ -83,11 +70,7 @@ def main():
     global plugins
     global app
     core.log(name, "Starting up!")
-    '''
-    t = flask_thread()
-    t.start()
-    threads.append(t)
-    '''
+    
     plugins = import_plugins()
     core.log(name, "Startup finished.")
     
