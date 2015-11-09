@@ -55,15 +55,9 @@ def import_plugins():
 
 @app.route("/")
 def process():
-    core.log(
-        name, "Keyword {key}, Parameter {param}, Command {comm}".format(
-            key=request.args.get('key', ''), 
-            param=request.args.get('param', ''), 
-            comm=request.args.get('comm', '')
-            )
-        )
+    core.log(name, "Keyword {key}, Parameter {param}, Command {comm}".format(key=request.args.get('key', 'None'),param=request.args.get('param', 'None'),comm=request.args.get('comm', 'None')))
     if key or param or comm:
-        return "Processing"
+        return "Processing\nKeyword {key}\nParameter {param}\nCommand {comm}".format(key=request.args.get('key', 'None'),param=request.args.get('param', 'None'),comm=request.args.get('comm', 'None'))
     else:
         return "Running!"
 
@@ -98,8 +92,8 @@ def main():
     core.log(name, "Startup finished.")
     
     #don't log "INFO"-messages from Flask/werkzeug
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.WARNING)
+    #log = logging.getLogger('werkzeug')
+    #log.setLevel(logging.WARNING)
     
     app.debug = True
     core.log(name, "Starting Flask")
