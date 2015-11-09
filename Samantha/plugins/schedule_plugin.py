@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import core, threading, time
+import core, threading, time, datetime
 
 is_sam_plugin = 1
 name = "Schedule"
@@ -26,7 +26,7 @@ class Plugin_Thread(threading.Thread):
         while self.running == 1:
             core.get_answer("schedule_min", i, "schedule_min {}".format(i % 60))
             #check if the hour has changed
-            self.hour = int(time.strftime("%H", time.localtime()))
+            self.hour = datetime.datetime.now().hour
             if not self.hour == self.old_hour:
                 core.get_answer("schedule_h", self.hour)
                 self.old_hour = self.hour
