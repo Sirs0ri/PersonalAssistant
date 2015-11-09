@@ -91,7 +91,8 @@ def main():
     core.log(name, "Flask shut down successfully")
 
 if __name__ == "__main__":
-    while restart:
-        main()
+    #while restart:
+    #    main()
+    main()
     core.log(name, "See you next mission!")
     core.log(name, "\n- - - \ Y / - - -")
