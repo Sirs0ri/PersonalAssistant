@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 threads = []
 plugins = []
-
+'''
 class flask_thread (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -24,7 +24,7 @@ class flask_thread (threading.Thread):
         core.log(self.name, "Exiting")
     def stop(self):
         urllib.urlopen("http://127.0.0.1:5000/shutdown")
-
+'''
 def import_plugins():
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
@@ -54,10 +54,6 @@ def import_plugins():
     return plugins
 
 @app.route("/")
-def running():
-    return "Running!"
-
-@app.route("/process/")
 def process():
     core.log(
         name, "Keyword {key}, Parameter {param}, Command {comm}".format(
@@ -66,7 +62,10 @@ def process():
             comm=request.args.get('comm', '')
             )
         )
-    return "Processing"
+    if key or param or comm:
+        return "Processing"
+    else:
+        return "Running!"
 
 @app.route('/shutdown/')
 def shutdown():
@@ -79,13 +78,13 @@ def shutdown():
         t.stop()
     core.log(name, "Shutdown completed. Waiting for plugins to stop.")
     return 'Server shutting down...'
-
+'''
 @app.route('/restart/')
 def restart():
     shutdown_server()
     main()
     return 'Server restarting...'
-
+'''
 def main():
     global plugins
     global app
