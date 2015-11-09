@@ -8,7 +8,7 @@ name = "Mainframe"
 
 app = Flask(__name__)
 
-
+restart = 1
 threads = []
 plugins = []
 
@@ -62,18 +62,20 @@ def shutdown():
 
 @app.route('/restart/')
 def restart():
+    global restart
     core.log(name, "Received the request to restart.")
+    restart = 1
     shutdown()
-    time.sleep(2)
-    main()
     return 'Server restarting...'
 
 def main():
     global plugins
     global app
+    global restart
     core.log(name,"\n  ____    _    __  __    _    _   _ _____ _   _    _     \n / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    \n \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   \n  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  \n |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ \n                                                     hi~")
     core.log(name, "Starting up!")
     
+    restart = 0
     plugins = import_plugins()
     core.log(name, "Startup finished.")
     
@@ -89,6 +91,7 @@ def main():
     core.log(name, "Flask shut down successfully")
 
 if __name__ == "__main__":
-    main()
+    while restart:
+        main()
     core.log(name, "See you next mission!")
     core.log(name, "\n- - - \ Y / - - -")
