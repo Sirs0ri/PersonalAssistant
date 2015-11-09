@@ -3,7 +3,7 @@
 
 import core
 
-is_sam_plugin = 1
+is_sam_plugin = 0
 name = "Test"
 keywords = ["test", "demo"]
 has_toggle = 0

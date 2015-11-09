@@ -3,7 +3,7 @@
 
 import core, threading, time
 
-is_sam_plugin = 1
+is_sam_plugin = 0
 name = "Schedule"
 keywords = []
 has_toggle = 0
