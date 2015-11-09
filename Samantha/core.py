@@ -151,7 +151,7 @@ def get_answer(k, p=None, c=None, attempt=1):
     comm = urllib.urlencode({"comm":c})
     if attempt < 5:
         try:
-            answer = urllib.urlopen("http://127.0.0.1:5000/process?{c}&{k}&{p}".format(c=comm, k=key, p=param)).read()
+            answer = urllib.urlopen("http://127.0.0.1:5000/?{k}&{p}&{c}".format(k=key, p=param, c=comm)).read()
         except IOError:
             log(name, "Couldn't connect to Flask. Retrying in 5 seconds.")
             time.sleep(5)
