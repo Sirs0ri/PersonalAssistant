@@ -47,8 +47,10 @@ def import_plugins():
                     plugins.append(new_plugin)
                     core.log(name, "  Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
                     new_plugin.initialize()
+                else: 
+                    core.log(name, "{} is not a valid Plugin (no error).".format(filenames[i]))
             except AttributeError:
-                core.log(name, "{} is not a valid Plugin.".format(filenames[i]))
+                core.log(name, "{} is not a valid Plugin (error).".format(filenames[i]))
         except ImportError:
             core.log(name, "{} wasn't imported successfully.".format(filenames[i]))
     return plugins
