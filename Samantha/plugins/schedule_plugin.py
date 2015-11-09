@@ -53,3 +53,4 @@ def stop():
     global t
     core.log(name, "Exiting")
     t.stop()
+    t.join()
