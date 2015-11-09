@@ -25,14 +25,14 @@ class Plugin_Thread(threading.Thread):
         self.old_hour = None
         while self.running == 1:
             core.get_answer("schedule_min", i, "schedule_min {}".format(i % 60))
+            #check if the hour has changed
+            self.hour = int(time.strftime("%H", time.localtime()))
+            if not self.hour == self.old_hour:
+                core.get_answer("schedule_h", self.hour)
+                self.old_hour = self.hour
             i += 5
             nexttime += 300
             while time.time() < nexttime and self.running == 1:
-                #check if the hour has changed
-                self.hour = int(time.strftime("%H", time.localtime()))
-                if not self.hour == self.old_hour:
-                    core.get_answer("schedule_h", self.hour)
-                    self.old_hour = self.hour
                     #sleep to take work from the CPU
                     time.sleep(1)
         core.log(self.name, "Not running anymore.")
