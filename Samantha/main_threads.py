@@ -101,6 +101,7 @@ def main():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.WARNING)
     
+    app.debug = True
     core.log(name, "Starting Flask")
     app.run(host="0.0.0.0")
     core.log(name, "Flask shut down successfully")
