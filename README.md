@@ -33,21 +33,9 @@ Plugins can have different function such as:
 ## To Do
 
 - "Mainframe" that reads a folder and imports .py files
-    - Rewrite core to start Daemon and Flask
-    - start interfaces
-    - react to input
-    - Maybe run the Mainframe as daemon?
+    - react to input -> process()
+    - eyecandy: create a website that is shown on raspberrypi2:5000/ which allows to enter commands and restart/stop the server
 
-- Interfaces
-    - bring input back to the Mainframe
-        -  Interrupt?
-        -  Call to 127.0.0.1:5000?
-        -  WILL! - Flask webserver der in Mainframe.py läuft
-        -  http://flask.pocoo.org/
-    - CMD
-    - GUI?
-    - Will, Glyph?
-    
 - Plugins
     - light
         - Transfer daemon to plugin 
@@ -57,14 +45,15 @@ Plugins can have different function such as:
         - Get brightest possible color while set()
         - apply brightness while crossFade(), when generating the spreaded List
     - Download
-        - Check every X minutes for new episodes
-        - Will's code to download Videos?
+        - find an episode from couchtuner's main page
+        - triggered by schedule_h = 5
+        - Download videos while I'm not sleeping: store a queue of links/filenames until then
     - Presence
         - Pings devices every couple of minutes and manages which ones are available
         - example: Force light to be off, if phone is not at home
     - 433
         - http://www.princetronics.com/how-to-read-433-mhz-codes-w-raspberry-pi-433-mhz-receiver/
-        - react to incoming 433MHz signals (via RC)
+        - react to incoming 433MHz signals (via RC): Plugin should start the RFSniffer as a subprocess and react to its output
         - send commands to devices using 433MHz signals
     - Chromecast
         - https://github.com/balloob/pychromecast
