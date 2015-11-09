@@ -1,8 +1,6 @@
-#include <CkHttp.h>
-#include <CkString.h>
-
-CkHttp http;
-CkString html;
-html = http.quickGetStr("http://www.w3.org/Protocols/");
-
-printf("%s\n",(const char *)html);
+ __      __   _______   __    __   __
+|   \  /   | |   ____| |  |  |  | |  |
+|    \/    | |  |__    |  |__|  | |  |
+|  |\__/|  | |   __|   |   __   |  \/
+|  |    |  | |  |____  |  |  |  |  __
+|__|    |__| |_______| |__|  |__| |__|
