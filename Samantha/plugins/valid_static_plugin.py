@@ -5,7 +5,7 @@ import core
 
 is_sam_plugin = 0
 name = "Test"
-keywords = ["test", "demo"]
+keywords = ["test", "static"]
 has_toggle = 0
 has_set = 0
 
