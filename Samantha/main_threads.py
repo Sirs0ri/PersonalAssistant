@@ -75,7 +75,7 @@ def shutdown():
 
 @app.route('/restart/')
 def restart():
-    shutdown_server()
+    shutdown()
     main()
     return 'Server restarting...'
 
