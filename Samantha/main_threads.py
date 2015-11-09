@@ -70,6 +70,7 @@ def restart():
 def main():
     global plugins
     global app
+    core.log(name,"\n  ____    _    __  __    _    _   _ _____ _   _    _     \n / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    \n \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   \n  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  \n |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ \n                                                     hi~")
     core.log(name, "Starting up!")
     
     plugins = import_plugins()
@@ -89,3 +90,4 @@ def main():
 if __name__ == "__main__":
     main()
     core.log(name, "See you next mission!")
+    core.log(name, "\n- - - \ Y / - - -")
