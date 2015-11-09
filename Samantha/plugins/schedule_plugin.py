@@ -25,8 +25,8 @@ class Plugin_Thread(threading.Thread):
         self.old_hour = None
         while self.running == 1:
             core.get_answer("schedule_min", i, "schedule_min {}".format(i % 60))
-            i += delay
-            nexttime += 60 * delay
+            i += 5
+            nexttime += 300
             while time.time() < nexttime and self.running == 1:
                 #check if the hour has changed
                 self.hour = int(time.strftime("%H", time.localtime()))
