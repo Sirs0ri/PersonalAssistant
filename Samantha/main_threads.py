@@ -62,6 +62,7 @@ def shutdown():
 
 @app.route('/restart/')
 def restart():
+    core.log(name, "Received the request to restart.")
     shutdown()
     main()
     return 'Server restarting...'
