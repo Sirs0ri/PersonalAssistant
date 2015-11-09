@@ -66,7 +66,7 @@ def process():
             comm=request.args.get('comm', '')
             )
         )
-    return "Running"
+    return "Processing"
 
 @app.route('/shutdown/')
 def shutdown():
@@ -85,10 +85,6 @@ def restart():
     shutdown_server()
     main()
     return 'Server restarting...'
-
-@app.errorhandler(404)
-def not_found(error):
-    return "Page not found", 404
 
 def main():
     global plugins
@@ -112,4 +108,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
+    core.log(name, "See you next mission!")
