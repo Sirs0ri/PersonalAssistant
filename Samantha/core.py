@@ -159,8 +159,8 @@ def get_answer(k, p=None, c=None, attempt=1):
             answer = get_answer(k, p, c, attempt)
     else:
         log(name, "aborted command {}, {}, {}".format(k, p, c))
-        answer = None
+        answer = "!CONNECTION_ERROR"
     if answer:
         return answer
     else:
-        return None
+        return "!NULL_ANSWER"
