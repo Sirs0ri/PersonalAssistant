@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import core, subprocess, os
+import core, subprocess, os, threading
 
 is_sam_plugin = 1
 name = "433MHz"
