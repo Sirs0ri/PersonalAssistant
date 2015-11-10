@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import core, subprocess, os, threading
+import core, subprocess, os, threading, signal
 
 is_sam_plugin = 1
 name = "433MHz"
@@ -14,14 +14,13 @@ class Plugin_Thread(threading.Thread):
     def __init__(self, name):
         threading.Thread.__init__(self)
         self.name = name + "_Thread"
-        self.running = 1
         self.process = None
         
     def run(self):
         core.log(self.name, "Started")
         self.process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
         core.log(self.name, "Subprocess started")
-        while self.running:
+        while True:
             core.log(self.name, "Getting Output.")
             output = self.process.stdout.readline()
             core.log(self.name, "Got Output.")
@@ -33,7 +32,6 @@ class Plugin_Thread(threading.Thread):
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
-        self.running = 0
         os.kill(self.process.pid, signal.SIGTERM)
         core.log(self.name, "Exited")
         
