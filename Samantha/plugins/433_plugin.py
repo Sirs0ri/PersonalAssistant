@@ -28,7 +28,7 @@ class Plugin_Thread(threading.Thread):
             if output == '' and self.process.poll() is not None:
                 break
             if output:
-                core.log(name, output.strip())
+                core.log(name, output)
             core.log(self.name, "Processed Output.")
         core.log(self.name, "Not running anymore.")
         
