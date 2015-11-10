@@ -1,19 +1,41 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import core
+import core, subprocess, os
 
 is_sam_plugin = 0
-name = "Test"
-keywords = ["test", "static"]
+name = "433MHz"
+keywords = []
 has_toggle = 0
 has_set = 0
 
+process = None
+
+def run_command():
+    global process
+    process = subprocess.Popen("sudo ~/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
+    while True:
+        output = process.stdout.readline()
+        if output == '' and process.poll() is not None:
+            break
+        if output:
+            core.log(name, output.strip())
+    rc = process.poll()
+    return rc
 
 def initialize():
-    core.log(name, "Startup")
-    core.log(name, "I could do sth now")
-    core.log(name, "Hello World!")
+    global process
+    core.log(name, "Starting thread.")
+    process = subprocess.Popen("sudo ~/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
+    while True:
+        output = process.stdout.readline()
+        if output == '' and process.poll() is not None:
+            break
+        if output:
+            core.log(name, output.strip())
+    core.log(name, "Not running anymore.")
 
 def stop():
-    core.log(name, "I'm not even running anymore!")
+    global process
+    core.log(name, "Exiting")
+    os.kill(process.pid, signal.SIGTERM)
