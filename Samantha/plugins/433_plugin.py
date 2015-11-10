@@ -3,7 +3,7 @@
 
 import core, subprocess, os
 
-is_sam_plugin = 0
+is_sam_plugin = 1
 name = "433MHz"
 keywords = []
 has_toggle = 0
