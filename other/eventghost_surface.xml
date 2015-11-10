@@ -661,31 +661,31 @@
             <Event Name="Keyboard.Shift+Ctrl+L" />
             <Event Name="Main.Macro1" />
             <Action>
-                SSH.RunCommand(u'/home/pi/Desktop/git/PersonalAssistant/led_daemon.py toggle', u'RasPi', False, False, False)
+                SSH.RunCommand(u'/home/pi/Desktop/PersonalAssistant/led_daemon.py toggle', u'RasPi', False, False, False)
             </Action>
         </Macro>
         <Macro Name="Light On">
             <Event Name="Main.Macro2" />
             <Action>
-                SSH.RunCommand(u'/home/pi/Desktop/git/PersonalAssistant/led_daemon.py set 255 85 17', u'RasPi', False, False, False)
+                SSH.RunCommand(u'/home/pi/Desktop/PersonalAssistant/led_daemon.py set 255 85 17', u'RasPi', False, False, False)
             </Action>
         </Macro>
         <Macro Name="Light Off">
             <Event Name="Main.Macro3" />
             <Action>
-                SSH.RunCommand(u'/home/pi/Desktop/git/PersonalAssistant/led_daemon.py set 0 0 0', u'RasPi', False, False, False)
+                SSH.RunCommand(u'/home/pi/Desktop/PersonalAssistant/led_daemon.py set 0 0 0', u'RasPi', False, False, False)
             </Action>
         </Macro>
         <Macro Name="Fade Light">
             <Event Name="Main.Macro4" />
             <Action>
-                SSH.RunCommand(u'/home/pi/Desktop/git/PersonalAssistant/led_daemon.py fade', u'RasPi', False, False, False)
+                SSH.RunCommand(u'/home/pi/Desktop/PersonalAssistant/led_daemon.py fade', u'RasPi', False, False, False)
             </Action>
         </Macro>
         <Macro Name="Strobe Light">
             <Event Name="Main.Macro5" />
             <Action>
-                SSH.RunCommand(u'/home/pi/Desktop/git/PersonalAssistant/led_daemon.py strobe', u'RasPi', False, False, False)
+                SSH.RunCommand(u'/home/pi/Desktop/PersonalAssistant/led_daemon.py strobe', u'RasPi', False, False, False)
             </Action>
         </Macro>
     </Folder>
