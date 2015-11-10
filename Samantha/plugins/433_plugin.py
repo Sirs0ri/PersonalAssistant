@@ -19,10 +19,11 @@ class Plugin_Thread(threading.Thread):
         
     def run(self):
         core.log(self.name, "Started")
-        process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
+        self.process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
+        core.log(self.name, "Subprocess started")
         while self.running:
-            output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
+            output = self.process.stdout.readline()
+            if output == '' and self.process.poll() is not None:
                 break
             if output:
                 core.log(name, output.strip())
@@ -30,7 +31,7 @@ class Plugin_Thread(threading.Thread):
         
     def stop(self):
         self.running = 0
-        os.kill(process.pid, signal.SIGTERM)
+        os.kill(self.process.pid, signal.SIGTERM)
         core.log(self.name, "Exited")
         
 if is_sam_plugin:
