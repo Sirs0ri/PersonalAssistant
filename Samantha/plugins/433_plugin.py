@@ -5,7 +5,7 @@ import core, subprocess, os
 
 is_sam_plugin = 1
 name = "433MHz"
-keywords = []
+keywords = ["433"]
 has_toggle = 0
 has_set = 0
 
