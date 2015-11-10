@@ -13,7 +13,7 @@ process = None
 
 def run_command():
     global process
-    process = subprocess.Popen("sudo ~/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
+    process = subprocess.Popen("sudo /home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
     while True:
         output = process.stdout.readline()
         if output == '' and process.poll() is not None:
@@ -26,7 +26,7 @@ def run_command():
 def initialize():
     global process
     core.log(name, "Starting thread.")
-    process = subprocess.Popen("sudo ~/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
+    process = subprocess.Popen("sudo /home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
     while True:
         output = process.stdout.readline()
         if output == '' and process.poll() is not None:
