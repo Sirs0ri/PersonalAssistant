@@ -23,7 +23,7 @@ class Plugin_Thread(threading.Thread):
         core.log(self.name, "Subprocess started")
         while True:
             core.log(self.name, "Getting Output.")
-            output = self.process.stdout.readline
+            output = self.process.stdout.read(1)
             core.log(self.name, "Got Output.")
             if output == '' and self.process.poll() is not None:
                 break
