@@ -35,8 +35,10 @@ def import_plugins():
                 new_plugin.initialize()
             else: 
                 core.log(name, "{} is not a valid Plugin (no error).".format(filenames[i]))
-        except:
+        except ImportError:
             core.log(name, "{} wasn't imported successfully. Error.".format(filenames[i]))
+        except AttributeError:
+            core.log(name, "{} is not a valid Plugin. Error.".format(filenames[i]))
     return plugins
 
 @app.route("/")
