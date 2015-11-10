@@ -22,11 +22,14 @@ class Plugin_Thread(threading.Thread):
         self.process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
         core.log(self.name, "Subprocess started")
         while self.running:
+            core.log(self.name, "Getting Output.")
             output = self.process.stdout.readline()
+            core.log(self.name, "Got Output.")
             if output == '' and self.process.poll() is not None:
                 break
             if output:
                 core.log(name, output.strip())
+            core.log(self.name, "Processed Output.")
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
