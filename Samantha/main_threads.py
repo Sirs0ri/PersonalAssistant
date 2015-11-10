@@ -29,17 +29,14 @@ def import_plugins():
             new_plugin = imp.load_source("samplugin{}".format(i), filenames[i])
             core.log(name, "{} imported successfully.".format(filenames[i]))
             #Test if the imported file is a valid Plugin
-            try:
-                if new_plugin.is_sam_plugin:
-                    plugins.append(new_plugin)
-                    core.log(name, "  Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
-                    new_plugin.initialize()
-                else: 
-                    core.log(name, "{} is not a valid Plugin (no error).".format(filenames[i]))
-            except:
-                core.log(name, "{} is not a valid Plugin (error).".format(filenames[i]))
-        except ImportError:
-            core.log(name, "{} wasn't imported successfully.".format(filenames[i]))
+            if new_plugin.is_sam_plugin:
+                plugins.append(new_plugin)
+                core.log(name, "  Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
+                new_plugin.initialize()
+            else: 
+                core.log(name, "{} is not a valid Plugin (no error).".format(filenames[i]))
+        except:
+            core.log(name, "{} wasn't imported successfully. Error.".format(filenames[i]))
     return plugins
 
 @app.route("/")
