@@ -13,7 +13,7 @@ process = None
 
 def run_command():
     global process
-    process = subprocess.Popen("sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
+    process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
     while True:
         output = process.stdout.readline()
         if output == '' and process.poll() is not None:
