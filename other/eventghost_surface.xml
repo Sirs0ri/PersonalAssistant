@@ -6,7 +6,7 @@
         LrobYv2GE1hHZA28tuocBoJb0v6mbZjqyE7oH7Uy9p7ZLdi8FAaTrIYtmdN/ONuai74eYZhsZFsm
         aOVzlSzLekt0vcCY9gTsZHA2N5Fi
     </Passwords>
-    <Autostart Name="Autostart">
+    <Autostart Name="Autostart" Expanded="True">
         <Action>
             EventGhost.PythonScript(u'eg.globals.network = ""\nprint "Globale Variable \'network\' initialisiert"\neg.globals.lightstatus = ""\nprint "Globale Variable \'lightstatus\' initialisiert"\neg.globals.NULL = None\nprint "Globale Variable \'NULL\' initialisiert"\neg.globals.Music_Album = ""\neg.globals.Music_Title = ""\neg.globals.Music_Artist = ""\neg.globals.Music_Playstate = ""\neg.globals.Music_Coverpath = ""\nprint "Musik initialisiert"\neg.globals.clipboard = ""\nprint "Globale Variable \'clipboard\' initialisiert"\neg.globals.ardevice = "G2"\nprint "AR-Hauptgeraet gesetzt"\neg.globals.pblist = []\nprint "Pushbullet-Liste initialisiert"\n')
         </Action>
@@ -656,7 +656,7 @@
             </Action>
         </Macro>
     </Folder>
-    <Folder Name="Home Automation">
+    <Folder Name="Home Automation" Expanded="True">
         <Macro Name="Toggle Light">
             <Event Name="Keyboard.Shift+Ctrl+L" />
             <Event Name="Main.Macro1" />
@@ -1987,7 +1987,7 @@
     <Folder Name="Ping">
         <Macro Name="AutoRemote: Sending ping to G2" Enabled="False">
             <Event Name="Main.MotoG.ping" />
-            <Action id="923" Enabled="False">
+            <Action id="907" Enabled="False">
                 AutoRemote.SendMessage(u'Moto G', u'goo.gl/TK5cqg', u'APA91bH8kibs_sxi5UaTJobPyoogtHymnj2tBV8kKjjsYv_bwvTviQO2BzdOKG_NwvhmLHoZ6WymtSrpSyiBOJRoAp1mJ0LMcdO_2dTKiY0qqJrbfBFMZTI8EPcMcoT39WU-y10FKJA1mH1jRdu1Agyn79XnAZFLJfd8_YjUkz3xgiakbM7A6qs', u'ping', u'', u'', u'', '', u'', u'{eg.globals.ardevice}')
             </Action>
             <Action>
@@ -1997,7 +1997,7 @@
         <Macro Name="Aktiviere: AutoRemote: Sending ping to Moto G">
             <Event Name="Ping.MotoG.alive" />
             <Action>
-                EventGhost.EnableItem(XmlIdLink(923))
+                EventGhost.EnableItem(XmlIdLink(907))
             </Action>
             <Action>
                 EventGhost.TriggerEvent(u'MotoG.ping', 0.0)
@@ -2006,7 +2006,7 @@
         <Macro Name="Deaktiviere: AutoRemote: Sending ping to Moto G">
             <Event Name="Ping.MotoG.dead" />
             <Action>
-                EventGhost.DisableItem(XmlIdLink(923))
+                EventGhost.DisableItem(XmlIdLink(907))
             </Action>
         </Macro>
     </Folder>
