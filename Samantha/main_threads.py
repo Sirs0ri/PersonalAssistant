@@ -33,7 +33,10 @@ def import_plugins():
                 if new_plugin.is_sam_plugin:
                     plugins.append(new_plugin)
                     core.log(name, "  Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
-                    new_plugin.initialize()
+                    try:
+                        new_plugin.initialize()
+                    except e, f:
+                        core.log(name, "ERROR: {}. {}".format(e, f))
                 else: 
                     core.log(name, "{} is not a valid Plugin (no error).".format(filenames[i]))
             except AttributeError:
