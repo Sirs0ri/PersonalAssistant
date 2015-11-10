@@ -21,6 +21,8 @@ class Plugin_Thread(threading.Thread):
         #self.process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
         self.process = subprocess.Popen("/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE, bufsize=1)
         core.log(self.name, "Subprocess started")
+        '''
+        This doesn't really work.. will have to look into it.
         while True:
             core.log(self.name, "Getting Output.")
             output = self.process.stdout.read(1)
@@ -30,6 +32,7 @@ class Plugin_Thread(threading.Thread):
             if output:
                 core.log(name, output)
             core.log(self.name, "Processed Output.")
+        '''
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
