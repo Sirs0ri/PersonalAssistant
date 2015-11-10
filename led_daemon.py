@@ -100,15 +100,15 @@ class LightDaemon(Daemon):
         """
         if 0 <= r <= 255:
             #calculate how many steps the single colors have to be turned up/down
-            redIs = pi.get_PWM_dutycycle(20)
+            redIs = pi.get_PWM_dutycycle(gvars.redPins[0])
             redDiff = r - redIs
             redList = self.spread(m=redDiff)
         if 0 <= g <= 255:
-            greenIs = pi.get_PWM_dutycycle(25)
+            greenIs = pi.get_PWM_dutycycle(gvars.greenPins[0])
             greenDiff = g - greenIs
             greenList = self.spread(m=greenDiff)
         if 0 <= b <= 255:
-            blueIs = pi.get_PWM_dutycycle(23)
+            blueIs = pi.get_PWM_dutycycle(gvars.bluePins[0])
             blueDiff = b - blueIs
             blueList = self.spread(m=blueDiff)
             
