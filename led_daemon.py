@@ -168,7 +168,7 @@ class LightDaemon(Daemon):
         turns on a warm-white light if the LEDs are completely off and turns them off otherwise
         """
         #get the values of the pins for each color, if all 3 are 0 the light is completely off, otherwise it will be turned off.
-        if (abs(pi.get_PWM_dutycycle(20)) + abs(pi.get_PWM_dutycycle(25)) + abs(pi.get_PWM_dutycycle(23))):
+        if (abs(pi.get_PWM_dutycycle(gvars.redPins[0])) + abs(pi.get_PWM_dutycycle(gvars.greenPins[0])) + abs(pi.get_PWM_dutycycle(gvars.bluePins[0]))):
             self.crossFade(0,0,0)
         else:
             self.crossFade(255,85,17)
@@ -192,9 +192,9 @@ class LightDaemon(Daemon):
         change the brightness of the light. possible inputs are -x and +x to add/substract values and x to set a new brightness independendly of the current one.
         """
         #get current values
-        r = pi.get_PWM_dutycycle(20)
-        g = pi.get_PWM_dutycycle(25)
-        b= pi.get_PWM_dutycycle(23)
+        r = pi.get_PWM_dutycycle(gvars.redPins[0])
+        g = pi.get_PWM_dutycycle(greenPins[0])
+        b= pi.get_PWM_dutycycle(gvars.bluePins[0])
 
         if "-" in str(brightness) or "+" in str(brightness):
             #get current brightness
