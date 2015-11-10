@@ -9,21 +9,40 @@ keywords = ["433"]
 has_toggle = 0
 has_set = 0
 
-process = None
+class Plugin_Thread(threading.Thread):
+
+    def __init__(self, name):
+        threading.Thread.__init__(self)
+        self.name = name + "_Thread"
+        self.running = 1
+        self.process = None
+        
+    def run(self):
+        core.log(self.name, "Started")
+        process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
+        while self.running:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                core.log(name, output.strip())
+        core.log(self.name, "Not running anymore.")
+        
+    def stop(self):
+        self.running = 0
+        os.kill(process.pid, signal.SIGTERM)
+        core.log(self.name, "Exited")
+        
+if is_sam_plugin:
+    t = Plugin_Thread(name)
 
 def initialize():
-    global process
+    global t
     core.log(name, "Starting thread.")
-    process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
-    while True:
-        output = process.stdout.readline()
-        if output == '' and process.poll() is not None:
-            break
-        if output:
-            core.log(name, output.strip())
-    core.log(name, "Not running anymore.")
+    t.start
 
 def stop():
-    global process
+    global t
     core.log(name, "Exiting")
-    os.kill(process.pid, signal.SIGTERM)
+    t.stop()
+    t.join()
