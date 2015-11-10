@@ -18,7 +18,8 @@ class Plugin_Thread(threading.Thread):
         
     def run(self):
         core.log(self.name, "Started")
-        self.process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
+        #self.process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
+        self.process = subprocess.Popen("/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
         core.log(self.name, "Subprocess started")
         while True:
             core.log(self.name, "Getting Output.")
