@@ -25,19 +25,19 @@ class Plugin_Thread(threading.Thread):
         self.old_hour = None
         while self.running == 1:
             a_min = core.get_answer("schedule_min", i, "schedule_min {}".format(i % 60))
+            if "!CONNECTION_ERROR" == a_min:
+                core.log(self.name, "Couldn't connect to flask. Aborting.")
+                break
             i += 5
             nexttime += 300
             while time.time() < nexttime and self.running == 1:
                 #check if the hour has changed
                 self.hour = datetime.datetime.now().hour
                 if not self.hour == self.old_hour:
-                    a_h = core.get_answer("schedule_h", self.hour)
+                    core.get_answer("schedule_h", self.hour)
                     self.old_hour = self.hour
                 #sleep to take work from the CPU
                 time.sleep(1)
-            if "!CONNECTION_ERROR" in [a_min, a_h]:
-                core.log(self.name, "Couldn't connect to flask. Aborting.")
-                break
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
