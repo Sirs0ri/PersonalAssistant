@@ -19,11 +19,13 @@ class Plugin_Thread(threading.Thread):
     def run(self):
         core.log(self.name, "Started")
         #self.process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
-        self.process = subprocess.Popen("/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE)
+        self.process = subprocess.Popen("/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE, bufsize=1)
+        for line in iter(self.process.stdout.read(1), b''):
+            print line,
         core.log(self.name, "Subprocess started")
         while True:
             core.log(self.name, "Getting Output.")
-            output = self.process.stdout.readline()
+            output = self.process.stdout.read(1)
             core.log(self.name, "Got Output.")
             if output == '' and self.process.poll() is not None:
                 break
