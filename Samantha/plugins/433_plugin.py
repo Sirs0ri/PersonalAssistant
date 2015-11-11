@@ -29,7 +29,7 @@ class Plugin_Thread(threading.Thread):
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
-        os.kill(self.process.pid, signal.SIGTERM)
+        subprocess.call(["sudo", "kill -9 {pid}".format(pid=self.process.pid)])
         core.log(self.name, "Exited")
         
 if is_sam_plugin:
