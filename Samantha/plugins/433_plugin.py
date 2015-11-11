@@ -18,21 +18,14 @@ class Plugin_Thread(threading.Thread):
         
     def run(self):
         core.log(self.name, "Started")
-        #self.process = subprocess.Popen("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/433_plugin.sh", stdout=subprocess.PIPE)
-        self.process = subprocess.Popen("/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer", stdout=subprocess.PIPE, bufsize=1)
+        self.process = subprocess.Popen("/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer")
         core.log(self.name, "Subprocess started")
-        '''
-        This doesn't really work.. will have to look into it.
         while True:
-            core.log(self.name, "Getting Output.")
-            output = self.process.stdout.read(1)
-            core.log(self.name, "Got Output.")
-            if output == '' and self.process.poll() is not None:
+            if self.process.poll() is not None: 
+                #Would return the process' return code once it's terminated. 
+                #Will return None if the process is still running.
                 break
-            if output:
-                core.log(name, output)
-            core.log(self.name, "Processed Output.")
-        '''
+            time.sleep(1)
         core.log(self.name, "Not running anymore.")
         
     def stop(self):
