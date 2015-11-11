@@ -53,7 +53,7 @@ def shutdown():
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
-    core.log(name, "Shutdown completed. Waiting for plugins to stop.")
+    core.log(name, "Flask stopped successfully. Waiting for plugins to stop.")
     for t in threads + plugins:
         t.stop()
     core.log(name, "Plugins stopped.")
@@ -92,5 +92,4 @@ def main():
 if __name__ == "__main__":
     while restart:
         main()
-    core.log(name, "See you next mission!")
-    core.log(name, "\n- - - \ Y / - - -")
+    core.log(name,"See you next mission!\n  ____    _    __  __    _    _   _ _____ _   _    _     \n / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    \n \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   \n  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  \n |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ \n                                                    bye~")
