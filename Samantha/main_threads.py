@@ -64,6 +64,7 @@ def restart():
     global restart
     core.log(name, "Received the request to restart.")
     restart = 1
+    # this will cause main() to restart itself after the server's shut down.
     shutdown()
     return 'Server restarting...'
 
