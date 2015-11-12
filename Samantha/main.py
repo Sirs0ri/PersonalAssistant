@@ -18,27 +18,27 @@ def import_plugins():
     """
     plugins = []
     #list files in /plugin folder
-    core.log(name, "Importing Plugins.")
+    core.log(name, " Importing Plugins.")
     filenames = glob.glob("plugins/*_plugin.py")
-    core.log(name, "{} possible plugins found.".format(len(filenames)))
+    core.log(name, "  {} possible plugins found.".format(len(filenames)))
 
     #try importing each plugin
     for i in range(0,len(filenames)):
-        core.log(name, "Found {}".format(filenames[i]))
+        core.log(name, "  Found {}".format(filenames[i]))
         try:
             new_plugin = imp.load_source("samplugin{}".format(i), filenames[i])
-            core.log(name, "{} imported successfully.".format(filenames[i]))
+            core.log(name, "   {} imported successfully.".format(filenames[i]))
             #Test if the imported file is a valid Plugin
             if new_plugin.is_sam_plugin:
                 plugins.append(new_plugin)
-                core.log(name, "  Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
+                core.log(name, "    Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
                 new_plugin.initialize()
             else: 
-                core.log(name, "{} is not a valid Plugin (no error).".format(filenames[i]))
+                core.log(name, "    {} is not a valid Plugin (no error).".format(filenames[i]))
         except ImportError:
-            core.log(name, "{} wasn't imported successfully. Error.".format(filenames[i]))
+            core.log(name, "   {} wasn't imported successfully. Error.".format(filenames[i]))
         except AttributeError:
-            core.log(name, "{} is not a valid Plugin. Error.".format(filenames[i]))
+            core.log(name, "   {} is not a valid Plugin. Error.".format(filenames[i]))
     return plugins
 
 @app.route("/")
@@ -54,9 +54,9 @@ def process():
     for p in plugins:
         if key in p.keywords:
             processed = 1
-            core.log(name, "The plugin {} matches the keyword.".format(p.name))
+            core.log(name, " The plugin {} matches the keyword.".format(p.name))
     if not processed:
-        core.log(name, "No matching Plugin found.")
+        core.log(name, " No matching Plugin found.")
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
 
 @app.route('/shutdown/')
@@ -66,10 +66,10 @@ def shutdown():
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
-    core.log(name, "Flask stopped successfully. Waiting for plugins to stop.")
+    core.log(name, " Flask stopped successfully. Waiting for plugins to stop.")
     for t in threads + plugins:
         t.stop()
-    core.log(name, "Plugins stopped.")
+    core.log(name, " Plugins stopped.")
     return 'Server shutting down...'
 
 @app.route('/restart/')
@@ -94,7 +94,7 @@ def main():
     for p in plugins:
         plugin_names.append(p.name)
     core.log(name, "Startup finished.")
-    core.log(name, "Imported plugins: {}".format(plugin_names))
+    core.log(name, " Imported plugins: {}".format(plugin_names))
     
     #don't log "INFO"-messages from Flask/werkzeug
     log = logging.getLogger('werkzeug')
