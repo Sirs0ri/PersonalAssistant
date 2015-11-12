@@ -64,22 +64,22 @@ def process(key, param, comm):
     4199700    01 00 00 00 00   01 01 01 00 01   01   00
     """
     if key == "433":
-        scode = 11111
+        scode = "11111"
         if param == "4195665":
             #turn on LEDs under bed
-            send(scode, 1, 1)
+            send(scode, "1", "1")
         elif param == "4195668":
             #turn off LEDs under bed
-            send(scode, 1, 0)
+            send(scode, "1", "0")
         elif param == "4198737":
             #turn on standing lamp1
-            send(scode, 2, 1)
+            send(scode, "2", "1")
         elif param == "4198740":
             #turn off standing lamp1
-            send(scode, 2, 0)
+            send(scode, "2", "0")
         elif param == "4199505":
             #turn on standing lamp2
-            send(scode, 3, 1)
+            send(scode, "3", "1")
         elif param == "4199508":
             #turn off standing lamp2
-            send(scode, 3, 0)
+            send(scode, "3", "0")
