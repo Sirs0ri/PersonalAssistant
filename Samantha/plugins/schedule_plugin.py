@@ -5,7 +5,7 @@ import core, threading, time, datetime
 
 is_sam_plugin = 1
 name = "Schedule"
-keywords = [""]
+keywords = []
 has_toggle = 0
 has_set = 0
 
