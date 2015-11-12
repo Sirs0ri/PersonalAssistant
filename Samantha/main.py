@@ -48,18 +48,18 @@ def process():
     key = request.args.get('key')
     param = request.args.get('param')
     comm = request.args.get('comm')
-    core.log(name, "Keyword {key}, Parameter {param}, Command {comm}".format(key=key,param=param,comm=comm))
+    core.log(name, "Keyword {}, Parameter {}, Command {}".format(key,param,comm))
     #process the command
     processed = 0
     for p in plugins:
         core.log(name, "Checking if {}'s keywords match".format(p.name))
         if key in p.keywords:
             processed = 1
-            core.log(name, "The plugin {name} matches the keyword.".format(p.name))
+            core.log(name, "The plugin {} matches the keyword.".format(p.name))
     if not processed:
         core.log(name, "No matching Plugin found.")
     core.log(name, "Processed {}|{}|{}. Code:{}".format(key, param, comm, processed))
-    return "Processing\nKeyword {key}\nParameter {param}\nCommand {comm}".format(key=key,param=param,comm=comm)
+    return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
 
 @app.route('/shutdown/')
 def shutdown():
