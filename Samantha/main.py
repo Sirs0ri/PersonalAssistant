@@ -53,7 +53,7 @@ def process():
     for p in plugins:
         if key in p.keywords:
             core.log(name, "The plugin {name} mattches the keyword.".format(p.name))
-    return "Processing\nKeyword {key}\nParameter {param}\nCommand {comm}".format(key=key,param=param,comm=comm))
+    return "Processing\nKeyword {key}\nParameter {param}\nCommand {comm}".format(key=key,param=param,comm=comm)
 
 @app.route('/shutdown/')
 def shutdown():
