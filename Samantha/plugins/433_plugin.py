@@ -48,6 +48,7 @@ def stop():
 
 def send(scode, dcode, state):
     subprocess.call(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/send", scode, dcode, state], stdout=subprocess.PIPE)
+    time.sleep(0.1)
     core.log(name, "Code {} {} {} sent successfully.".format(scode, dcode, state))
 
 def process(key, param, comm):
