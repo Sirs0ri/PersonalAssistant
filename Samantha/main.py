@@ -52,9 +52,10 @@ def process():
     #process the command
     processed = 0
     for p in plugins:
+        core.log(name, "Checking if {}'s keywords match".format(p.name))
         if key in p.keywords:
             processed = 1
-            core.log(name, "The plugin {name} mattches the keyword.".format(p.name))
+            core.log(name, "The plugin {name} matches the keyword.".format(p.name))
     if not processed:
         core.log(name, "No matching Plugin found.")
     core.log(name, "Processed {}|{}|{}. Code:{}".format(key, param, comm, processed))
