@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<EventGhost Version="1700" Guid="{F908F04C-771A-4243-B72D-1B7F321E60E5}" Time="1447198590.61">
+<EventGhost Version="1700" Guid="{5BF6054E-1208-44D4-B5D8-D7AB630A43FB}" Time="1447357244.56">
     <Passwords>
         TJ1t8e1EOPdlYMxmuSweKaeKei2k8WYXOgNk6gzIusG54TEXIX0OWOSwzZYYFnP+Eym3/34kHQfU
         qfknQYdt2/uknyLQUErXnnaaUFu26BM4wptS8+R+SDtxe9y9JSMOBJwuPPDKHgq/UmTHXAm/CH9S
         LrobYv2GE1hHZA28tuocBoJb0v6mbZjqyE7oH7Uy9p7ZLdi8FAaTrIYtmdN/ONuai74eYZhsZFsm
         aOVzlSzLekt0vcCY9gTsZHA2N5Fi
     </Passwords>
-    <Autostart Name="Autostart" Expanded="True">
+    <Autostart Name="Autostart">
         <Action>
             EventGhost.PythonScript(u'eg.globals.network = ""\nprint "Globale Variable \'network\' initialisiert"\neg.globals.lightstatus = ""\nprint "Globale Variable \'lightstatus\' initialisiert"\neg.globals.NULL = None\nprint "Globale Variable \'NULL\' initialisiert"\neg.globals.Music_Album = ""\neg.globals.Music_Title = ""\neg.globals.Music_Artist = ""\neg.globals.Music_Playstate = ""\neg.globals.Music_Coverpath = ""\nprint "Musik initialisiert"\neg.globals.clipboard = ""\nprint "Globale Variable \'clipboard\' initialisiert"\neg.globals.ardevice = "G2"\nprint "AR-Hauptgeraet gesetzt"\neg.globals.pblist = []\nprint "Pushbullet-Liste initialisiert"\n')
         </Action>
@@ -656,7 +656,12 @@
             </Action>
         </Macro>
     </Folder>
-    <Folder Name="Home Automation" Expanded="True">
+    <Folder Name="Home Automation">
+        <Macro Name="Set">
+            <Action>
+                SSH.RunCommand(u'/home/pi/Desktop/PersonalAssistant/led_daemon.py set 255 241 224', u'RasPi', False, False, False)
+            </Action>
+        </Macro>
         <Macro Name="Toggle Light">
             <Event Name="Keyboard.Shift+Ctrl+L" />
             <Event Name="Main.Macro1" />
