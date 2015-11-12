@@ -33,6 +33,20 @@ Plugins can have different function such as:
 ## To Do
 
 - "Mainframe" that reads a folder and imports .py files
+    - Auto-updater
+        - trigger: schedule plugin, hourly
+        - check if an update is available (via last downloaded commit)
+        - if yes:
+            - copy current files to a backup location
+            - pull the latest changes from GitHub
+                - subprocess.Popen("home/pi/Desktop/update_git.sh")
+            - stop and restart the server
+            - wait 2 minutes for the "ok"
+            - if there is no Ok-command: 
+                - stop the server
+                - restore the previously backed-up files
+                - start the Server again
+            - notify me about success/failure
     - react to input -> process()
     - eyecandy: create a website that is shown on raspberrypi2:5000/ which allows to enter commands and restart/stop the server
 
@@ -44,17 +58,19 @@ Plugins can have different function such as:
         - store original color, always start dimming with that color
         - Get brightest possible color while set()
         - apply brightness while crossFade(), when generating the spreaded List
-    - Download
+    - Shows:
         - find an episode from couchtuner's main page
         - triggered by schedule_h = 5
+    - Download
+        - trigger should contain a source location and a destination
         - Download videos while I'm not sleeping: store a queue of links/filenames until then
     - Presence
         - Pings devices every couple of minutes and manages which ones are available
         - example: Force light to be off, if phone is not at home
     - 433
         - http://www.princetronics.com/how-to-read-433-mhz-codes-w-raspberry-pi-433-mhz-receiver/
-        - react to incoming 433MHz signals (via RC): Plugin should start the RFSniffer as a subprocess and react to its output
         - send commands to devices using 433MHz signals
+        - Done: react to incoming 433MHz signals
     - Chromecast
         - https://github.com/balloob/pychromecast
         - Remote Controls?
