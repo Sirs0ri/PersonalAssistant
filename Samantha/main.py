@@ -90,7 +90,11 @@ def main():
     
     restart = 0
     plugins = import_plugins()
+    plugin_names = []
+    for p in plugins:
+        plugin_names.append(p.name)
     core.log(name, "Startup finished.")
+    core.log(name, "Imported plugins: {}".format(plugin_names))
     
     #don't log "INFO"-messages from Flask/werkzeug
     log = logging.getLogger('werkzeug')
