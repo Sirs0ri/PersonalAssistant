@@ -30,7 +30,7 @@ class Plugin_Thread(threading.Thread):
         
     def stop(self):
         subprocess.call(["sudo", "pkill", "RFSniffer"])
-        core.log(self.name, "Exited")
+        core.log(self.name, " Exited")
         
 if is_sam_plugin:
     t = Plugin_Thread(name)
@@ -45,3 +45,47 @@ def stop():
     core.log(name, "Exiting")
     t.stop()
     t.join()
+
+def send(scode, dcode, state):
+    subprocess.call(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/send", scode, dcode, state], stdout=subprocess.PIPE)
+    core.log(name, "Code {} {} {} sent successfully.".format(scode, dcode, state))
+
+def process(key, param, comm):
+    """
+    Funfact: this is how the Codes work:
+    Dec-Code   System-Code      Device-Code      off  on
+    4195665    01 00 00 00 00   00 01 01 01 01   00   01
+    4195668    01 00 00 00 00   00 01 01 01 01   01   00
+    4198737    01 00 00 00 00   01 00 01 01 01   00   01
+    4198740    01 00 00 00 00   01 00 01 01 01   01   00
+    4199505    01 00 00 00 00   01 01 00 01 01   00   01
+    4199508    01 00 00 00 00   01 01 00 01 01   01   00
+    4199697    01 00 00 00 00   01 01 01 00 01   00   01
+    4199700    01 00 00 00 00   01 01 01 00 01   01   00
+    """
+    if key == "433":
+        scode = 11111
+        if param == "4195665":
+            #turn on LEDs under bed
+            send(scode, 1, 1)
+            pass
+        elif param == "4195668":
+            #turn off LEDs under bed
+                send(scode, 1, 0)
+            pass
+        elif param == "4198737":
+            #turn on standing lamp1
+                send(scode, 2, 1)
+            pass
+        elif param == "4198740":
+            #turn off standing lamp1
+                send(scode, 2, 0)
+            pass
+        elif param == "4199505":
+            #turn on standing lamp2
+                send(scode, 3, 1)
+            pass
+        elif param == "4199508":
+            #turn off standing lamp2
+                send(scode, 3, 0)
+            pass
