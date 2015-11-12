@@ -57,6 +57,7 @@ def process():
             core.log(name, "The plugin {name} mattches the keyword.".format(p.name))
     if not processed:
         core.log(name, "No matching Plugin found.")
+    core.log(name, "Processed {}|{}|{}. Code:{}".format(key, param, comm, processed))
     return "Processing\nKeyword {key}\nParameter {param}\nCommand {comm}".format(key=key,param=param,comm=comm)
 
 @app.route('/shutdown/')
