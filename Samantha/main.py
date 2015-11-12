@@ -55,6 +55,10 @@ def process():
         if key in p.keywords:
             processed = 1
             core.log(name, " The plugin {} matches the keyword.".format(p.name))
+            try:
+                p.process(key, param, comm)
+            except:
+                core.log(name, "ERROR: {} couldn't process the command {}|{}|{}.".format(p.name, key, param, comm))
     if not processed:
         core.log(name, " No matching Plugin found.")
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)

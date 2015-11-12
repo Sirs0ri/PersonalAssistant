@@ -280,6 +280,9 @@ def stop():
     global t
     t.stop()
 
+def process(key, param, comm):
+    pass
+
 if __name__ == "__main__":
     daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
     if len(sys.argv) >= 2:

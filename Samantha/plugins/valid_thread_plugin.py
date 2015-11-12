@@ -39,3 +39,7 @@ def stop():
     core.log(name, "Exiting")
     t.stop()
     t.join()
+
+def process(key, param, comm):
+    core.log(name, "I could do sth now")
+    pass

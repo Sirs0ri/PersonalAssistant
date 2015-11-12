@@ -29,3 +29,6 @@ def main():
 
 def initialize():
     core.log(name, "Everything's fine.")
+
+def process(key, param, comm):
+    pass

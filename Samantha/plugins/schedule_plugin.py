@@ -57,3 +57,6 @@ def stop():
     core.log(name, "Exiting")
     t.stop()
     t.join()
+
+def process(key, param, comm):
+    pass
