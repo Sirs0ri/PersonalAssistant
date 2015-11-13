@@ -48,7 +48,7 @@ def process():
     key = request.args.get('key')
     param = request.args.get('param')
     comm = request.args.get('comm')
-    core.log(name, "Keyword {}, Parameter {}, Command {}".format(key,param,comm))
+    core.log("Incoming", "Keyword {}, Parameter {}, Command {}".format(key,param,comm))
     #process the command
     processed = 0
     for p in plugins:
