@@ -19,7 +19,7 @@ def import_plugins():
     plugins = []
     #list files in /plugin folder
     core.log(name, " Importing Plugins.")
-    filenames = glob.glob("plugins/*_plugin.py")
+    filenames = glob.glob("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/*_plugin.py")
     core.log(name, "  {} possible plugins found.".format(len(filenames)))
 
     #try importing each plugin
