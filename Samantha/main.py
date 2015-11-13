@@ -11,14 +11,14 @@ app = Flask(__name__)
 restart = 1
 threads = []
 plugins = []
+key_index = {}
 
 def import_plugins():
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
     """
     plugins = []
-key_index = {}
-    #list files in /plugin folder
+    #list files in Samantha's /plugin folder
     core.log(name, " Importing Plugins.")
     filenames = glob.glob("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/*_plugin.py")
     core.log(name, "  {} possible plugins found.".format(len(filenames)))
@@ -34,13 +34,10 @@ key_index = {}
                 #add it to the list of plugins
                 plugins.append(new_plugin)
                 core.log(name, "    Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
-                #add the plugin's keywords to the index
-                for k in new_plugin.keywords:
-                    if not key_index[k]:
-                        key_index[k] = []
-                    key_index[k].append(new_plugin)
+                #initialize the plugin
                 new_plugin.initialize()
             else: 
+                #is_sam_plugin == 0 -> the plugin is not supposed to be imported.
                 core.log(name, "    {} is not a valid Plugin (no error).".format(filenames[i]))
         except ImportError:
             core.log(name, "   {} wasn't imported successfully. Error.".format(filenames[i]))
@@ -64,6 +61,10 @@ def generate_index():
 
 @app.route("/")
 def process():
+    """
+    Process the data received via Flask
+    Accesses the parameters "Keyword", "Parameter" and "Command"
+    """
     global plugins
     #get parameters
     key = request.args.get('key')
@@ -89,6 +90,9 @@ def process():
 
 @app.route('/shutdown/')
 def shutdown():
+    """
+    Shuts down first the Flask-Server, then every Thread started by the main module and all the plugins.
+    """
     core.log(name, "Received the request to shut down.")
     func = request.environ.get("werkzeug.server.shutdown")
     if func is None:
@@ -102,6 +106,9 @@ def shutdown():
 
 @app.route('/restart/')
 def restart():
+    """
+    Restart the complete program. It'll shutdown Flask and set the Restart-Flag back to 1 so that main() will be executed again after it's completed (aka after Flask and the Plugins are shut down correctly.) 
+    """
     global restart
     core.log(name, "Received the request to restart.")
     restart = 1
@@ -110,6 +117,10 @@ def restart():
     return 'Server restarting...'
 
 def main():
+    """
+    This is the main function. 
+    It starts everything and does stuff.
+    """
     global plugins
     global key_index
     global app
