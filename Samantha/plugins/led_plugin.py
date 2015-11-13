@@ -281,46 +281,36 @@ def stop():
     t.stop()
 
 def process(key, param, comm):
-    pass
-
-if __name__ == "__main__":
-    daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
-    if len(sys.argv) >= 2:
-        if "start" == sys.argv[1]:
-            print("Starting..")
-            daemon.restart()
-            daemon.create()
-        elif "stop" == sys.argv[1]:
-            print("Stopping..")
-            daemon.restart()
-            daemon.destroy()
-        elif "Pause" == sys.argv[1]:
+    global t
+    if key == "led":
+        if param == "pause":
             print("Pausing..")
-            daemon.restart()
-        elif "fade" == sys.argv[1]:
-            print("Fading")
-            daemon.restart()
-            daemon.fade()
-        elif "strobe" == sys.argv[1]:
-            print("Party Hard!")
-            daemon.restart()
-            daemon.strobe()
-        elif "toggle" == sys.argv[1]:
-            print("Toggling")
-            daemon.restart()
-            daemon.toggle()
-        elif "set" == sys.argv[1]:
+            t.daemon.restart()
+            core.log(name, "LEDs Paused.")
+        elif param == "fade":
+            t.daemon.restart()
+            t.daemon.fade()
+            core.log(name, "LEDs now fading.")
+        elif param == "strobe":
+            t.daemon.restart()
+            t.daemon.strobe()
+            core.log(name, "Party mode activated.")
+        elif param == "toggle":
+            t.daemon.restart()
+            t.daemon.toggle()
+            core.log(name, "Toggled the light.")
+        elif param == "set":
             #check that the values the light will be set to are valid as numbers between 0 and 255.
             try:
-                redIn = int(sys.argv[2])
+                redIn = int(comm[0])
             except IndexError:
                 redIn = 0
             try:
-                greenIn = int(sys.argv[3])
+                greenIn = int(comm[1])
             except IndexError:
                 greenIn = 0
             try:
-                blueIn = int(sys.argv[4])
+                blueIn = int(comm[2])
             except IndexError:
                 blueIn = 0
             if not (0 <= redIn <= 255):
@@ -329,9 +319,10 @@ if __name__ == "__main__":
                 greenIn = 0
             if not (0 <= blueIn <= 255):
                 blueIn = 0
-            daemon.restart()
-            daemon.set(r=redIn, g=greenIn, b=blueIn)
-            '''
+            t.daemon.restart()
+            t.daemon.set(r=redIn, g=greenIn, b=blueIn)
+            core.log(name, "Set the LEDs to ({},{},{}).".format(redIn, greenIn, blueIn))
+        '''
         elif "dim" == sys.argv[1]:
             print("Changing Brightness")
             try:
@@ -341,11 +332,13 @@ if __name__ == "__main__":
             print("Changing Brightness to %f" % brightness)
             daemon.restart()
             daemon.dim(brightness)
-            '''
-        else:
-            print "Unknown command"
-            sys.exit(2)
-        sys.exit(0)
-    else:
-        print "usage: %s start|stop|restart" % sys.argv[0]
-        sys.exit(2)
+        '''
+    elif key == "light":
+        if param == "off":
+            t.daemon.restart()
+            t.daemon.set(r=0, g=0, b=0)
+            core.log(name, "Set the LEDs to (0,0,0).")
+        elif param == "on":
+            t.daemon.restart()
+            t.daemon.set(r=255, g=85, b=17)
+            core.log(name, "Set the LEDs to (255,85,17).")
