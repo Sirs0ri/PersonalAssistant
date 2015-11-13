@@ -7,7 +7,7 @@ import global_variables as gvars
 import core
 
 
-is_sam_plugin = 0
+is_sam_plugin = 1
 name = "LED"
 keywords = ["led", "light"]
 has_toggle = 1
