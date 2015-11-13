@@ -9,7 +9,7 @@ import core
 
 is_sam_plugin = 0
 name = "LED"
-keywords = ["led"]
+keywords = ["led", "light"]
 has_toggle = 1
 has_set = 1
 
