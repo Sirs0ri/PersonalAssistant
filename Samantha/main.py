@@ -17,6 +17,7 @@ def import_plugins():
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
     """
     plugins = []
+    key_index = {}
     #list files in /plugin folder
     core.log(name, " Importing Plugins.")
     filenames = glob.glob("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/*_plugin.py")
@@ -30,8 +31,14 @@ def import_plugins():
             core.log(name, "   {} imported successfully.".format(filenames[i]))
             #Test if the imported file is a valid Plugin
             if new_plugin.is_sam_plugin:
+                #add it to the list of plugins
                 plugins.append(new_plugin)
                 core.log(name, "    Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
+                #add the plugin's keywords to the index
+                for k in new_plugin.keywords:
+                    if not key_index[k]:
+                        key_index[k] = []
+                    key_index[k].append(new_plugin)
                 new_plugin.initialize()
             else: 
                 core.log(name, "    {} is not a valid Plugin (no error).".format(filenames[i]))
