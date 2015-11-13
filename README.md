@@ -69,7 +69,7 @@ Plugins can have different function such as:
         - example: Force light to be off, if phone is not at home
     - 433
         - http://www.princetronics.com/how-to-read-433-mhz-codes-w-raspberry-pi-433-mhz-receiver/
-        - send commands to devices using 433MHz signals
+        - Done: send commands to devices using 433MHz signals
         - Done: react to incoming 433MHz signals
     - Chromecast
         - https://github.com/balloob/pychromecast
