@@ -17,7 +17,7 @@ def import_plugins():
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
     """
     plugins = []
-    key_index = {}
+key_index = {}
     #list files in /plugin folder
     core.log(name, " Importing Plugins.")
     filenames = glob.glob("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/*_plugin.py")
@@ -47,6 +47,20 @@ def import_plugins():
         except AttributeError:
             core.log(name, "   {} is not a valid Plugin. Error.".format(filenames[i]))
     return plugins
+
+def generate_index():
+    """
+    Generates and returns an index of keywords and the plugins that react to them.
+    Exmple: key_index = {"344":[<433-Plugin>], "light":[<433-plugin>, <LED-Plugin>], "led":[<LED-Plugin>]}
+    """
+    global plugins
+    key_index = {}
+    for p in plugins:
+        for k in p.keywords:
+            if not key_index[k]:    #key isn't indexed yet
+                key_index[k] = []
+            key_index[k].append(p)
+    return key_index
 
 @app.route("/")
 def process():
@@ -97,6 +111,7 @@ def restart():
 
 def main():
     global plugins
+    global key_index
     global app
     global restart
     core.log(name,"\n  ____    _    __  __    _    _   _ _____ _   _    _     \n / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    \n \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   \n  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  \n |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ \n                                                     hi~")
@@ -104,6 +119,7 @@ def main():
     
     restart = 0
     plugins = import_plugins()
+    key_index = generate_index()
     plugin_names = []
     for p in plugins:
         plugin_names.append(p.name)
