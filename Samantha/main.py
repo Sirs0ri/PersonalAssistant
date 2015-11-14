@@ -93,8 +93,8 @@ def process():
             core.log(name, "  The plugin {} matches the keyword.".format(p.name))
             p.process(key, param, comm)
             processed=1
-    except KeyError:
-        core.log(name, "  Error: This Keyword isn't indexed.")
+    except KeyError as e:
+        core.log(name, "  Error: This Keyword isn't indexed. [{}]".format(e))
     if not processed:
         core.log(name, "  No matching Plugin found.")
     '''
@@ -158,11 +158,11 @@ def main():
     log.setLevel(logging.WARNING)
     
     #app.debug = True
-    core.log(name, "Starting Flask")
+    core.log(name, "Starting Flask.")
     app.run(host="0.0.0.0")
     
     #this'll be executed when Flask stops.
-    core.log(name, "Flask shut down successfully")
+    core.log(name, "Shut down successfully.")
 
 if __name__ == "__main__":
     while restart:
