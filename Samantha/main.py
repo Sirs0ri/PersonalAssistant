@@ -110,15 +110,15 @@ def shutdown():
     """
     Shuts down first the Flask-Server, then every Thread started by the main module and all the plugins.
     """
-    core.log(name, "Received the request to shut down.")
+    core.log("Incoming", "Received the request to shut down.")
     func = request.environ.get("werkzeug.server.shutdown")
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
-    core.log(name, " Flask stopped successfully. Waiting for plugins to stop.")
+    core.log(name, "  Flask stopped successfully. Waiting for plugins to stop.")
     for t in threads + plugins:
         t.stop()
-    core.log(name, " Plugins stopped.")
+    core.log(name, "  Plugins stopped.")
     return 'Server shutting down...'
 
 @app.route('/restart/')

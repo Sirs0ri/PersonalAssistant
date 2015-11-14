@@ -266,7 +266,7 @@ class Plugin_Thread(threading.Thread):
         core.log(self.name, "Initialized")
         
     def stop(self):
-        core.log(self.name, "Exiting")
+        core.log(self.name, "  Exiting")
         self.daemon.restart()
         self.daemon.destroy()
         
