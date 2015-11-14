@@ -45,7 +45,7 @@ def import_plugins():
                 core.log(name, "    {} initialized successfully".format(new_plugin.name, new_plugin.keywords))
             else: 
                 #is_sam_plugin == 0 -> the plugin is not supposed to be imported.
-                core.log(name, "   {} is not a valid Plugin (no error).".format(filenames[i]))
+                core.log(name, "    {} is not a valid Plugin (no error).".format(filenames[i]))
         except ImportError:
             core.log(name, "  Error: {} wasn't imported successfully.".format(filenames[i]))
         except AttributeError:
@@ -71,7 +71,7 @@ def generate_index():
                 key_index[k] = []
                 key_index[k].append(p)
                 core.log(name, "  Created new Key: '{}'".format(k))
-    core.log(name, "  Indexed Keywords: {}".format(key_index))
+    core.log(name, "  Indexed Keywords.")
     return key_index
 
 @app.route("/")
@@ -92,7 +92,6 @@ def process():
         if key in p.keywords:
             processed = 1
             core.log(name, "  The plugin {} matches the keyword.".format(p.name))
-
             p.process(key, param, comm)
     if not processed:
         core.log(name, "  No matching Plugin found.")
