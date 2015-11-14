@@ -89,7 +89,7 @@ def process():
     #process the command
     processed = 0
     try:
-        for p in key_index:
+        for p in key_index[key]:
             core.log(name, "  The plugin {} matches the keyword.".format(p.name))
             p.process(key, param, comm)
             processed=1
