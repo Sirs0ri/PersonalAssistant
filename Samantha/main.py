@@ -4,6 +4,11 @@ import glob, imp, sys, threading, time, urllib, logging
 from flask import Flask,request
 import core
 
+"""
+This is the main part, the "core" of Samantha.
+It starts a Flask-Server which is used to receive commands (via Lan or localhost) on port 5000.
+
+"""
 name = "Mainframe"
 
 app = Flask(__name__)
