@@ -25,7 +25,7 @@ def import_plugins():
     plugins = []
     plugin_names = []
     #list files in Samantha's /plugin folder
-    core.log(name, " Importing Plugins.")
+    core.log(name, "Importing Plugins.")
     filenames = glob.glob("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/*_plugin.py")
     core.log(name, "  {} possible plugins found.".format(len(filenames)))
 
@@ -34,7 +34,7 @@ def import_plugins():
         core.log(name, "  Found {}".format(filenames[i]))
         try:
             new_plugin = imp.load_source("samplugin{}".format(i), filenames[i])
-            core.log(name, "   {} imported successfully.".format(filenames[i]))
+            core.log(name, "    Successfully imported {}.".format(filenames[i]))
             #Test if the imported file is a valid Plugin
             if new_plugin.is_sam_plugin:
                 #add it to the list of plugins
@@ -42,13 +42,14 @@ def import_plugins():
                 core.log(name, "    Name: {}\tKeywords: {}".format(new_plugin.name, new_plugin.keywords))
                 #initialize the plugin
                 new_plugin.initialize()
+                core.log(name, "    {} initialized successfully".format(new_plugin.name, new_plugin.keywords))
             else: 
                 #is_sam_plugin == 0 -> the plugin is not supposed to be imported.
-                core.log(name, "    {} is not a valid Plugin (no error).".format(filenames[i]))
+                core.log(name, "   {} is not a valid Plugin (no error).".format(filenames[i]))
         except ImportError:
-            core.log(name, "   {} wasn't imported successfully. Error.".format(filenames[i]))
+            core.log(name, "  Error: {} wasn't imported successfully.".format(filenames[i]))
         except AttributeError:
-            core.log(name, "   {} is not a valid Plugin. Error.".format(filenames[i]))
+            core.log(name, "  Error: {} is not a valid Plugin.".format(filenames[i]))
     for p in plugins:
         plugin_names.append(p.name)
     core.log(name, "Imported plugins: {}".format(plugin_names))
@@ -61,6 +62,7 @@ def generate_index():
     """
     global plugins
     key_index = {}
+    core.log(name, "Indexing Keywords")
     for p in plugins:
         for k in p.keywords:
             try:
@@ -68,6 +70,8 @@ def generate_index():
             except KeyError:    #key isn't indexed yet
                 key_index[k] = []
                 key_index[k].append(p)
+                core.log(name, "  Created new Key: '{}'".format(k))
+    core.log(name, "  Indexed Keywords: {}".format(key_index))
     return key_index
 
 @app.route("/")
@@ -87,16 +91,11 @@ def process():
     for p in plugins:
         if key in p.keywords:
             processed = 1
-            core.log(name, " The plugin {} matches the keyword.".format(p.name))
-            '''
-            try:
-                p.process(key, param, comm)
-            except:
-                core.log(name, "ERROR: {} couldn't process the command {}|{}|{}.".format(p.name, key, param, comm))
-            '''
+            core.log(name, "  The plugin {} matches the keyword.".format(p.name))
+
             p.process(key, param, comm)
     if not processed:
-        core.log(name, " No matching Plugin found.")
+        core.log(name, "  No matching Plugin found.")
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
 
 @app.route('/shutdown/')
@@ -143,6 +142,7 @@ def main():
     plugins = import_plugins()
     key_index = generate_index()
     core.log(name, "Startup finished.")
+        
     #don't log "INFO"-messages from Flask/werkzeug
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.WARNING)

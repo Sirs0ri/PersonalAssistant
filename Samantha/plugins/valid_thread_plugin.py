@@ -41,5 +41,5 @@ def stop():
     t.join()
 
 def process(key, param, comm):
-    core.log(name, "I could do sth now")
+    core.log(name, "  I could do sth now")
     pass

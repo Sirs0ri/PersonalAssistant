@@ -18,5 +18,5 @@ def stop():
     core.log(name, "I'm not even running anymore!")
 
 def process(key, param, comm):
-    core.log(name, "I could do sth now")
+    core.log(name, "  I could do sth now")
     pass

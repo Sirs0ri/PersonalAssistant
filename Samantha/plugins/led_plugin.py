@@ -286,19 +286,19 @@ def process(key, param, comm):
         if param == "pause":
             print("Pausing..")
             t.daemon.restart()
-            core.log(name, "LEDs Paused.")
+            core.log(name, "  LEDs Paused.")
         elif param == "fade":
             t.daemon.restart()
             t.daemon.fade()
-            core.log(name, "LEDs now fading.")
+            core.log(name, "  LEDs now fading.")
         elif param == "strobe":
             t.daemon.restart()
             t.daemon.strobe()
-            core.log(name, "Party mode activated.")
+            core.log(name, "  Party mode activated.")
         elif param == "toggle":
             t.daemon.restart()
             t.daemon.toggle()
-            core.log(name, "Toggled the light.")
+            core.log(name, "  Toggled the light.")
         elif param == "set":
             #check that the values the light will be set to are valid as numbers between 0 and 255.
             try:
@@ -321,7 +321,7 @@ def process(key, param, comm):
                 blueIn = 0
             t.daemon.restart()
             t.daemon.set(r=redIn, g=greenIn, b=blueIn)
-            core.log(name, "Set the LEDs to ({},{},{}).".format(redIn, greenIn, blueIn))
+            core.log(name, "  Set the LEDs to ({},{},{}).".format(redIn, greenIn, blueIn))
         '''
         elif "dim" == sys.argv[1]:
             print("Changing Brightness")
