@@ -59,9 +59,11 @@ def generate_index():
     key_index = {}
     for p in plugins:
         for k in p.keywords:
-            if not key_index[k]:    #key isn't indexed yet
+            try:
+                key_index[k].append(p)
+            except KeyError:    #key isn't indexed yet
                 key_index[k] = []
-            key_index[k].append(p)
+                key_index[k].append(p)
     return key_index
 
 @app.route("/")
