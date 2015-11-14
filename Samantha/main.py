@@ -23,6 +23,7 @@ def import_plugins():
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
     """
     plugins = []
+    plugin_names = []
     #list files in Samantha's /plugin folder
     core.log(name, " Importing Plugins.")
     filenames = glob.glob("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/*_plugin.py")
@@ -48,6 +49,9 @@ def import_plugins():
             core.log(name, "   {} wasn't imported successfully. Error.".format(filenames[i]))
         except AttributeError:
             core.log(name, "   {} is not a valid Plugin. Error.".format(filenames[i]))
+    for p in plugins:
+        plugin_names.append(p.name)
+    core.log(name, "Imported plugins: {}".format(plugin_names))
     return plugins
 
 def generate_index():
@@ -138,12 +142,7 @@ def main():
     restart = 0
     plugins = import_plugins()
     key_index = generate_index()
-    plugin_names = []
-    for p in plugins:
-        plugin_names.append(p.name)
     core.log(name, "Startup finished.")
-    core.log(name, " Imported plugins: {}".format(plugin_names))
-    
     #don't log "INFO"-messages from Flask/werkzeug
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.WARNING)
