@@ -88,6 +88,13 @@ def process():
     core.log("Incoming", "Keyword {}, Parameter {}, Command {}".format(key,param,comm))
     #process the command
     processed = 0
+    try:
+        for p in key_index:
+            core.log(name, "  The plugin {} matches the keyword.".format(p.name))
+            p.process(key, param, comm)
+    except KeyError:
+        core.log(name, "  No matching Plugin found.")
+    '''
     for p in plugins:
         if key in p.keywords:
             processed = 1
@@ -95,6 +102,7 @@ def process():
             p.process(key, param, comm)
     if not processed:
         core.log(name, "  No matching Plugin found.")
+    '''
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
 
 @app.route('/shutdown/')
