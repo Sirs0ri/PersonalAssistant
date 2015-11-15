@@ -88,6 +88,7 @@ def process():
     core.log("Incoming", "Keyword {}, Parameter {}, Command {}".format(key,param,comm))
     #process the command
     processed = 0
+    '''
     try:
         for p in key_index[key]:
             core.log(name, "  The plugin {} matches the keyword.".format(p.name))
@@ -95,6 +96,11 @@ def process():
             processed=1
     except KeyError as e:
         core.log(name, "  Error: This Keyword isn't indexed. [{}]".format(e))
+    '''
+    for p in key_index[key]:
+        core.log(name, "  The plugin {} matches the keyword.".format(p.name))
+        p.process(key, param, comm)
+        processed=1
     if not processed:
         core.log(name, "  No matching Plugin found.")
     '''
