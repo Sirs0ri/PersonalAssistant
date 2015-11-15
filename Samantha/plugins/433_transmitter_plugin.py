@@ -4,51 +4,23 @@
 import core, subprocess, os, threading, signal, time
 
 is_sam_plugin = 1
-name = "433MHz"
+name = "433MHz_Transmitter"
 keywords = ["433", "light"]
 has_toggle = 0
 has_set = 0
 
-class Plugin_Thread(threading.Thread):
-
-    def __init__(self, name):
-        threading.Thread.__init__(self)
-        self.name = name + "_Thread"
-        self.process = None
-        
-    def run(self):
-        core.log(self.name, "      Started")
-        self.process = subprocess.Popen(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer"], stdout=subprocess.PIPE)
-        core.log(self.name, "Subprocess started")
-        while True:
-            if self.process.poll() is not None: 
-                #Would return the process' return code once it's terminated. 
-                #Will return None if the process is still running.
-                break
-            time.sleep(1)
-        core.log(self.name, "  Not running anymore.")
-        
-    def stop(self):
-        subprocess.call(["sudo", "pkill", "RFSniffer"])
-        core.log(self.name, "  Exited")
-        
-if is_sam_plugin:
-    t = Plugin_Thread(name)
-
 def initialize():
-    global t
-    core.log(name, "      Starting thread.")
-    t.start()
+    core.log(name, "      I don't need to be started.")
 
 def stop():
     global t
-    core.log(name, "  Exiting")
+    core.log(name, "  I'm not running in the Background")
     t.stop()
     t.join()
 
 def send(scode, dcode, state):
     subprocess.call(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/send", scode, dcode, state], stdout=subprocess.PIPE)
-    time.sleep(0.1)
+    #time.sleep(0.1)
     core.log(name, "  Code {} {} {} sent successfully.".format(scode, dcode, state))
 
 def process(key, param, comm):
