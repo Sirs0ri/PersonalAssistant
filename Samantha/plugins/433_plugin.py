@@ -83,6 +83,12 @@ def process(key, param, comm):
         elif param == "4199508":
             #turn off standing lamp2
             send("11111", "3", "0")
+        elif param == "4199697":
+            #turn all lights on
+            core.get_answer(key=light, param=on)
+        elif param == "4199700":
+            #turn all lights on
+            core.get_answer(key=light, param=off)
         else:
             core.log(name, "  Error: illegal parameter.")
     elif key == "light":
