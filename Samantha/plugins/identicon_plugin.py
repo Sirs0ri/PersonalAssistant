@@ -35,7 +35,7 @@ def stop():
     
 def process(key, param, comm):
     if key == "identicon":
-        core.log(name, "Generating an Identicon with the data {}.".format(param))
+        core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
             generate(param)
         else:
