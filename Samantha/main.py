@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import glob, imp, sys, threading, time, urllib, logging
+import glob, imp, sys, threading, time, urllib, logging, global_variables
 from flask import Flask,request
 import core
 
@@ -26,7 +26,7 @@ def import_plugins():
     plugin_names = []
     #list files in Samantha's /plugin folder
     core.log(name, "Importing Plugins.")
-    filenames = glob.glob("/home/pi/Desktop/PersonalAssistant/Samantha/plugins/*_plugin.py")
+    filenames = glob.glob(global_variables.folder_base + "/plugins/*_plugin.py")
     core.log(name, "  {} possible plugins found.".format(len(filenames)))
 
     #try importing each plugin
