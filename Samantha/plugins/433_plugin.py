@@ -83,6 +83,8 @@ def process(key, param, comm):
         elif param == "4199508":
             #turn off standing lamp2
             send("11111", "3", "0")
+        else:
+            core.log(name, "  Error: illegal parameter.")
     elif key == "light":
         if param == "off":
             send("11111", "1", "0")
@@ -92,3 +94,7 @@ def process(key, param, comm):
             send("11111", "1", "1")
             send("11111", "2", "1")
             send("11111", "3", "1")
+        else:
+            core.log(name, "  Error: illegal parameter.")
+    else:
+        core.log(name, "  Error: illegal command.")
