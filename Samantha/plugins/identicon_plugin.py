@@ -40,7 +40,10 @@ def process(key, param, comm):
             generate(param)
         else:
             generate()
-    elif key == "schedule_h" and param == "0":
-        generate(time.time())
+    elif key == "schedule_h":
+        if param == "0":
+            generate(time.time())
+        else:
+            core.log(name, "  Error: illegal parameter.")
     else:
-        
+        core.log(name, "  Error: illegal command.")        
