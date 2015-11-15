@@ -4,7 +4,7 @@
 import core, subprocess, os, threading, signal, time
 
 is_sam_plugin = 1
-name = "433MHz_Receiver"
+name = "433MHz_RX"
 keywords = []
 has_toggle = 0
 has_set = 0

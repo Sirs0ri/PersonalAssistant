@@ -4,7 +4,7 @@
 import core, subprocess, os, threading, signal, time
 
 is_sam_plugin = 1
-name = "433MHz_Transmitter"
+name = "433MHz_TX"
 keywords = ["433", "light"]
 has_toggle = 0
 has_set = 0
@@ -13,10 +13,7 @@ def initialize():
     core.log(name, "      I don't need to be started.")
 
 def stop():
-    global t
     core.log(name, "  I'm not running in the Background")
-    t.stop()
-    t.join()
 
 def send(scode, dcode, state):
     subprocess.call(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/send", scode, dcode, state], stdout=subprocess.PIPE)
@@ -36,6 +33,7 @@ def process(key, param, comm):
     4199697    01 00 00 00 00   01 01 01 00 01   00   01
     4199700    01 00 00 00 00   01 01 01 00 01   01   00
     """
+    core.log(name, "  Processing: {}, {}, {}".format(key, param, comm))
     if key == "433":
         if param == "4195665":
             #turn on LEDs under bed
