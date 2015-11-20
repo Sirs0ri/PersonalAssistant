@@ -132,13 +132,13 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     
     core.log(name, "      Creating the final image")
     final = Image.new("RGBA", size)
-    final.paste(bg_layer.convert("L"))
+    final.paste(bg_layer.convert("LA"))
     '''
     final.paste(shadow_layer, None, shadow_layer)
     final.paste(overlay_layer, None, overlay_layer)
     '''
     final = Image.alpha_composite(final, shadow_layer) 
-    final = Image.alpha_composite(final, overlay_layer)
+    #final = Image.alpha_composite(final, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
     core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path))
     return destination_path
