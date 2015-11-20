@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pydenticon, core, time, global_variables
+import re, pydenticon, core, time, global_variables, requests
 from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
 
 is_sam_plugin = 1
@@ -18,6 +18,28 @@ def initialize():
 def stop():
     core.log(name, "I'm not even running anymore!")
 
+def get_wallpaper():
+    core.log(name, "    Downloading the baseimage.")
+    path = "/data/wallpaper_background.png"
+    response =requests.get("https://earthview.withgoogle.com/")
+    html = response.text
+    regex = r"background-image: url((?P<link>.+).jpg);"
+    m = re.search(regex, html, re.IGNORECASE)
+    if m:
+        if m.group("link"):
+            image_url = m.group("link")
+        else: 
+            image_url = None
+    else: 
+        image_url = None
+    
+    if image_url:
+        f = open(global_variables.folder_base + path, "wb")
+        f.write(requests.get(image_url).content)
+        f.close()
+    core.log(name, "    Download completed to {}.".format(path))
+    return path
+    
 def resize(im, size, offset=(0,0)):
     bg = Image.new(im.mode, size)
     if im.size[0] < size[0]:
