@@ -15,7 +15,7 @@ keywords = ["identicon", "schedule_h"]
 has_toggle = 0
 has_set = 0
 
-def generate(data="I'm Samantha"):
+def generate_identicon(data="I'm Samantha"):
     """
     generates an identicon and sends it to the G2
     possibly via an AutoRemote Plugin?
@@ -37,13 +37,13 @@ def process(key, param, comm):
     if key == "identicon":
         core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
-            generate(param)
+            generate_identicon(param)
         else:
-            generate()
+            generate_identicon()
     elif key == "schedule_h":
         if param == "0":
-            generate(time.time())
+            generate_identicon(time.time())
         else:
             core.log(name, "  Error: illegal parameter.")
     else:
-        core.log(name, "  Error: illegal command.")        
+        core.log(name, "  Error: illegal command.")
