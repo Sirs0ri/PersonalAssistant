@@ -120,8 +120,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         n += 1
     pixels = shadow_layer.load() # create the pixel map
 
-    for i in range(img.size[0]):    # for every pixel:
-        for j in range(img.size[1]):
+    for i in range(shadow_layer.size[0]):    # for every pixel:
+        for j in range(shadow_layer.size[1]):
             pixels[i,j] = (0, 0, 0) # set the colour accordingly
 
     #core.log(name, "      Adding transparency")
