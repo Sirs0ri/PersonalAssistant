@@ -23,7 +23,7 @@ def get_wallpaper():
     path = "/data/wallpaper_background.png"
     response = requests.get("https://earthview.withgoogle.com/")
     html = response.text
-    regex = r"background-image: url\((?P<link>.+)\.jpg\);"
+    regex = r"background-image: url\((?P<link>.+)\);"
     m = re.search(regex, html, re.IGNORECASE)
     if m:
         if m.group("link"):
