@@ -32,12 +32,15 @@ def get_wallpaper():
             image_url = None
     else: 
         image_url = None
+    core.log(name, "    The URL is {}. Downloading to {}.".format(image_url, global_variables.folder_base + path))
     
     if image_url:
         f = open(global_variables.folder_base + path, "wb")
         f.write(requests.get(image_url).content)
         f.close()
-    core.log(name, "    Download completed to {}.".format(path))
+    else: 
+        core.log(name, "    Error: Download not completed.")
+    core.log(name, "    Download completed to {}.".format(global_variables.folder_base + path))
     return path
     
 def resize(im, size, offset=(0,0)):
@@ -134,7 +137,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     final.paste(shadow_layer, None, shadow_layer)
     final.paste(overlay_layer, None, overlay_layer)
     final.save(global_variables.folder_base + path)
-    core.log(name, "    Created the wallpaper at {}.".format(path))
+    core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + path))
     return path
 
 def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
@@ -145,10 +148,11 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     core.log(name, "    Generating the Identicon.")
     generator = pydenticon.Generator(5, 5)
     identicon = generator.generate(data, 300, 300)
+    core.log(name, "    Generated the Identicon. Saving at {}.".format(global_variables.folder_base + path))
     f = open(global_variables.folder_base + path, "wb")
     f.write(identicon)
     f.close()
-    core.log(name, "    Generated the Identicon at {}.".format(path))
+    core.log(name, "    Generated the Identicon at {}.".format(global_variables.folder_base + path))
     return path
 
 def process(key, param, comm):
