@@ -144,9 +144,9 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     """
     core.log(name, "    Generating the Identicon.")
     generator = pydenticon.Generator(5, 5)
-    identicon = generator.generate(data, 200, 200)
+    identicon = generator.generate(data, 300, 300)
     f = open(global_variables.folder_base + path, "wb")
-    f.write(data)
+    f.write(identicon)
     f.close()
     core.log(name, "    Generated the Identicon at {}.".format(path))
     return path
