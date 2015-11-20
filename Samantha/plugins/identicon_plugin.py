@@ -9,7 +9,7 @@ Might be used to create a colored overlay over a b/w wallpaper
 
 import pydenticon, core, time, global_variables
 
-is_sam_plugin = 1
+is_sam_plugin = 0
 name = "Identicon"
 keywords = ["identicon", "schedule_h"]
 has_toggle = 0
