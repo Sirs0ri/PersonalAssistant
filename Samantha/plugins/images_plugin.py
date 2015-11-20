@@ -64,6 +64,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     First of all, the background layer is created. It contains the 
     """
+    core.log(name, "    Creating the Wallpaper.")
     bg_layer = Image.open(background_path)    #the background in color
     converter_color = ImageEnhance.Color(bg_layer)
     converter_brightness = ImageEnhance.Brightness(bg_layer)
@@ -133,6 +134,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     final.paste(shadow_layer, None, shadow_layer)
     final.paste(overlay_layer, None, overlay_layer)
     final.save(global_variables.folder_base + path)
+    core.log(name, "    Created the wallpaper at {}.".format(path))
     return path
 
 def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
@@ -140,11 +142,13 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     generates an identicon and sends it to the G2
     possibly via an AutoRemote Plugin?
     """
+    core.log(name, "    Generating the Identicon.")
     generator = pydenticon.Generator(5, 5)
     identicon = generator.generate(data, 200, 200)
     f = open(global_variables.folder_base + path, "wb")
     f.write(data)
     f.close()
+    core.log(name, "    Generated the Identicon at {}.".format(path))
     return path
 
 def process(key, param, comm):
