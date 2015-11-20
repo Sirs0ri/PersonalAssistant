@@ -67,7 +67,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     First of all, the background layer is created. It contains the 
     """
-    bg_layer = Image.open(background_path)    #the background in color
+    bg_layer = Image.open(global_variables.folder_base + background_path)    #the background in color
     converter_color = ImageEnhance.Color(bg_layer)
     converter_brightness = ImageEnhance.Brightness(bg_layer)
     bg_layer = converter_color.enhance(0.05)
@@ -79,7 +79,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     core.log(name, "      Creating the mask")
     size = bg_layer.size
-    mask_BoW = Image.open(mask_path)    #"BoW" means black icon on white background. "WoB" is a white icon on black bg.
+    mask_BoW = Image.open(global_variables.folder_base + mask_path)    #"BoW" means black icon on white background. "WoB" is a white icon on black bg.
     mask_WoB = ImageOps.invert(mask_BoW)
     if not mask_BoW.size == size:
         mask_WoB = resize(mask_WoB, size)
@@ -91,8 +91,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     #generate the overlay
 
-    overlay_layer = Image.open(background_path)    #the overlay, black on white
     core.log(name, "      Creating the overlay")
+    overlay_layer = Image.open(global_variables.folder_base + background_path)    #the overlay, black on white
     overlay_layer.putalpha(mask_WoB)
     #overlay_layer.save("./overlay_layer.png")
 
