@@ -135,9 +135,9 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     final.paste(bg_layer.convert("L"))
     final.paste(shadow_layer, None, shadow_layer)
     final.paste(overlay_layer, None, overlay_layer)
-    final.save(global_variables.folder_base + path)
-    core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + path))
-    return path
+    final.save(global_variables.folder_base + destination_path)
+    core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path))
+    return destination_path
 
 def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     """
