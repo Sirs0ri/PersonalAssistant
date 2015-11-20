@@ -21,9 +21,9 @@ def stop():
 def get_wallpaper():
     core.log(name, "    Downloading the baseimage.")
     path = "/data/wallpaper_background.png"
-    response =requests.get("https://earthview.withgoogle.com/")
+    response = requests.get("https://earthview.withgoogle.com/")
     html = response.text
-    regex = r"background-image: url((?P<link>.+).jpg);"
+    regex = r"background-image: url\((?P<link>.+)\.jpg\);"
     m = re.search(regex, html, re.IGNORECASE)
     if m:
         if m.group("link"):
