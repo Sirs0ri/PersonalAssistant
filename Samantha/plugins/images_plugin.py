@@ -160,7 +160,7 @@ def process(key, param, comm):
         if param == "0":
             core.log(name, "  Generating the daily wallpaper.")
             wallpaper_bg = get_wallpaper()
-            identicon = generate_identicon(time.time())
+            identicon = generate_identicon(str(time.time()))
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
         else:
             core.log(name, "  Error: illegal parameter: {}.".format(param))
