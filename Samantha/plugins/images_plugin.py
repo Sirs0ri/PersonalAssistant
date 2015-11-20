@@ -63,11 +63,10 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     #generate the background
 
-    #print("Creating the background")
+    core.log(name, "      Creating the background")
     """
     First of all, the background layer is created. It contains the 
     """
-    core.log(name, "    Creating the Wallpaper.")
     bg_layer = Image.open(background_path)    #the background in color
     converter_color = ImageEnhance.Color(bg_layer)
     converter_brightness = ImageEnhance.Brightness(bg_layer)
@@ -78,7 +77,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     #generate the mask
 
-    #print("Creating the mask")
+    core.log(name, "      Creating the mask")
     size = bg_layer.size
     mask_BoW = Image.open(mask_path)    #"BoW" means black icon on white background. "WoB" is a white icon on black bg.
     mask_WoB = ImageOps.invert(mask_BoW)
@@ -92,14 +91,14 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     #generate the overlay
 
-    #print("Creating the overlay")
     overlay_layer = Image.open(background_path)    #the overlay, black on white
+    core.log(name, "      Creating the overlay")
     overlay_layer.putalpha(mask_WoB)
     #overlay_layer.save("./overlay_layer.png")
 
     #generate the shadow
 
-    #print("Creating the dropshadow")
+    core.log(name, "      Creating the dropshadow")
     shadow_layer =  mask_BoW.convert("RGBA")
     shadow_layer.putalpha(mask_WoB)
     """
@@ -114,12 +113,12 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
         shadow_layer.paste(offset_layer, None, offset_layer)
-    #print("Blurring the shadow")
+    core.log(name, "      Blurring the shadow")
     n = 0
     while n < 5:    #as noted above, the Blur is applied multiple times for a stronger effect.
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
         n += 1
-    #print("Adding transparency")
+    core.log(name, "      Adding transparency")
     shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.7)
     #shadow_layer.save("./shadow_layer.png")
 
@@ -131,7 +130,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     
     #merge the layers
     
-    #print("Creating the final image")
+    core.log(name, "      Creating the final image")
     final = Image.new("RGBA", size)
     final.paste(bg_layer.convert("L"))
     final.paste(shadow_layer, None, shadow_layer)
