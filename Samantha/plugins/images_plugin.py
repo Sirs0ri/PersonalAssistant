@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re, pydenticon, core, time, global_variables, requests
+import re, pydenticon, core, time, global_variables, requests, cloudinary
 from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
 
 is_sam_plugin = 1
@@ -105,7 +105,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     A copy if the image is pasted ontop of it with a 2px offset into the 4 diagonal directions to increase it's size.
     Otherwise the shadow would disappear behind the colored overlay.
     The whole layer is then blurred multiple times to increase the blur's effect.
-    Finally, the shadow-layer is blended with a completely transparent layer to add some transparency.
+    Finally, the shadow_layer is blended with a completely transparent layer to add some transparency.
     """
     offset_layers = []
     offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
@@ -133,9 +133,12 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Creating the final image")
     final = Image.new("RGBA", size)
     final.paste(bg_layer.convert("LA"))
+    '''
     final.paste(shadow_layer, None, shadow_layer)
     final.paste(overlay_layer, None, overlay_layer)
-    #final = Image.alpha_composite(final, overlay_layer)
+    '''
+    final = Image.alpha_composite(final, shadow_layer)
+    final = Image.alpha_composite(final, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
     core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path))
     return destination_path
