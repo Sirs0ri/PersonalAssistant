@@ -118,12 +118,6 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     while n < 5:    #as noted above, the Blur is applied multiple times for a stronger effect.
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
         n += 1
-    pixels = shadow_layer.load() # create the pixel map
-
-    for i in range(shadow_layer.size[0]):    # for every pixel:
-        for j in range(shadow_layer.size[1]):
-            pixels[i,j] = (0, 0, 0) # set the colour accordingly
-
     #core.log(name, "      Adding transparency")
     #shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.7)
     #shadow_layer.save("./shadow_layer.png")
@@ -139,7 +133,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Creating the final image")
     final = Image.new("RGBA", size)
     final.paste(bg_layer.convert("LA"))
-    final.paste(shadow_layer, None, shadow_layer)
+    final.paste(shadow_layer.convert("1A"), None, shadow_layer)
     final.paste(overlay_layer, None, overlay_layer)
     #final = Image.alpha_composite(final, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
