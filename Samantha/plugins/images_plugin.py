@@ -94,7 +94,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Creating the overlay")
     overlay_layer = Image.open(global_variables.folder_base + background_path)    #the overlay, black on white
     overlay_layer.putalpha(mask_WoB)
-    #overlay_layer.save("./overlay_layer.png")
+    #overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
 
     #generate the shadow
 
