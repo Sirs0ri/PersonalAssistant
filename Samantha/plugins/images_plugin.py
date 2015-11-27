@@ -61,7 +61,7 @@ def resize(im, size, offset=(0,0)):
     shift_bottom = size[1] - (factor_height * shift_top)
     return im.crop((shift_left, shift_top, shift_right, shift_bottom))
 
-def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", offset):
+def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", offset=2):
 
     core.log(name, "    Creating the final image")
 
