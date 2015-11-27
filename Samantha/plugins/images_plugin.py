@@ -137,24 +137,24 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Merging the shadow with the background")
     try:
         pixels = 0
-        lines = 0
         pixels_bg = bg_layer.load()
         pixels_mask = shadow_layer.load()
         for x in range(size[0]):
             for y in range(size[1]):
                 r_mask, g_mask, b_mask, a_mask = pixels_mask[x, y]
                 if a_mask:
+                    if not pixels:
+                        core.log(name, "      The shadow begins at ({}|{}) - {}".format(x, y, a_mask))
                     r_bg, g_bg, b_bg, a_bg = pixels_bg[x, y]
                     r_bg *= (1 - (a_mask / 255))
                     g_bg *= (1 - (a_mask / 255))
                     b_bg *= (1 - (a_mask / 255))
                     pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
-                pixels += 1
-            lines += 1
+                    pixels += 1
     except Exception as e:
         core.log(name, "Error: {}".format(e))
     finally: 
-        core.log(name, "      {} out of {} pixels and {} out of {} lines processed.".format(pixels, shadow_layer.size[0] * shadow_layer.size[1], lines, shadow_layer.size[0]))
+        core.log(name, "      {} out of {} pixels processed.".format(pixels, shadow_layer.size[0] * shadow_layer.size[1], lines, shadow_layer.size[0]))
     bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
     '''
     #generate the light frame
