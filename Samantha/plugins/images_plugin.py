@@ -61,7 +61,7 @@ def resize(im, size, offset=(0,0)):
     shift_bottom = size[1] - (factor_height * shift_top)
     return im.crop((shift_left, shift_top, shift_right, shift_bottom))
 
-def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", brightness=0.8):
+def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png"):
 
     core.log(name, "    Creating the final image")
 
@@ -123,7 +123,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "        Step {}/{}".format(n + 1, 3))
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
     core.log(name, "      Adding transparency")
-    shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, brightness)
+    shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.8)
     if DEBUG:
         shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
 
@@ -204,9 +204,7 @@ def process(key, param, comm):
         core.log(name, "  Generating a new wallpaper.")
         wallpaper_bg = get_wallpaper()
         identicon = generate_identicon(str(time.time()))
-        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.6.png", 0.6)
-        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.7.png", 0.7)
-        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.8.png", 0.8)
+        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.6.png")
     elif key == "identicon":
         core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
