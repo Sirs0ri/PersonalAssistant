@@ -61,7 +61,7 @@ def resize(im, size, offset=(0,0)):
     shift_bottom = size[1] - (factor_height * shift_top)
     return im.crop((shift_left, shift_top, shift_right, shift_bottom))
 
-def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", offset=2):
+def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", brightness=0.8):
 
     core.log(name, "    Creating the final image")
 
@@ -112,7 +112,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     
     offset_layers = []
-    offsets = [(offset,offset),(-offset,offset),(offset,-offset),(-offset,-offset)]     #offset is defined in the definition of the function. Default is 2.
+    offsets = [(1,1),(-1,1),(1,-1),(-1,-1)]     #offset is defined in the definition of the function. Default is 2.
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
@@ -120,10 +120,10 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     
     core.log(name, "      Blurring the shadow")
     for n in range(3):      #as noted above, the Blur is applied multiple times for a stronger effect. 3 has proven as a good compromise between a good effect and not too much necessary calculation.
-        core.log(name, "        Step {}/{}".format(n, 3))
+        core.log(name, "        Step {}/{}".format(n + 1, 3))
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
     core.log(name, "      Adding transparency")
-    shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.6)
+    shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, brightness)
     if DEBUG:
         shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
 
@@ -204,9 +204,9 @@ def process(key, param, comm):
         core.log(name, "  Generating a new wallpaper.")
         wallpaper_bg = get_wallpaper()
         identicon = generate_identicon(str(time.time()))
-        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.png", 0)
-        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper1.png", 1)
-        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper2.png", 2)
+        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.6.png", 0.6)
+        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.7.png", 0.7)
+        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.8.png", 0.8)
     elif key == "identicon":
         core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
