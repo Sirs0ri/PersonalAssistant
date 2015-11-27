@@ -72,6 +72,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     converter_brightness = ImageEnhance.Brightness(bg_layer)
     bg_layer = converter_color.enhance(0.05)
     bg_layer = converter_brightness.enhance(0.8)
+    bg_layer = bg_layer.convert("RGBA")
     #bg_layer.convert("L")
     #bg_layer.save("./bg_layer.png")
 
@@ -106,6 +107,15 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     Otherwise the shadow would disappear behind the colored overlay.
     The whole layer is then blurred multiple times to increase the blur's effect.
     Finally, the shadow_layer is blended with a completely transparent layer to add some transparency.
+    
+    This doesn't work well though. The background behind the image becomes greyish.
+    Another attempt would be to iterate over the pixels and set the background's color to 
+        original_color *= (1 - (alpha_mask / 255))
+        
+        -> alpha_mask = 255 (= black mask)
+            (1 - (255 / 255)) = 1 - 1 = 0
+        -> alpha_mask = 0 (= no mask)
+            (1 - (0 / 255)) = 1 - 0 = 1
     """
     offset_layers = []
     offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
@@ -122,6 +132,18 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     #shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.7)
     #shadow_layer.save("./shadow_layer.png")
 
+    #merge the shadow with the background
+    pixels_bg = bg_layer.load()
+    pixels_mask = shadow_layer.load()
+    for x in shadow_layer.size[0]:
+        for y in shadow_layer.size[1]:
+            r_bg, g_bg, b_bg, a_bg = pixels_background[x, y]
+            r_mask, g_mask, b_mask, a_mask = pixels_mask[x, y]
+            r_bg *= (1 - (a_mask / 255))
+            g_bg *= (1 - (a_mask / 255))
+            b_bg *= (1 - (a_mask / 255))
+            pixels_background[x, y] = (r_bg, g_bg, b_bg, a_bg)
+            
     '''
     #generate the light frame
     frame_layer = overlay_layer.filter(ImageFilter.FIND_EDGES)
@@ -132,13 +154,15 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     
     core.log(name, "      Creating the final image")
     final = Image.new("RGBA", size)
-    final.paste(bg_layer.convert("LA"))
+    #final.paste(bg_layer.convert("LA"))
+    final.paste(bg_layer)
     '''
     final.paste(shadow_layer, None, shadow_layer)
-    final.paste(overlay_layer, None, overlay_layer)
     '''
-    final = Image.alpha_composite(final, shadow_layer)
-    final = Image.alpha_composite(final, overlay_layer)
+    
+    final.paste(overlay_layer, None, overlay_layer)
+    #final = Image.alpha_composite(final, shadow_layer)
+    #final = Image.alpha_composite(final, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
     core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path))
     return destination_path
