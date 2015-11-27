@@ -125,7 +125,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "        Step {}/{}".format(n, repetitions))
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
     core.log(name, "      Adding transparency")
-    shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.7)
+    shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.6)
     if DEBUG:
         shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
 
