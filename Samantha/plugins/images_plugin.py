@@ -68,13 +68,14 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     First of all, the background layer is created. It contains the 
     """
     bg_layer = Image.open(global_variables.folder_base + background_path)    #the background in color
+    bg_layer = bg_layer.convert("RGBA")
     converter_color = ImageEnhance.Color(bg_layer)
     converter_brightness = ImageEnhance.Brightness(bg_layer)
     bg_layer = converter_color.enhance(0.05)
     bg_layer = converter_brightness.enhance(0.8)
-    bg_layer = bg_layer.convert("RGBA")
     #bg_layer.convert("L")
-    #bg_layer.save("./bg_layer.png")
+    bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
+
 
     #generate the mask
 
@@ -87,8 +88,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW = ImageOps.invert(mask_WoB)
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
-    #mask_WoB.save("./mask_WoB.png")
-    #mask_BoW.save("./mask_BoW.png")
+    #mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
+    #mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
 
     #generate the overlay
 
@@ -130,7 +131,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         n += 1
     #core.log(name, "      Adding transparency")
     #shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.7)
-    #shadow_layer.save("./shadow_layer.png")
+    shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
 
     #merge the shadow with the background
     core.log(name, "      Merging the shadow with the background")
@@ -139,21 +140,22 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         lines = 0
         pixels_bg = bg_layer.load()
         pixels_mask = shadow_layer.load()
-        for x in range(shadow_layer.size[0]):
-            for y in range(shadow_layer.size[1]):
-                r_bg, g_bg, b_bg, a_bg = pixels_bg[x, y]
+        for x in range(size[0]):
+            for y in range(size[1]):
                 r_mask, g_mask, b_mask, a_mask = pixels_mask[x, y]
-                r_bg *= (1 - (a_mask / 255))
-                g_bg *= (1 - (a_mask / 255))
-                b_bg *= (1 - (a_mask / 255))
-                pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
+                if a_mask:
+                    r_bg, g_bg, b_bg, a_bg = pixels_bg[x, y]
+                    r_bg *= (1 - (a_mask / 255))
+                    g_bg *= (1 - (a_mask / 255))
+                    b_bg *= (1 - (a_mask / 255))
+                    pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
                 pixels += 1
             lines += 1
     except Exception as e:
         core.log(name, "Error: {}".format(e))
     finally: 
         core.log(name, "      {} out of {} pixels and {} out of {} lines processed.".format(pixels, shadow_layer.size[0] * shadow_layer.size[1], lines, shadow_layer.size[0]))
-            
+    bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
     '''
     #generate the light frame
     frame_layer = overlay_layer.filter(ImageFilter.FIND_EDGES)
