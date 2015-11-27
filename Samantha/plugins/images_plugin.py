@@ -113,7 +113,11 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     
     offset_layers = []
     offset_negative = 0 - offset
-    offsets = [(offset,offset),(offset_negative,offset),(offset,offset_negative),(offset_negative,offset_negative)]     #offset is defined in the definition of the function. Default is 2.
+    offsets = []     #offset is defined in the definition of the function. Default is 2.
+    offsets.append((offset,offset))
+    offsets.append((offset_negative,offset))
+    offsets.append((offset,offset_negative))
+    offsets.append((offset_negative,offset_negative))
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
