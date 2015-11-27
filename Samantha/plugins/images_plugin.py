@@ -112,12 +112,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     
     offset_layers = []
-    if offset == 0:
-        offsets = [(0,0),(0,0),(0,0),(0,0)]     #offset is defined in the definition of the function. Default is 2.
-    elif offset == 1:
-        offsets = [(1,1),(-1,1),(1,-1),(-1,-1)]
-    else:
-        offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
+    offsets = [(offset,offset),(-offset,offset),(offset,-offset),(-offset,-offset)]     #offset is defined in the definition of the function. Default is 2.
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
@@ -125,7 +120,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     
     core.log(name, "      Blurring the shadow")
     for n in range(3):      #as noted above, the Blur is applied multiple times for a stronger effect. 3 has proven as a good compromise between a good effect and not too much necessary calculation.
-        core.log(name, "        Step {}/{}".format(n, repetitions))
+        core.log(name, "        Step {}/{}".format(n, 3))
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
     core.log(name, "      Adding transparency")
     shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.6)
