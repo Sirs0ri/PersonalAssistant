@@ -70,8 +70,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     bg_layer = Image.open(global_variables.folder_base + background_path)    #the background in color
     bg_layer = bg_layer.convert("RGBA")
     converter_color = ImageEnhance.Color(bg_layer)
-    converter_brightness = ImageEnhance.Brightness(bg_layer)
     bg_layer = converter_color.enhance(0.05)
+    converter_brightness = ImageEnhance.Brightness(bg_layer)
     bg_layer = converter_brightness.enhance(0.8)
     #bg_layer.convert("L")
     bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
