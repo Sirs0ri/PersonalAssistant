@@ -133,16 +133,17 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     #shadow_layer.save("./shadow_layer.png")
 
     #merge the shadow with the background
+    core.log(name, "      Merging the shadow with the background")
     pixels_bg = bg_layer.load()
     pixels_mask = shadow_layer.load()
     for x in shadow_layer.size[0]:
         for y in shadow_layer.size[1]:
-            r_bg, g_bg, b_bg, a_bg = pixels_background[x, y]
+            r_bg, g_bg, b_bg, a_bg = pixels_bg[x, y]
             r_mask, g_mask, b_mask, a_mask = pixels_mask[x, y]
             r_bg *= (1 - (a_mask / 255))
             g_bg *= (1 - (a_mask / 255))
             b_bg *= (1 - (a_mask / 255))
-            pixels_background[x, y] = (r_bg, g_bg, b_bg, a_bg)
+            pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
             
     '''
     #generate the light frame
