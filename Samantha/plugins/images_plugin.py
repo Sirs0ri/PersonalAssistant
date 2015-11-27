@@ -119,9 +119,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         shadow_layer.paste(offset_layer, None, offset_layer)
     
     core.log(name, "      Blurring the shadow")
-    n = 0
-    while n < repetitions:      #as noted above, the Blur is applied multiple times for a stronger effect.
-        n += 1
+    for n in range(3):      #as noted above, the Blur is applied multiple times for a stronger effect. 3 has proven as a good compromise between a good effect and not too much necessary calculation.
         core.log(name, "        Step {}/{}".format(n, repetitions))
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
     core.log(name, "      Adding transparency")
