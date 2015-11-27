@@ -147,8 +147,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
                 g_bg *= (1 - (a_mask / 255))
                 b_bg *= (1 - (a_mask / 255))
                 pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
-                pixels++
-            lines++
+                pixels += 1
+            lines += 1
     finally: 
         core.log(name, "      {} out of {} pixels and {} out of {} lines processed.".format(pixels, shadow_layer.size[0] * shadow_layer.size[1], lines, shadow_layer.size[0]))
             
