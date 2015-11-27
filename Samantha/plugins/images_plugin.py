@@ -10,6 +10,8 @@ keywords = ["identicon", "schedule_h", "wallpaper"]
 has_toggle = 0
 has_set = 0
 
+DEBUG = 0
+
 
 def initialize():
     core.log(name, "Startup")
@@ -74,8 +76,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     converter_brightness = ImageEnhance.Brightness(bg_layer)
     bg_layer = converter_brightness.enhance(0.8)
     #bg_layer.convert("L")
-    bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
-
+    if DEBUG:
+        bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
 
     #generate the mask
 
@@ -88,15 +90,17 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW = ImageOps.invert(mask_WoB)
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
-    #mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
-    #mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
+    if DEBUG:
+        mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
+        mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
 
     #generate the overlay
 
     core.log(name, "      Creating the overlay")
     overlay_layer = Image.open(global_variables.folder_base + background_path)    #the overlay, black on white
     overlay_layer.putalpha(mask_WoB)
-    #overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
+    if DEBUG:
+        overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
 
     #generate the shadow
 
@@ -132,7 +136,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
     #core.log(name, "      Adding transparency")
     #shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.7)
-    shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
+    if DEBUG:
+        shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
 
     #merge the shadow with the background
     core.log(name, "      Merging the shadow with the background")
@@ -155,14 +160,13 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "Error: {}".format(e))
     finally: 
         core.log(name, "      {} out of {} pixels processed.".format(pixels, bg_layer.size[0] * bg_layer.size[1]))
-    
-    bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
+    if DEBUG:
+        bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
     '''
     #generate the light frame
     frame_layer = overlay_layer.filter(ImageFilter.FIND_EDGES)
     frame_layer.save("./frame_layer.png")
     '''
-    
     #merge the layers
     
     core.log(name, "      Creating the final image")
