@@ -61,7 +61,7 @@ def resize(im, size, offset=(0,0)):
     shift_bottom = size[1] - (factor_height * shift_top)
     return im.crop((shift_left, shift_top, shift_right, shift_bottom))
 
-def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", repetitions=2):
+def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", offset=2):
 
     core.log(name, "    Creating the final image")
 
@@ -110,14 +110,14 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     The whole layer is then blurred multiple times to increase the blur's effect.
     Finally, the shadow_layer is blended with a completely transparent layer to add some transparency to it.
     """
-    '''
+    
     offset_layers = []
-    offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
+    offsets = [(offset,offset),(-offset,offset),(offset,-offset),(-offset,-offset)]     #offset is defined in the definition of the function. Default is 2.
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
         shadow_layer.paste(offset_layer, None, offset_layer)
-    '''
+    
     core.log(name, "      Blurring the shadow")
     n = 0
     while n < repetitions:      #as noted above, the Blur is applied multiple times for a stronger effect.
