@@ -142,12 +142,11 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         for x in range(size[0]):
             for y in range(size[1]):
                 r_mask, g_mask, b_mask, a_mask = pixels_mask[x, y]
-                if not pixels and a_mask:
-                    core.log(name, "      The shadow begins at ({}|{}) - {}".format(x, y, a_mask))
                 r_bg, g_bg, b_bg, a_bg = pixels_bg[x, y]
-                r_bg *= (1 - (a_mask / 255))
-                g_bg *= (1 - (a_mask / 255))
-                b_bg *= (1 - (a_mask / 255))
+                factor = (1.0 - (float(a_mask) / 255.0))
+                r_bg = int(float(r_bg) * factor)
+                g_bg = int(float(g_bg) * factor)
+                b_bg = int(float(b_bg) * factor)
                 pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
                 pixels += 1
     except Exception as e:
