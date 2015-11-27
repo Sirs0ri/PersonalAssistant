@@ -61,7 +61,7 @@ def resize(im, size, offset=(0,0)):
     shift_bottom = size[1] - (factor_height * shift_top)
     return im.crop((shift_left, shift_top, shift_right, shift_bottom))
 
-def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png"):
+def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", repetitions=3):
 
     #generate the background
 
@@ -116,8 +116,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         shadow_layer.paste(offset_layer, None, offset_layer)
     core.log(name, "      Blurring the shadow")
     n = 0
-    repetitions = 3     #as noted above, the Blur is applied multiple times for a stronger effect.
-    while n < repetitions:
+    while n < repetitions:      #as noted above, the Blur is applied multiple times for a stronger effect.
         n += 1
         core.log(name, "        Step {}/{}".format(n, repetitions))
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
@@ -202,7 +201,14 @@ def process(key, param, comm):
         core.log(name, "  Generating a new wallpaper.")
         wallpaper_bg = get_wallpaper()
         identicon = generate_identicon(str(time.time()))
-        wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+        if not param:
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+        else:
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper1.png", 1)
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper2.png", 2)
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper3.png", 3)
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper4.png", 4)
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper5.png", 5)
     elif key == "identicon":
         core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
