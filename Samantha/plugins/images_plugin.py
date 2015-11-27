@@ -138,7 +138,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     core.log(name, "      Merging the shadow with the background")
     try:
-        pixels = 0
+        pixels_changed_count = 0
         pixels_bg = bg_layer.load()
         pixels_mask = shadow_layer.load()
         for x in range(bg_layer.size[0]):
@@ -151,15 +151,15 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
                     g_bg = int(float(g_bg) * factor)
                     b_bg = int(float(b_bg) * factor)
                     pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
-                    pixels += 1
+                    pixels_changed_count += 1
                 elif a_mask == 255:
                     a_bg = pixels_bg[x, y][-1]
                     pixels_bg[x, y] = (0, 0, 0, a_bg)
-                    pixels += 1
+                    pixels_changed_count += 1
     except Exception as e:
         core.log(name, "Error: {}".format(e))
     finally: 
-        core.log(name, "      {} out of {} pixels processed.".format(pixels, bg_layer.size[0] * bg_layer.size[1]))
+        core.log(name, "      {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1]))
     if DEBUG:
         bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
     '''
