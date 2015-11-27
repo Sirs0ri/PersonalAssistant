@@ -204,14 +204,14 @@ def process(key, param, comm):
         core.log(name, "  Generating a new wallpaper.")
         wallpaper_bg = get_wallpaper()
         identicon = generate_identicon(str(time.time()))
-        if not param:
-            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
-        else:
+        if param == "test5":
             wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper1.png", 1)
             wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper2.png", 2)
             wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper3.png", 3)
             wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper4.png", 4)
             wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper5.png", 5)
+        else:
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
     elif key == "identicon":
         core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
