@@ -141,6 +141,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         pixels_mask = shadow_layer.load()
         for x in range(shadow_layer.size[0]):
             for y in range(shadow_layer.size[1]):
+                '''
                 r_mask, g_mask, b_mask, a_mask = pixels_mask[x, y]
                 r_bg, g_bg, b_bg, a_bg = pixels_bg[x, y]
                 factor = (1.0 - (float(a_mask) / 255.0))
@@ -148,6 +149,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
                 g_bg = int(float(g_bg) * factor)
                 b_bg = int(float(b_bg) * factor)
                 pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
+                '''
                 pixels += 1
     except Exception as e:
         core.log(name, "Error: {}".format(e))
