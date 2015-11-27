@@ -139,8 +139,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         pixels = 0
         pixels_bg = bg_layer.load()
         pixels_mask = shadow_layer.load()
-        for x in range(size[0]):
-            for y in range(size[1]):
+        for x in range(shadow_layer.size[0]):
+            for y in range(shadow_layer.size[1]):
                 r_mask, g_mask, b_mask, a_mask = pixels_mask[x, y]
                 r_bg, g_bg, b_bg, a_bg = pixels_bg[x, y]
                 factor = (1.0 - (float(a_mask) / 255.0))
