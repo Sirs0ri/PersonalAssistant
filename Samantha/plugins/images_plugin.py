@@ -149,7 +149,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
                 pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
                 pixels += 1
             lines += 1
-    except Exception e:
+    except Exception as e:
         core.log(name, "Error: {}".format(e))
     finally: 
         core.log(name, "      {} out of {} pixels and {} out of {} lines processed.".format(pixels, shadow_layer.size[0] * shadow_layer.size[1], lines, shadow_layer.size[0]))
