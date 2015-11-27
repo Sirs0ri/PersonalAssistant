@@ -61,7 +61,9 @@ def resize(im, size, offset=(0,0)):
     shift_bottom = size[1] - (factor_height * shift_top)
     return im.crop((shift_left, shift_top, shift_right, shift_bottom))
 
-def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", repetitions=3):
+def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", repetitions=2):
+
+    core.log(name, "    Creating the final image")
 
     #generate the background
 
@@ -147,6 +149,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
                     g_bg = int(float(g_bg) * factor)
                     b_bg = int(float(b_bg) * factor)
                     pixels_bg[x, y] = (r_bg, g_bg, b_bg, a_bg)
+                    pixels += 1
                 elif a_mask == 255:
                     a_bg = pixels_bg[x, y][-1]
                     pixels_bg[x, y] = (0, 0, 0, a_bg)
@@ -164,7 +167,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     '''
     #merge the layers
     
-    core.log(name, "      Creating the final image")
+    core.log(name, "      Merging the layers")
     final = Image.new("RGBA", size)
     final.paste(bg_layer)
     #final.paste(shadow_layer, None, shadow_layer)
