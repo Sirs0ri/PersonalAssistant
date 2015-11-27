@@ -4,7 +4,7 @@
 import core, subprocess, os, threading, signal, time
 
 is_sam_plugin = 1
-name = "433MHz_TX"
+name = "433_TX"
 keywords = ["433", "light"]
 has_toggle = 0
 has_set = 0
