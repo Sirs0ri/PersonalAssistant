@@ -61,7 +61,7 @@ def resize(im, size, offset=(0,0)):
     shift_bottom = size[1] - (factor_height * shift_top)
     return im.crop((shift_left, shift_top, shift_right, shift_bottom))
 
-def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", offset=2):
+def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png", offset):
 
     core.log(name, "    Creating the final image")
 
@@ -112,12 +112,12 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     
     offset_layers = []
-    offset_negative = 0 - offset
-    offsets = []     #offset is defined in the definition of the function. Default is 2.
-    offsets.append((offset,offset))
-    offsets.append((offset_negative,offset))
-    offsets.append((offset,offset_negative))
-    offsets.append((offset_negative,offset_negative))
+    if offset == 0:
+        offsets = [(0,0),(0,0),(0,0),(0,0)]     #offset is defined in the definition of the function. Default is 2.
+    elif offset == 1:
+        offsets = [(1,1),(-1,1),(1,-1),(-1,-1)]
+    else:
+        offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
@@ -209,12 +209,9 @@ def process(key, param, comm):
         core.log(name, "  Generating a new wallpaper.")
         wallpaper_bg = get_wallpaper()
         identicon = generate_identicon(str(time.time()))
-        if param == "test":
-            wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.png", 0)
-            wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper1.png", 1)
-            wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper2.png", 2)
-        else:
-            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper0.png", 0)
+        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper1.png", 1)
+        wallpaper = generate_wallpaper(wallpaper_bg, identicon, "/data/wallpaper2.png", 2)
     elif key == "identicon":
         core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
