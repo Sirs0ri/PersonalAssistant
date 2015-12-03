@@ -77,9 +77,9 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     if DEBUG:
         bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
 
-    #generate the mask
+    #generate the masks
 
-    core.log(name, "      Creating the mask")
+    core.log(name, "      Creating the normal mask")
     size = bg_layer.size
     mask_BoW = Image.open(global_variables.folder_base + mask_path)     #"BoW" means black icon on white background.
     mask_WoB = ImageOps.invert(mask_BoW)                                #"WoB" is a white icon on black bg.
@@ -88,39 +88,68 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW = ImageOps.invert(mask_WoB)
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
+    mask_BoT = mask_BoW.putalpha(mask_WoB)                              #"BoT" means black icon on transparent bg
+    core.log(name, "      Creating the big mask")
+    mask_BoT_big = mask_BoT
+    offset_layers = []
+    offsets = [(1,1),(-1,1),(1,-1),(-1,-1)]     #offset is defined in the definition of the function. Default is 2.
+    for (x, y) in offsets:
+        offset_layers.append(ImageChops.offset(mask_BoT, x, y))
+    for offset_layer in offset_layers:
+        mask_BoT_big.paste(offset_layer, None, offset_layer)
     if DEBUG:
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
+        mask_BoT.save(global_variables.folder_base + "/data/mask_BoT.png")
+        mask_BoT_big.save(global_variables.folder_base + "/data/mask_BoT_big.png")
 
+    #blur the mask
+    
+    core.log(name, "      Creating the normal mask with rounded edges")
+    mask_BoT_rounded = mask_BoT
+    mask_BoT_rounded = mask_BoT_rounded.filter(ImageFilter.BLUR)
+    core.log(name, "      Creating the big mask with rounded edges")
+    mask_BoT_big_rounded = mask_BoT_big
+    mask_BoT_big_rounded = mask_BoT_big_rounded.filter(ImageFilter.BLUR)
+    
+    
     #generate the colored overlay
 
+    '''
     core.log(name, "      Creating the colored overlay")
     overlay_layer = Image.open(global_variables.folder_base + background_path)
     overlay_layer.putalpha(mask_WoB)
     if DEBUG:
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
+    '''
+    core.log(name, "      Creating the colored overlay")
+    overlay_layer = Image.open(global_variables.folder_base + background_path)
+    overlay_layer.putalpha(mask_BoT_rounded)
+    if DEBUG:
+        overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
+    
+    #generate the brighter, bigger colored overlay
+    
+    core.log(name, "      Creating the frame around the colored overlay")
+    overlay_frame_layer = Image.open(global_variables.folder_base + background_path)
+    overlay_frame_layer.putalpha(mask_BoT_rounded)
+    overlay_frame_layer = Image.blend(Image.new("RGBA", size, "white"), overlay_frame_layer, 0.8)
+    if DEBUG:
+        overlay_frame_layer.save(global_variables.folder_base + "/data/overlay_frame_layer.png")
 
     #generate the shadow
 
     core.log(name, "      Creating the dropshadow")
-    shadow_layer =  mask_BoW.convert("RGBA")
-    shadow_layer.putalpha(mask_WoB)
+    shadow_layer =  mask_BoT_big_rounded.convert("RGBA")
     """
     A copy if the mask is pasted ontop of itself with a 2px offset into the 4 diagonal directions each to increase it's size into each direction. (The shadow would otherwise disappear behind the colored overlay.)
     The whole layer is then blurred multiple times to increase the blur's effect.
     Finally, the shadow_layer is blended with a completely transparent layer to add some transparency to it.
     """
-    
-    offset_layers = []
-    offsets = [(1,1),(-1,1),(1,-1),(-1,-1)]     #offset is defined in the definition of the function. Default is 2.
-    for (x, y) in offsets:
-        offset_layers.append(ImageChops.offset(shadow_layer, x, y))
-    for offset_layer in offset_layers:
-        shadow_layer.paste(offset_layer, None, offset_layer)
-    
+
     core.log(name, "      Blurring the shadow")
-    for n in range(3):      #as noted above, the Blur is applied multiple times for a stronger effect. 3 has proven as a good compromise between a good effect and not too much necessary calculation.
-        core.log(name, "        Step {}/{}".format(n + 1, 3))
+    for n in range(2):      #as noted above, the Blur is applied multiple times for a stronger effect. 3 has proven as a good compromise between a good effect and not too much necessary calculation. The rounded image is used here, therefore it's blurred 2 more times.
+        core.log(name, "        Step {}/{}".format(n + 1, 2))
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
     core.log(name, "      Adding transparency")
     shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.8)
@@ -170,7 +199,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Merging the layers")
     final = Image.new("RGBA", size)
     final.paste(bg_layer)
-    #final.paste(shadow_layer, None, shadow_layer)
+    final.paste(overlay_frame_layer, None, overlay_frame_layer)
     final.paste(overlay_layer, None, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
     core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path))
