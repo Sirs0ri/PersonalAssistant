@@ -233,7 +233,10 @@ def process(key, param, comm):
         core.log(name, "  Generating a new wallpaper.")
         wallpaper_bg = get_wallpaper()
         identicon = generate_identicon(str(time.time()))
-        wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+        try:
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+        except Exception as e:
+            core.log(name, "Error: {}".format(e))
     elif key == "identicon":
         core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
