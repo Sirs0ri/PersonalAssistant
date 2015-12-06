@@ -93,10 +93,9 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "      DEBUG: Saving the normal masks")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
-    '''
+
     core.log(name, "      Creating the big masks")
     mask_BoW_big = mask_BoW.convert("RGBA")
-    mask_BoW_big.putalpha(mask_WoB)
     core.log(name, "        Adding the Offset")
     offset_layers = []
     offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
@@ -104,6 +103,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         offset_layers.append(ImageChops.offset(mask_BoW_big, x, y))
     for offset_layer in offset_layers:
         mask_BoW_big.paste(offset_layer, None, offset_layer)
+    core.log(name, "        Creating mask_WoB_big")
     mask_WoB_big = ImageOps.invert(mask_BoW_big)
     mask_WoB_big = mask_WoB_big.convert("1")
     mask_BoW_big = mask_BoW_big.convert("1")
@@ -111,7 +111,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "      DEBUG: Saving the big masks")
         mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
         mask_BoW_big.save(global_variables.folder_base + "/data/mask_BoW_big.png")
-    '''
+
     #generate the colored overlay
 
     core.log(name, "      Creating the colored overlay")
@@ -203,7 +203,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Merging the layers")
     final = Image.new("RGBA", size)
     final.paste(bg_layer)
-    final.paste(frame_layer, None, frame_layer)
+#    final.paste(frame_layer, None, frame_layer)
     final.paste(overlay_layer, None, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
     core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path))
