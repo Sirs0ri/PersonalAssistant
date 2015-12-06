@@ -119,9 +119,9 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     if DEBUG:
         core.log(name, "      DEBUG: Saving the colored overlay")
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
-    '''
-    #generate the frame around the colored overlay
 
+    #generate the frame around the colored overlay
+    '''
     core.log(name, "      Creating the frame around the overlay")
     frame_layer = Image.open(global_variables.folder_base + background_path)
     frame_layer = Image.blend(Image.new("RGBA", size, "white"), frame_layer, 0.8)
