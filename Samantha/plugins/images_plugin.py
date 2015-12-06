@@ -78,9 +78,9 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "      DEBUG: Saving the background")
         bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
 
-    #generate the mask
+    #generate the masks
 
-    core.log(name, "      Creating the masks")
+    core.log(name, "      Creating the normal masks")
     size = bg_layer.size
     mask_BoW = Image.open(global_variables.folder_base + mask_path)     #"BoW" means black icon on white background.
     mask_WoB = ImageOps.invert(mask_BoW)                                #"WoB" is a white icon on black bg.
@@ -90,9 +90,23 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
     if DEBUG:
-        core.log(name, "      DEBUG: Saving the masks")
+        core.log(name, "      DEBUG: Saving the normal masks")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
+
+    core.log(name, "      Creating the big masks")
+    mask_WoB_big = mask_WoB
+    offset_layers = []
+    offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]     #offset is defined in the definition of the function. Default is 2.
+    for (x, y) in offsets:
+        offset_layers.append(ImageChops.offset(mask_WoB_big, x, y))
+    for offset_layer in offset_layers:
+        mask_WoB_big.paste(offset_layer, None, offset_layer)
+    mask_BoW_big = ImageOps.invert(mask_WoB_big)
+    if DEBUG:
+        core.log(name, "      DEBUG: Saving the big masks")
+        mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
+        mask_BoW_big.save(global_variables.folder_base + "/data/mask_BoW_big.png")
 
     #generate the colored overlay
 
