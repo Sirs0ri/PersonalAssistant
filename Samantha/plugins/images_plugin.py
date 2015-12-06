@@ -95,19 +95,21 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
 
     core.log(name, "      Creating the big masks")
-    mask_BoW_big = mask_BoW.convert("RGBA")
-    mask_BoW_big.putalpha(mask_WoB)
+    mask_BoT_big = mask_BoT.convert("RGBA")
+    mask_BoT_big.putalpha(mask_WoB)
     core.log(name, "        Adding the Offset")
     offset_layers = []
     offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
     for (x, y) in offsets:
-        offset_layers.append(ImageChops.offset(mask_BoW_big, x, y))
+        offset_layers.append(ImageChops.offset(mask_BoT_big, x, y))
     for offset_layer in offset_layers:
-        mask_BoW_big.paste(offset_layer, None, offset_layer)
-    core.log(name, "        Creating mask_WoB_big")
-    #mask_WoB_big = ImageOps.invert(mask_BoW_big)
-    #mask_WoB_big = mask_WoB_big.convert("1")
-    #mask_BoW_big = mask_BoW_big.convert("1")
+        mask_BoT_big.paste(offset_layer, None, offset_layer)
+    core.log(name, "        Creating mask_BoT_big")
+    mask_BoW_big =  Image.new("RGBA", size, "white")
+    mask_BoW_big.paste(mask_BoT_big, None, mask_BoT_big)
+    mask_WoB_big = ImageOps.invert(mask_BoW_big)
+    mask_WoB_big = mask_WoB_big.convert("1")
+    mask_BoW_big = mask_BoW_big.convert("1")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the big masks")
         #mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
