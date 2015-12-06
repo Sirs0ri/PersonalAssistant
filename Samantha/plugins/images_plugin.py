@@ -134,8 +134,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     #generate the shadow
 
     core.log(name, "      Creating the dropshadow")
-    shadow_layer =  mask_BoW_big.convert("RGBA")
-    shadow_layer.putalpha(mask_WoB_big)
+    shadow_layer =  mask_BoW.convert("RGBA")
+    shadow_layer.putalpha(mask_WoB)
     """
     A copy if the mask is pasted ontop of itself with a 2px offset into the 4 diagonal directions each to increase it's size into each direction. (The shadow would otherwise disappear behind the colored overlay.)
     The whole layer is then blurred multiple times to increase the blur's effect.
