@@ -124,13 +124,13 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     for (x, y) in offsets:
         mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, x, y))
     '''
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 0))
+    mask_BoT_small = mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 0))
     mask_BoT_small.save(global_variables.folder_base + "/data/mask_BoT_small1.png")
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, -5, 0))
+    mask_BoT_small = mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, -5, 0))
     mask_BoT_small.save(global_variables.folder_base + "/data/mask_BoT_small2.png")
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, 5))
+    mask_BoT_small = mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, 5))
     mask_BoT_small.save(global_variables.folder_base + "/data/mask_BoT_small3.png")
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, -5))
+    mask_BoT_small = mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, -5))
     mask_BoT_small.save(global_variables.folder_base + "/data/mask_BoT_small4.png")
     mask_BoW_small =  Image.new("RGB", size, "white")
     mask_BoW_small.paste(mask_BoT_small, None, mask_BoT_small)
