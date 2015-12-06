@@ -96,7 +96,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     core.log(name, "      Creating the big masks")
     mask_BoW_big = mask_BoW.convert("RGBA")
-    shadow_layer.putalpha(mask_WoB)
+    mask_BoW_big.putalpha(mask_WoB)
     offset_layers = []
     offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]     #offset is defined in the definition of the function. Default is 2.
     for (x, y) in offsets:
