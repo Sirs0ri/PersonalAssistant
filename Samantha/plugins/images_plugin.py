@@ -64,9 +64,7 @@ def resize(im, size, offset=(0,0)):
 def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png"):
 
     core.log(name, "    Creating the final image")
-    
-    frame_width = 5
-    shadow_offset = frame_width + 1
+
     #generate the background
 
     core.log(name, "      Creating the background")
@@ -101,7 +99,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoT_big.putalpha(mask_WoB)
     core.log(name, "        Adding the Offset")
     offset_layers = []
-    offsets = [(frame_width,frame_width),(-frame_width,frame_width),(frame_width,-frame_width),(-frame_width,-frame_width)]
+    offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(mask_BoT_big, x, y))
     for offset_layer in offset_layers:
@@ -121,7 +119,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoT_small.putalpha(mask_WoB)
     core.log(name, "        Adding the Offset")
     offset_layers = []
-    offsets = [(frame_width,frame_width),(-frame_width,frame_width),(frame_width,-frame_width),(-frame_width,-frame_width)]
+    offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(mask_WoB, x, y))
     for offset_layer in offset_layers:
@@ -168,7 +166,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     
     offset_layers = []
-    offsets = [(shadow_offset,shadow_offset),(-shadow_offset,shadow_offset),(shadow_offset,-shadow_offset),(-shadow_offset,-shadow_offset)]
+    offsets = [(6,6),(-6,6),(6,-6),(-6,-6)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
