@@ -92,6 +92,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoW_round = mask_BoW.filter(ImageFilter.BLUR)
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
+    mask_WoB_round = mask_WoB_round.convert("L")
+    mask_BoW_round = mask_BoW_round.convert("L")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the masks")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
