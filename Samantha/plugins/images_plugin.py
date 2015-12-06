@@ -95,7 +95,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
 
     core.log(name, "      Creating the big masks")
-    mask_WoB_big = mask_WoB
+    mask_WoB_big = mask_WoB.convert("RGBA")
     offset_layers = []
     offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]     #offset is defined in the definition of the function. Default is 2.
     for (x, y) in offsets:
@@ -103,6 +103,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     for offset_layer in offset_layers:
         mask_WoB_big.paste(offset_layer, None, offset_layer)
     mask_BoW_big = ImageOps.invert(mask_WoB_big)
+    mask_WoB_big = mask_WoB.convert("1")
+    mask_BoW_big = mask_BoW.convert("1")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the big masks")
         mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
