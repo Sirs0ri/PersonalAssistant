@@ -75,6 +75,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     converter_brightness = ImageEnhance.Brightness(bg_layer)
     bg_layer = converter_brightness.enhance(0.8)
     if DEBUG:
+        core.log(name, "      DEBUG: Saving the background")
         bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
 
     #generate the mask
@@ -89,6 +90,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
     if DEBUG:
+        core.log(name, "      DEBUG: Saving the masks")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
 
@@ -98,6 +100,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     overlay_layer = Image.open(global_variables.folder_base + background_path)
     overlay_layer.putalpha(mask_WoB)
     if DEBUG:
+        core.log(name, "      DEBUG: Saving the colored overlay")
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
 
     #generate the shadow
@@ -125,6 +128,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Adding transparency")
     shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.8)
     if DEBUG:
+        core.log(name, "      DEBUG: Saving the dropshadow")
         shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
 
     #merge the shadow with the background
@@ -159,6 +163,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     finally: 
         core.log(name, "      {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1]))
     if DEBUG:
+        core.log(name, "      DEBUG: Saving the background+shadow")
         bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
     '''
     #generate the light frame
