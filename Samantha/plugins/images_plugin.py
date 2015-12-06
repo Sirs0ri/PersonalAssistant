@@ -117,6 +117,28 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
         mask_BoW_big.save(global_variables.folder_base + "/data/mask_BoW_big.png")
 
+    core.log(name, "      Creating the small masks")
+    mask_BoT_small = mask_BoW.convert("RGBA")
+    mask_BoT_small.putalpha(mask_WoB)
+    core.log(name, "        Adding the Offset")
+    offset_layers = []
+    offsets = [(frame_width,frame_width),(-frame_width,frame_width),(frame_width,-frame_width),(-frame_width,-frame_width)]
+    for (x, y) in offsets:
+        offset_layers.append(ImageChops.offset(mask_BoT_small, x, y))
+    for offset_layer in offset_layers:
+        mask_BoT_small.putalpha(offset_layer)
+    core.log(name, "        Creating mask_BoT_big")
+    mask_BoW_small =  Image.new("RGB", size, "white")
+    mask_BoW_small.paste(mask_BoT_small, None, mask_BoT_small)
+    mask_WoB_small = ImageOps.invert(mask_BoW_small)
+    mask_WoB_small = mask_WoB_small.convert("1")
+    mask_BoW_small = mask_BoW_small.convert("1")
+    if DEBUG:
+        core.log(name, "      DEBUG: Saving the small masks")
+        mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small.png")
+        mask_BoW_small.save(global_variables.folder_base + "/data/mask_BoW_small.png")
+
+
     #generate the colored overlay
 
     core.log(name, "      Creating the colored overlay")
