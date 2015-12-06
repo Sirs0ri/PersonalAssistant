@@ -104,9 +104,6 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Creating the colored overlay")
     overlay_layer = Image.open(global_variables.folder_base + background_path)
     overlay_layer.putalpha(mask_WoB_round)
-    overlay_layer_round = overlay_layer.filter(ImageFilter.BLUR)
-    overlay_layer_round = overlay_layer_round.filter(ImageFilter.BLUR)
-    overlay_layer = Image.composite(overlay_layer, overlay_layer_round, overlay_layer)
     if DEBUG:
         core.log(name, "      DEBUG: Saving the colored overlay")
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
