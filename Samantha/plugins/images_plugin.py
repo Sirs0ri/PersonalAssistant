@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re, pydenticon, core, time, global_variables, requests, cloudinary
+import re, pydenticon, core, time, global_variables, requests, cloudinary, traceback
 from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
 
 is_sam_plugin = 1
@@ -237,6 +237,9 @@ def process(key, param, comm):
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
         except Exception as e:
             core.log(name, "Error: {}".format(e))
+            print '-'*60
+            traceback.print_exc(file=sys.stdout)
+            print '-'*60
     elif key == "identicon":
         core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
         if param:
