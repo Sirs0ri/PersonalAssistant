@@ -99,7 +99,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoT_big.putalpha(mask_WoB)
     core.log(name, "        Adding the Offset")
     offset_layers = []
-    offsets = [(20,20),(-20,20),(20,-20),(-20,-20)]
+    offsets = [(10,10),(-10,10),(10,-10),(-10,-10)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(mask_BoT_big, x, y))
     for offset_layer in offset_layers:
@@ -146,7 +146,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     
     offset_layers = []
-    offsets = [(21,21),(-21,21),(21,-21),(-21,-21)]
+    offsets = [(11,11),(-11,11),(11,-11),(-11,-11)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
@@ -202,7 +202,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Merging the layers")
     final = Image.new("RGBA", size)
     final.paste(bg_layer)
-#    final.paste(frame_layer, None, frame_layer)
+    final.paste(frame_layer, None, frame_layer)
     final.paste(overlay_layer, None, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
     core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path))
