@@ -80,19 +80,24 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     #generate the mask
 
-    core.log(name, "      Creating the mask")
+    core.log(name, "      Creating the masks")
     size = bg_layer.size
     mask_BoW = Image.open(global_variables.folder_base + mask_path)     #"BoW" means black icon on white background.
     mask_WoB = ImageOps.invert(mask_BoW)                                #"WoB" is a white icon on black bg.
     if not mask_BoW.size == size:
         mask_WoB = resize(mask_WoB, size)
         mask_BoW = ImageOps.invert(mask_WoB)
+    core.log(name, "      Creating the rounded masks")
+    mask_WoB_round = mask_WoB.filter(ImageFilter.BLUR)
+    mask_BoW_round = mask_BoW.filter(ImageFilter.BLUR)
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the masks")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
+        mask_WoB_round.save(global_variables.folder_base + "/data/mask_WoB_round.png")
+        mask_BoW_round.save(global_variables.folder_base + "/data/mask_BoW_round.png")
 
     #generate the colored overlay
 
