@@ -93,14 +93,12 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "      DEBUG: Saving the masks")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
-        mask_WoB_round.save(global_variables.folder_base + "/data/mask_WoB_round.png")
-        mask_BoW_round.save(global_variables.folder_base + "/data/mask_BoW_round.png")
 
     #generate the colored overlay
 
     core.log(name, "      Creating the colored overlay")
     overlay_layer = Image.open(global_variables.folder_base + background_path)
-    overlay_layer.putalpha(mask_WoB_round)
+    overlay_layer.putalpha(mask_WoB)
     if DEBUG:
         core.log(name, "      DEBUG: Saving the colored overlay")
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
