@@ -117,11 +117,21 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "      DEBUG: Saving the colored overlay")
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
 
+    #generate the frame around the colored overlay
+
+    core.log(name, "      Creating the frame around the overlay")
+    frame_layer = Image.open(global_variables.folder_base + background_path)
+    frame_layer = Image.blend(Image.new("RGBA", size, "white"), frame_layer, 0.8)
+    frame_layer.putalpha(mask_WoB_big)
+    if DEBUG:
+        core.log(name, "      DEBUG: Saving the frame")
+        frame_layer.save(global_variables.folder_base + "/data/frame_layer.png")
+
     #generate the shadow
 
     core.log(name, "      Creating the dropshadow")
-    shadow_layer =  mask_BoW.convert("RGBA")
-    shadow_layer.putalpha(mask_WoB)
+    shadow_layer =  mask_BoW_big.convert("RGBA")
+    shadow_layer.putalpha(mask_WoB_big)
     """
     A copy if the mask is pasted ontop of itself with a 2px offset into the 4 diagonal directions each to increase it's size into each direction. (The shadow would otherwise disappear behind the colored overlay.)
     The whole layer is then blurred multiple times to increase the blur's effect.
@@ -189,7 +199,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "      Merging the layers")
     final = Image.new("RGBA", size)
     final.paste(bg_layer)
-    #final.paste(shadow_layer, None, shadow_layer)
+    final.paste(frame_layer, None, frame_layer)
     final.paste(overlay_layer, None, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
     core.log(name, "    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path))
