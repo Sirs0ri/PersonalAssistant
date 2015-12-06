@@ -105,7 +105,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     for offset_layer in offset_layers:
         mask_BoT_big.paste(offset_layer, None, offset_layer)
     core.log(name, "        Creating mask_BoT_big")
-    mask_BoW_big =  Image.new("RGBA", size, "white")
+    mask_BoW_big =  Image.new("RGB", size, "white")
     mask_BoW_big.paste(mask_BoT_big, None, mask_BoT_big)
     mask_WoB_big = ImageOps.invert(mask_BoW_big)
     mask_WoB_big = mask_WoB_big.convert("1")
