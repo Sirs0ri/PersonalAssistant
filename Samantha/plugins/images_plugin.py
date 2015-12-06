@@ -95,7 +95,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
 
     core.log(name, "      Creating the big masks")
-    mask_BoW_big = mask_BoW.convert("RGBA")
+    mask_BoW_big = mask_BoW.convert("RGB")
     core.log(name, "        Adding the Offset")
     offset_layers = []
     offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
