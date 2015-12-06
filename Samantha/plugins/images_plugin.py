@@ -112,7 +112,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoW_big = mask_BoW_big.convert("1")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the big masks")
-        #mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
+        mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
         mask_BoW_big.save(global_variables.folder_base + "/data/mask_BoW_big.png")
 
     #generate the colored overlay
@@ -128,7 +128,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     core.log(name, "      Creating the frame around the overlay")
     frame_layer = Image.open(global_variables.folder_base + background_path)
-    frame_layer = Image.blend(Image.new("RGBA", size, "white"), frame_layer, 0.8)
+    frame_layer = Image.blend(Image.new("RGB", size, "white"), frame_layer, 0.8)
     frame_layer.putalpha(mask_BoW_big)
     if DEBUG:
         core.log(name, "      DEBUG: Saving the frame")
