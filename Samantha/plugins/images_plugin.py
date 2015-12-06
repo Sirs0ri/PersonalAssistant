@@ -99,7 +99,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoT_big.putalpha(mask_WoB)
     core.log(name, "        Adding the Offset")
     offset_layers = []
-    offsets = [(2,2),(-2,2),(2,-2),(-2,-2)]
+    offsets = [(20,20),(-20,20),(20,-20),(-20,-20)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(mask_BoT_big, x, y))
     for offset_layer in offset_layers:
@@ -146,7 +146,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     
     offset_layers = []
-    offsets = [(1,1),(-1,1),(1,-1),(-1,-1)]
+    offsets = [(21,21),(-21,21),(21,-21),(-21,-21)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
