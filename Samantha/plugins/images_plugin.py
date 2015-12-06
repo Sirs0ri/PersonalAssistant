@@ -123,15 +123,15 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
 
     #generate the frame around the colored overlay
-    '''
+
     core.log(name, "      Creating the frame around the overlay")
     frame_layer = Image.open(global_variables.folder_base + background_path)
     frame_layer = Image.blend(Image.new("RGBA", size, "white"), frame_layer, 0.8)
-    frame_layer.putalpha(mask_WoB_big)
+    frame_layer.putalpha(mask_BoW_big)
     if DEBUG:
         core.log(name, "      DEBUG: Saving the frame")
         frame_layer.save(global_variables.folder_base + "/data/frame_layer.png")
-    '''
+
     #generate the shadow
 
     core.log(name, "      Creating the dropshadow")
@@ -194,11 +194,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     if DEBUG:
         core.log(name, "      DEBUG: Saving the background+shadow")
         bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
-    '''
-    #generate the light frame
-    frame_layer = overlay_layer.filter(ImageFilter.FIND_EDGES)
-    frame_layer.save("./frame_layer.png")
-    '''
+
     #merge the layers
     
     core.log(name, "      Merging the layers")
