@@ -93,7 +93,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "      DEBUG: Saving the normal masks")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
-
+    '''
     core.log(name, "      Creating the big masks")
     mask_BoW_big = mask_BoW.convert("RGBA")
     mask_BoW_big.putalpha(mask_WoB)
@@ -110,7 +110,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "      DEBUG: Saving the big masks")
         mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
         mask_BoW_big.save(global_variables.folder_base + "/data/mask_BoW_big.png")
-
+    '''
     #generate the colored overlay
 
     core.log(name, "      Creating the colored overlay")
@@ -119,7 +119,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     if DEBUG:
         core.log(name, "      DEBUG: Saving the colored overlay")
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
-
+    '''
     #generate the frame around the colored overlay
 
     core.log(name, "      Creating the frame around the overlay")
@@ -129,7 +129,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     if DEBUG:
         core.log(name, "      DEBUG: Saving the frame")
         frame_layer.save(global_variables.folder_base + "/data/frame_layer.png")
-
+    '''
     #generate the shadow
 
     core.log(name, "      Creating the dropshadow")
