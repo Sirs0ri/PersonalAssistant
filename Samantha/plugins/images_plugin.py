@@ -121,9 +121,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offset_layers = []
     offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     for (x, y) in offsets:
-        offset_layers.append(ImageChops.offset(mask_WoB, x, y))
-    for offset_layer in offset_layers:
-        mask_BoT_small.putalpha(offset_layer)
+        mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, x, y))
     mask_BoW_small =  Image.new("RGB", size, "white")
     mask_BoW_small.paste(mask_BoT_small, None, mask_BoT_small)
     mask_WoB_small = ImageOps.invert(mask_BoW_small)
@@ -133,6 +131,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "      DEBUG: Saving the small masks")
         mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small.png")
         mask_BoW_small.save(global_variables.folder_base + "/data/mask_BoW_small.png")
+        mask_BoT_small.save(global_variables.folder_base + "/data/mask_BoT_small.png")
 
 
     #generate the colored overlay
