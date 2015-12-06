@@ -87,13 +87,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     if not mask_BoW.size == size:
         mask_WoB = resize(mask_WoB, size)
         mask_BoW = ImageOps.invert(mask_WoB)
-    core.log(name, "      Creating the rounded masks")
-    mask_WoB_round = mask_WoB.filter(ImageFilter.BLUR)
-    mask_BoW_round = mask_BoW.filter(ImageFilter.BLUR)
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
-    mask_WoB_round = mask_WoB_round.convert("L")
-    mask_BoW_round = mask_BoW_round.convert("L")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the masks")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
