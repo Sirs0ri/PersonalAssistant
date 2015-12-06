@@ -192,27 +192,27 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     return path
 
 def process(key, param, comm):
-    if key == "schedule_h":
-        if param == "0":
-            core.log(name, "  Generating the daily wallpaper.")
+    try:
+        if key == "schedule_h":
+            if param == "0":
+                core.log(name, "  Generating the daily wallpaper.")
+                wallpaper_bg = get_wallpaper()
+                identicon = generate_identicon(str(time.time()))
+                wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+            else:
+                core.log(name, "  Warning: parameter {} not in use.".format(param))
+        elif key == "wallpaper":
+            core.log(name, "  Generating a new wallpaper.")
             wallpaper_bg = get_wallpaper()
             identicon = generate_identicon(str(time.time()))
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+        elif key == "identicon":
+            core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
+            if param:
+                generate_identicon(param)
+            else:
+                generate_identicon()
         else:
-            core.log(name, "  Error: illegal parameter: {}.".format(param))
-    elif key == "wallpaper":
-        core.log(name, "  Generating a new wallpaper.")
-        wallpaper_bg = get_wallpaper()
-        identicon = generate_identicon(str(time.time()))
-        try:
-            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
-        except Exception as e:
-            core.log(name, "Error: {}".format(e))
-    elif key == "identicon":
-        core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
-        if param:
-            generate_identicon(param)
-        else:
-            generate_identicon()
-    else:
-        core.log(name, "  Error: illegal command: {}.".format(key))
+            core.log(name, "  Warning: parameter {} not in use.".format(param))
+    except Exception as e:
+        core.log(name, "Error: {}".format(e))
