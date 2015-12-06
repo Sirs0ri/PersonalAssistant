@@ -124,7 +124,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offset_layers = []
     offsets = [(frame_width,frame_width),(-frame_width,frame_width),(frame_width,-frame_width),(-frame_width,-frame_width)]
     for (x, y) in offsets:
-        offset_layers.append(ImageChops.offset(mask_BoT_small, x, y))
+        offset_layers.append(ImageChops.offset(mask_BoW, x, y))
     for offset_layer in offset_layers:
         mask_BoT_small.putalpha(offset_layer)
     core.log(name, "        Creating mask_BoT_big")
