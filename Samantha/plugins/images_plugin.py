@@ -88,7 +88,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW = ImageOps.invert(mask_WoB)
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
-    mask_BoT = mask_BoW.putalpha(mask_WoB)                              #"BoT" means black icon on transparent bg
+    mask_BoT = mask_BoW.convert("ARGB").putalpha(mask_WoB)              #"BoT" means black icon on transparent bg
     core.log(name, "      Creating the big mask")
     mask_BoT_big = mask_BoT
     offset_layers = []
