@@ -119,8 +119,28 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     core.log(name, "        Adding the Offset")
     offset_layers = []
-    offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     core.log(name, "          Creating the Offset-Layers")
+    offset_layer1 = Image.new("RGB", size)
+    offset_layer1.paste(ImageChops.offset(mask_WoB_small, 5, 5))
+    offset_layer2 = Image.new("RGB", size)
+    offset_layer2.paste(ImageChops.offset(mask_WoB_small, -5, 5))
+    offset_layer3 = Image.new("RGB", size)
+    offset_layer3.paste(ImageChops.offset(mask_WoB_small, -5, -5))
+    offset_layer4 = Image.new("RGB", size)
+    offset_layer4.paste(ImageChops.offset(mask_WoB_small, 5, -5))
+    
+    core.log(name, "          Merging the Offset-Layers")
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, mask_WoB_small)
+    
+    core.log(name, "          Merging the Offset-Layers")
+    
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer1)
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer2)
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer3)
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer4)
+    
+    '''
+    offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     for (x, y) in offsets:
         im = Image.new("RGB", size)
         im.paste(ImageChops.offset(mask_WoB_small, x, y))
@@ -157,6 +177,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, "Error: {}".format(e))
     finally: 
         core.log(name, "      {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1]))
+    '''
 
     core.log(name, "        Inverting mask_WoB_small")
     mask_BoW_small = ImageOps.invert(mask_WoB_small)
