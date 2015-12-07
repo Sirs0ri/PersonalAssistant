@@ -132,12 +132,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offset_layer4 = Image.new("RGB", size)
     offset_layer4.paste(ImageChops.offset(mask_WoB_small, 5, -5))
     offset_layer4 = offset_layer4.convert("1")
-    
+
     core.log(name, "          Merging the Offset-Layers")
-    mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("1"), mask_WoB_small.convert("1"))
-    
-    core.log(name, "          Merging the Offset-Layers")
-    
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer1)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer2)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer3)
@@ -184,8 +180,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     '''
 
     core.log(name, "        Inverting mask_WoB_small")
-    mask_BoW_small = ImageOps.invert(mask_WoB_small)
-    mask_WoB_small = mask_WoB_small.convert("1")
+    mask_BoW_small = ImageOps.invert(mask_WoB_small.convert("RGB"))
     mask_BoW_small = mask_BoW_small.convert("1")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the small masks")
