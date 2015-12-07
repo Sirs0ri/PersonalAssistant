@@ -115,33 +115,24 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW_big.save(global_variables.folder_base + "/data/mask_BoW_big.png")
 
     core.log(name, "      Creating the small masks")
-    mask_BoT_small = mask_BoW.convert("RGBA")
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, 0))
+    mask_WoB_small = mask_WoB
     core.log(name, "        Adding the Offset")
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 0))
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 5))
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, 5))
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, -5, 5))
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, -5, 0))
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, -5, -5))
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, -5))
-    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, -5))
-    '''
+    #mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 0))
+
     offset_layers = []
     offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     for (x, y) in offsets:
-        mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, x, y))
-    '''
-    mask_BoW_small =  Image.new("RGB", size, "white")
-    mask_BoW_small.paste(mask_BoT_small, None, mask_BoT_small)
-    mask_WoB_small = ImageOps.invert(mask_BoW_small)
+        offset_layers.append(ImageChops.offset(mask_WoB, x, y))
+    for offset_layer in offset_layers:
+        mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer)
+
+    mask_BoW_small = ImageOps.invert(mask_WoB_small)
     mask_WoB_small = mask_WoB_small.convert("1")
     mask_BoW_small = mask_BoW_small.convert("1")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the small masks")
         mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small.png")
         mask_BoW_small.save(global_variables.folder_base + "/data/mask_BoW_small.png")
-        mask_BoT_small.save(global_variables.folder_base + "/data/mask_BoT_small.png")
 
 
     #generate the colored overlay
