@@ -133,6 +133,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offset_layer4.paste(ImageChops.offset(mask_WoB_small, 5, -5))
     offset_layer4 = offset_layer4.convert("1")
 
+    mask_WoB_small = mask_WoB_small.convert("1")
     core.log(name, "          Merging the Offset-Layers")
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer1)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer2)
