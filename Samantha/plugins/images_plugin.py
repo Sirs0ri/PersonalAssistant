@@ -126,9 +126,9 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     '''
     mask_BoW_small =  Image.new("RGB", size, "white")
     mask_BoW_small.paste(mask_BoW, None, ImageChops.offset(mask_WoB, 5, 0))
-    mask_BoW_small.paste(mask_BoW, None, ImageChops.offset(mask_BoW, -5, 0))
-    mask_BoW_small.paste(mask_BoW, None, ImageChops.offset(mask_BoW, 0, 5))
-    mask_BoW_small.paste(mask_BoW, None, ImageChops.offset(mask_BoW, 0, -5))
+    mask_BoW_small.paste(mask_BoW_small, None, ImageChops.offset(mask_BoW, 0, 5))
+    mask_BoW_small.paste(mask_BoW_small, None, ImageChops.offset(mask_BoW, -5, 0))
+    mask_BoW_small.paste(mask_BoW_small, None, ImageChops.offset(mask_BoW, 0, -5))
     mask_WoB_small = ImageOps.invert(mask_BoW_small)
     mask_WoB_small = mask_WoB_small.convert("1")
     mask_BoW_small = mask_BoW_small.convert("1")
