@@ -126,11 +126,14 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         im.paste(ImageChops.offset(mask_WoB_small, x, y))
         offset_layers.append(im)
     core.log(name, "          Merging the Offset-Layers. 1st attempt.")
-    for offset_layer in offset_layers:
-        mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer)
-    mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small1.png")
+    try:
+        for offset_layer in offset_layers:
+            mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("RGB"), offset_layer.convert("RGB"))
+        mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small1.png")
+    except Exception as e:
+        core.log(name, "Error: {}".format(e))
         
-    core.log(name, "          Merging the Offset-Layers. 2nd aottempt. This might take a while..")
+    core.log(name, "          Merging the Offset-Layers. 2nd attempt. This might take a while..")
     try:
         pixels_changed_count = 0
         pixels_bg = mask_WoB_small.load()
