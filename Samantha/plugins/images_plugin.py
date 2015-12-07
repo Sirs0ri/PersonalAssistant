@@ -128,10 +128,10 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     try:
         pixels_changed_count = 0
         pixels_bg = mask_WoB_small.load()
-        pixels_mask_0 = offsets[0].load()
-        pixels_mask_1 = offsets[1].load()
-        pixels_mask_2 = offsets[2].load()
-        pixels_mask_3 = offsets[3].load()
+        pixels_mask_0 = offsets[0]
+        pixels_mask_1 = offsets[1]
+        pixels_mask_2 = offsets[2]
+        pixels_mask_3 = offsets[3]
         for x in range(bg_layer.size[0]):
             for y in range(bg_layer.size[1]):
                 r_m0, g_m0, b_m0 = pixels_mask_0[x, y]
@@ -149,9 +149,6 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     finally: 
         core.log(name, "      {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1]))
 
-    for offset_layer in offset_layers:
-        mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("RGB"), offset_layer.convert("RGB"))
-        
     core.log(name, "        Inverting mask_WoB_small")
     mask_BoW_small = ImageOps.invert(mask_WoB_small)
     mask_WoB_small = mask_WoB_small.convert("1")
