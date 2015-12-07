@@ -116,15 +116,39 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     core.log(name, "      Creating the small masks")
     mask_WoB_small = mask_WoB.convert("RGB")
-    core.log(name, "        Adding the Offset")
-    #mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 0))
 
+    core.log(name, "        Adding the Offset")
     offset_layers = []
     offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     core.log(name, "          Creating the Offset-Layers")
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(mask_WoB_small, x, y))
-    core.log(name, "          Merging the Offset-Layers")
+    core.log(name, "          Merging the Offset-Layers. This might take a while..")
+
+    try:
+        pixels_changed_count = 0
+        pixels_bg = mask_WoB_small.load()
+        pixels_mask_0 = offsets[0].load()
+        pixels_mask_1 = offsets[1].load()
+        pixels_mask_2 = offsets[2].load()
+        pixels_mask_3 = offsets[3].load()
+        for x in range(bg_layer.size[0]):
+            for y in range(bg_layer.size[1]):
+                r_m0, g_m0, b_m0 = pixels_mask_0[x, y]
+                r_m1, g_m1, b_m1 = pixels_mask_1[x, y]
+                r_m2, g_m2, b_m2 = pixels_mask_2[x, y]
+                r_m3, g_m3, b_m3 = pixels_mask_3[x, y]
+                if r_m0 and r_m1 and r_m2 and r_m3:     #I'm changing all values at once, because the images are B/W anyways
+                    new_value = 255
+                else:
+                    new_value = 0
+                pixels_bg[x, y] = (new_value, new_value, new_value)
+                pixels_changed_count += 1
+    except Exception as e:
+        core.log(name, "Error: {}".format(e))
+    finally: 
+        core.log(name, "      {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1]))
+
     for offset_layer in offset_layers:
         mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("RGB"), offset_layer.convert("RGB"))
         
