@@ -115,7 +115,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoW_big.save(global_variables.folder_base + "/data/mask_BoW_big.png")
 
     core.log(name, "      Creating the small masks")
-    mask_WoB_small = mask_WoB.convert("L")
+    mask_WoB_small = mask_WoB.convert("RGB")
     core.log(name, "        Adding the Offset")
     #mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 0))
 
