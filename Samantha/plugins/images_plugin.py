@@ -134,51 +134,12 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offset_layer4 = offset_layer4.convert("1")
 
     mask_WoB_small = mask_WoB_small.convert("1")
+    
     core.log(name, "          Merging the Offset-Layers")
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer1)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer2)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer3)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer4)
-    
-    '''
-    offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
-    for (x, y) in offsets:
-        im = Image.new("RGB", size)
-        im.paste(ImageChops.offset(mask_WoB_small, x, y))
-        offset_layers.append(im)
-    core.log(name, "          Merging the Offset-Layers. 1st attempt.")
-    try:
-        for offset_layer in offset_layers:
-            mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("RGB"), offset_layer.convert("RGB"))
-        mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small1.png")
-    except Exception as e:
-        core.log(name, "Error: {}".format(e))
-        
-    core.log(name, "          Merging the Offset-Layers. 2nd attempt. This might take a while..")
-    try:
-        pixels_changed_count = 0
-        pixels_bg = mask_WoB_small.load()
-        pixels_mask_0 = offsets[0].load()
-        pixels_mask_1 = offsets[1].load()
-        pixels_mask_2 = offsets[2].load()
-        pixels_mask_3 = offsets[3].load()
-        for x in range(bg_layer.size[0]):
-            for y in range(bg_layer.size[1]):
-                r_m0, g_m0, b_m0 = pixels_mask_0[x, y]
-                r_m1, g_m1, b_m1 = pixels_mask_1[x, y]
-                r_m2, g_m2, b_m2 = pixels_mask_2[x, y]
-                r_m3, g_m3, b_m3 = pixels_mask_3[x, y]
-                if r_m0 and r_m1 and r_m2 and r_m3:     #I'm changing all values at once, because the images are B/W anyways
-                    new_value = 255
-                else:
-                    new_value = 0
-                pixels_bg[x, y] = (new_value, new_value, new_value)
-                pixels_changed_count += 1
-    except Exception as e:
-        core.log(name, "Error: {}".format(e))
-    finally: 
-        core.log(name, "      {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1]))
-    '''
 
     core.log(name, "        Inverting mask_WoB_small")
     mask_BoW_small = ImageOps.invert(mask_WoB_small.convert("RGB"))
