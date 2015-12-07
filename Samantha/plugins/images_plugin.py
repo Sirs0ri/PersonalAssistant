@@ -128,6 +128,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, "          Merging the Offset-Layers. 1st attempt.")
     for offset_layer in offset_layers:
         mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer)
+    mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small1.png")
         
     core.log(name, "          Merging the Offset-Layers. 2nd aottempt. This might take a while..")
     try:
@@ -160,7 +161,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoW_small = mask_BoW_small.convert("1")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the small masks")
-        mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small.png")
+        mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small2.png")
         mask_BoW_small.save(global_variables.folder_base + "/data/mask_BoW_small.png")
 
 
