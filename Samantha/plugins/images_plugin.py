@@ -10,7 +10,7 @@ keywords = ["identicon", "schedule_h", "wallpaper"]
 has_toggle = 0
 has_set = 0
 
-DEBUG = 1
+DEBUG = 0
 
 
 def initialize():
