@@ -126,7 +126,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         offset_layers.append(ImageChops.offset(mask_WoB_small, x, y))
     core.log(name, "          Merging the Offset-Layers")
     for offset_layer in offset_layers:
-        mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("1"), offset_layer.convert("1"))
+        mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("RGB"), offset_layer.convert("RGB"))
         
     core.log(name, "        Inverting mask_WoB_small")
     mask_BoW_small = ImageOps.invert(mask_WoB_small)
