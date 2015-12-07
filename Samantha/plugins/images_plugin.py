@@ -122,17 +122,21 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     core.log(name, "          Creating the Offset-Layers")
     for (x, y) in offsets:
-    core.log(name, "          Merging the Offset-Layers. This might take a while..")
         im = Image.new("RGB", size)
         im.paste(ImageChops.offset(mask_WoB_small, x, y))
         offset_layers.append(im)
+    core.log(name, "          Merging the Offset-Layers. 1st attempt.")
+    for offset_layer in offset_layers:
+        mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer)
+        
+    core.log(name, "          Merging the Offset-Layers. 2nd aottempt. This might take a while..")
     try:
         pixels_changed_count = 0
         pixels_bg = mask_WoB_small.load()
-        pixels_mask_0 = offsets[0]
-        pixels_mask_1 = offsets[1]
-        pixels_mask_2 = offsets[2]
-        pixels_mask_3 = offsets[3]
+        pixels_mask_0 = offsets[0].load()
+        pixels_mask_1 = offsets[1].load()
+        pixels_mask_2 = offsets[2].load()
+        pixels_mask_3 = offsets[3].load()
         for x in range(bg_layer.size[0]):
             for y in range(bg_layer.size[1]):
                 r_m0, g_m0, b_m0 = pixels_mask_0[x, y]
