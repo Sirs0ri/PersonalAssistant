@@ -94,32 +94,10 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
 
-    core.log(name, "      Creating the big masks")
-    mask_BoT_big = mask_BoW.convert("RGBA")
-    mask_BoT_big.putalpha(mask_WoB)
-    core.log(name, "        Adding the Offset")
-    offset_layers = []
-    offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
-    for (x, y) in offsets:
-        offset_layers.append(ImageChops.offset(mask_BoT_big, x, y))
-    for offset_layer in offset_layers:
-        mask_BoT_big.paste(offset_layer, None, offset_layer)
-    mask_BoW_big =  Image.new("RGB", size, "white")
-    mask_BoW_big.paste(mask_BoT_big, None, mask_BoT_big)
-    mask_WoB_big = ImageOps.invert(mask_BoW_big)
-    mask_WoB_big = mask_WoB_big.convert("1")
-    mask_BoW_big = mask_BoW_big.convert("1")
-    if DEBUG:
-        core.log(name, "      DEBUG: Saving the big masks")
-        mask_WoB_big.save(global_variables.folder_base + "/data/mask_WoB_big.png")
-        mask_BoW_big.save(global_variables.folder_base + "/data/mask_BoW_big.png")
-
     core.log(name, "      Creating the small masks")
     mask_WoB_small = mask_WoB.convert("RGB")
 
-    core.log(name, "        Adding the Offset")
     offset_layers = []
-    core.log(name, "          Creating the Offset-Layers")
     offset_layer1 = Image.new("RGB", size)
     offset_layer1.paste(ImageChops.offset(mask_WoB_small, 4, 4))
     offset_layer1 = offset_layer1.convert("1")
@@ -134,14 +112,11 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offset_layer4 = offset_layer4.convert("1")
 
     mask_WoB_small = mask_WoB_small.convert("1")
-    
-    core.log(name, "          Merging the Offset-Layers")
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer1)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer2)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer3)
     mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer4)
 
-    core.log(name, "        Inverting mask_WoB_small")
     mask_BoW_small = ImageOps.invert(mask_WoB_small.convert("RGB"))
     mask_BoW_small = mask_BoW_small.convert("1")
     if DEBUG:
