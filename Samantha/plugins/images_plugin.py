@@ -128,16 +128,12 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offset_layer3.paste(ImageChops.offset(mask_WoB_small, -5, -5))
     offset_layer4 = Image.new("RGB", size)
     offset_layer4.paste(ImageChops.offset(mask_WoB_small, 5, -5))
-    
+
     core.log(name, "          Merging the Offset-Layers")
-    mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("1"), mask_WoB_small.convert("1"))
-    
-    core.log(name, "          Merging the Offset-Layers")
-    
-    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer1)
-    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer2)
-    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer3)
-    mask_WoB_small = ImageChops.logical_and(mask_WoB_small, offset_layer4)
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("1"), offset_layer1.convert("1"))
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("1"), offset_layer2.convert("1"))
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("1"), offset_layer3.convert("1"))
+    mask_WoB_small = ImageChops.logical_and(mask_WoB_small.convert("1"), offset_layer4.convert("1"))
     
     '''
     offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
@@ -185,7 +181,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoW_small = mask_BoW_small.convert("1")
     if DEBUG:
         core.log(name, "      DEBUG: Saving the small masks")
-        mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small2.png")
+        mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small.png")
         mask_BoW_small.save(global_variables.folder_base + "/data/mask_BoW_small.png")
 
 
