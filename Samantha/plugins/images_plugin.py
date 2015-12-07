@@ -122,9 +122,10 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
     core.log(name, "          Creating the Offset-Layers")
     for (x, y) in offsets:
-        offset_layers.append(ImageChops.offset(mask_WoB_small, x, y))
     core.log(name, "          Merging the Offset-Layers. This might take a while..")
-
+        im = Image.new("RGB", size)
+        im.paste(ImageChops.offset(mask_WoB_small, x, y))
+        offset_layers.append(im)
     try:
         pixels_changed_count = 0
         pixels_bg = mask_WoB_small.load()
