@@ -116,8 +116,16 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     core.log(name, "      Creating the small masks")
     mask_BoT_small = mask_BoW.convert("RGBA")
-    mask_BoT_small.putalpha(mask_WoB)
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, 0))
     core.log(name, "        Adding the Offset")
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 0))
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, 5))
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, 5))
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, -5, 5))
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, -5, 0))
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, -5, -5))
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 0, -5))
+    mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, 5, -5))
     '''
     offset_layers = []
     offsets = [(5,5),(-5,5),(5,-5),(-5,-5)]
@@ -125,10 +133,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         mask_BoT_small.putalpha(ImageChops.offset(mask_WoB, x, y))
     '''
     mask_BoW_small =  Image.new("RGB", size, "white")
-    mask_BoW_small.paste(mask_BoW, None, ImageChops.offset(mask_WoB, 5, 0))
-    mask_BoW_small.paste(mask_BoW_small, None, ImageChops.offset(mask_BoW, 0, 5))
-    mask_BoW_small.paste(mask_BoW_small, None, ImageChops.offset(mask_BoW, -5, 0))
-    mask_BoW_small.paste(mask_BoW_small, None, ImageChops.offset(mask_BoW, 0, -5))
+    mask_BoW_small.paste(mask_BoT_small, None, mask_BoT_small)
     mask_WoB_small = ImageOps.invert(mask_BoW_small)
     mask_WoB_small = mask_WoB_small.convert("1")
     mask_BoW_small = mask_BoW_small.convert("1")
