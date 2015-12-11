@@ -158,17 +158,17 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     
     offset_layers = []
-    offsets = [(10,10),(-10,10),(10,0),(-10,0)]
+    offsets = [(1,1),(-1,1),(1,0),(-1,0)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
         shadow_layer.paste(offset_layer, None, offset_layer)
     
-    core.log(name, "      Blurring the shadow")
+    core.log(name, "        Blurring the shadow")
     for n in range(3):      #as noted above, the Blur is applied multiple times for a stronger effect. 3 has proven as a good compromise between a good effect and not too much necessary calculation.
-        core.log(name, "        Step {}/{}".format(n + 1, 3))
+        core.log(name, "          Step {}/{}".format(n + 1, 3))
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
-    core.log(name, "      Adding transparency")
+    core.log(name, "        Adding transparency")
     shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.8)
     if DEBUG:
         core.log(name, "      DEBUG: Saving the dropshadow")
@@ -204,7 +204,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     except Exception as e:
         core.log(name, "Error: {}".format(e))
     finally: 
-        core.log(name, "      {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1]))
+        core.log(name, "        {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1]))
     if DEBUG:
         core.log(name, "      DEBUG: Saving the background+shadow")
         bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
