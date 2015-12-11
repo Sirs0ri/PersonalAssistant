@@ -64,6 +64,8 @@ def resize(im, size, offset=(0,0)):
 def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png"):
 
     core.log(name, "    Creating the final image")
+    
+    framwewidth = 3
 
     #generate the background
 
@@ -99,16 +101,16 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     offset_layers = []
     offset_layer1 = Image.new("RGB", size)
-    offset_layer1.paste(ImageChops.offset(mask_WoB_small, 4, 4))
+    offset_layer1.paste(ImageChops.offset(mask_WoB_small, framwewidth, framwewidth))
     offset_layer1 = offset_layer1.convert("1")
     offset_layer2 = Image.new("RGB", size)
-    offset_layer2.paste(ImageChops.offset(mask_WoB_small, -4, 4))
+    offset_layer2.paste(ImageChops.offset(mask_WoB_small, -framwewidth, framwewidth))
     offset_layer2 = offset_layer2.convert("1")
     offset_layer3 = Image.new("RGB", size)
-    offset_layer3.paste(ImageChops.offset(mask_WoB_small, -4, -4))
+    offset_layer3.paste(ImageChops.offset(mask_WoB_small, -framwewidth, -framwewidth))
     offset_layer3 = offset_layer3.convert("1")
     offset_layer4 = Image.new("RGB", size)
-    offset_layer4.paste(ImageChops.offset(mask_WoB_small, 4, -4))
+    offset_layer4.paste(ImageChops.offset(mask_WoB_small, framwewidth, -framwewidth))
     offset_layer4 = offset_layer4.convert("1")
 
     mask_WoB_small = mask_WoB_small.convert("1")
@@ -156,7 +158,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     """
     
     offset_layers = []
-    offsets = [(1,1),(-1,1),(1,-1),(-1,-1)]
+    offsets = [(1,0),(-1,0),(1,-1),(-1,-1)]
     for (x, y) in offsets:
         offset_layers.append(ImageChops.offset(shadow_layer, x, y))
     for offset_layer in offset_layers:
