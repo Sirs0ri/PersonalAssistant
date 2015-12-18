@@ -252,7 +252,7 @@ def set_daily_wallpaper(path="/data/wallpaper.png"):
     payload = {'message': 'wallpaper.set', 'files': url}
     core.log(name, "      Sending the AR-Message")
     response = requests.get(private_variables.autoremote_baseurl["g2"], payload)
-    core.log(name, "      {}".format(response))
+    core.log(name, "      The Image was sent successfully. {}".format(response))
     
 def process(key, param, comm):
     try:
