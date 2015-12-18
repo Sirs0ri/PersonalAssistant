@@ -242,7 +242,7 @@ def set_daily_wallpaper(path="/data/wallpaper.png"):
     destination = "/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
     core.log(name, "      Initializing the Dropbox-Client")
     client = dropbox.client.DropboxClient(private_variables.dropbox_token)
-    f = open(path, 'rb')
+    f = open(global_variables.folder_base + path, 'rb')
     core.log(name, "      Uploading")
     response = client.put_file(destination, f)
     core.log(name, "      Accessing the public Link")
