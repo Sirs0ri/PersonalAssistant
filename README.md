@@ -75,6 +75,13 @@ Plugins can have different function such as:
         - https://github.com/balloob/pychromecast
         - Remote Controls?
         - Dim Light while casting is active
+    - Images
+        - Done: grab an image from the earthview collection, add the colored overlay with shadows, eyecandy 'n stuff, and upload it to Dropbox; finally send it to my phone.
+        - Done: create a new wallpaper everyday at midnight and send it to the phone
+        - Todo: speed improvements (currently takes roughly 90 sec from getting the command to finishing the upload)
+            - combine iterating over the image multiple times into one action
+            - Multithreading?
+        - Todo: finetuning of the shadow - maybe apply the blur to a 2x zoomed overlay and scale that down
 
 * Eventghost 
     - magage autostart programs
