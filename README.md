@@ -55,35 +55,50 @@ Plugins can have different function such as:
 ### Plugins
 
 #### light
-[ ] Transfer daemon to plugin 
-[ ] Save {"red":redValue[0-255], "green":greenValue[0-255], "blue":blueValue[0-255], "brightness":redValue[Decimal(0-1)]}
-[ ] dim(): use Decimal() as factor while crossFade()
-[ ] store original color, always start dimming with that color
-[ ] Get brightest possible color while set()
-[ ] apply brightness while crossFade(), when generating the spreaded List
-[ ] fix incompatibility with Flask and/or the RFSniffer
+
+- [ ] Transfer daemon to plugin 
+- [ ] Save {"red":redValue[0-255], "green":greenValue[0-255], "blue":blueValue[0-255], "brightness":redValue[Decimal(0-1)]}
+- [ ] dim(): use Decimal() as factor while crossFade()
+- [ ] store original color, always start dimming with that color
+- [ ] Get brightest possible color while set()
+- [ ] apply brightness while crossFade(), when generating the spreaded List
+- [ ] fix incompatibility with Flask and/or the RFSniffer
+
 #### Shows:
+
 - [ ] find an episode from couchtuner's main page
 - [ ] triggered by schedule_h = 5
+
 #### Download
+
 - [ ] trigger should contain a source location and a destination
 - [ ] Download videos while I'm not sleeping: store a queue of links/filenames until then
+
 #### Presence
+
 - [ ] Pings devices every couple of minutes and manages which ones are available
 - [ ] example: Force light to be off, if phone is not at home
-#### Schedule:
+
+#### Schedule
+
 - [X] schedule Tasks, every x*5 minutes/hourly
+
 #### 433
+
 - [ ] fix incompatibility with the LED-Daemon
 - [ ] increase performance of the receiver
 - [X] send commands to devices using 433MHz signals
 - [X] react to incoming 433MHz signals
 - http://www.princetronics.com/how-to-read-433-mhz-codes-w-raspberry-pi-433-mhz-receiver/
+
 #### Chromecast
+
 - [ ] Dim Light while casting is active
 - [ ] Remote Controls?
 - https://github.com/balloob/pychromecast
+
 #### Images
+
 - [ ] speed improvements (currently takes roughly 90 sec from getting the command to finishing the upload)
     - [ ] combine iterating over the image multiple times into one action
     - [ ] Multithreading?
