@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re, pydenticon, core, time, global_variables, private_variables, requests, cloudinary, dropbox
+import re, pydenticon, core, time, global_variables, requests, dropbox, imp
 from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
+private_variables = imp.load_source("private_variables", "../../private_variables.py")
 
 is_sam_plugin = 1
 name = "Images"
@@ -236,12 +237,15 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     return path
 
 def set_daily_wallpaper(path="/data/wallpaper.png"):
-    destination = "/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
     
-    access_token = private_variables.token_dropbox
-    client = dropbox.client.DropboxClient(access_token)
+    destination = "/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
+    client = dropbox.client.DropboxClient(private_variables.dropbox_token)
     f = open(path, 'rb')
     response = client.put_file(destination, f)
+    response = client.share(destination, short_url=False)
+    url = response["url"].replace("www.dropbox", "dl.dropboxusercontent").replace("?dl=0", "")
+    payload = {'message': 'wallpaper.set', 'files': url}
+    response = requests.get(private_variables.autoremote_baseurl["g2"], payload)
     
 def process(key, param, comm):
     try:
@@ -252,7 +256,7 @@ def process(key, param, comm):
                 wallpaper_bg = get_wallpaper()
                 identicon = generate_identicon(str(time.time()))
                 wallpaper = generate_wallpaper(wallpaper_bg, identicon, path)
-                
+                set_daily_wallpaper(wallpaper)
             else:
                 core.log(name, "  Warning: parameter {} not in use.".format(param))
         elif key == "wallpaper":
@@ -260,6 +264,7 @@ def process(key, param, comm):
             wallpaper_bg = get_wallpaper()
             identicon = generate_identicon(str(time.time()))
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+            set_daily_wallpaper(wallpaper)
         elif key == "identicon":
             core.log(name, "  Generating an Identicon with the data '{}'.".format(param))
             if param:
