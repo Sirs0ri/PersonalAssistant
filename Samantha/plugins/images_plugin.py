@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re, pydenticon, core, time, global_variables, requests, cloudinary
+import re, pydenticon, core, time, global_variables, private_variables, requests, cloudinary, dropbox
 from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
 
 is_sam_plugin = 1
@@ -235,14 +235,24 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     core.log(name, "    Generated the Identicon at {}.".format(global_variables.folder_base + path))
     return path
 
+def set_daily_wallpaper(path="/data/wallpaper.png"):
+    destination = "/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
+    
+    access_token = private_variables.token_dropbox
+    client = dropbox.client.DropboxClient(access_token)
+    f = open(path, 'rb')
+    response = client.put_file(destination, f)
+    
 def process(key, param, comm):
     try:
         if key == "schedule_h":
             if param == "0":
-                core.log(name, "  Generating the daily wallpaper.")
+                path = "/data/wallpaper_{time}.png".format(time=time.strftime("%Y-%j_%H:%M:%S", time.localtime()))
+                core.log(name, "  Generating the daily wallpaper at {}.".format(path))
                 wallpaper_bg = get_wallpaper()
                 identicon = generate_identicon(str(time.time()))
-                wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+                wallpaper = generate_wallpaper(wallpaper_bg, identicon, path)
+                
             else:
                 core.log(name, "  Warning: parameter {} not in use.".format(param))
         elif key == "wallpaper":
