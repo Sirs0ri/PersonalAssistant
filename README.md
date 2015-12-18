@@ -32,25 +32,31 @@ Plugins can have different function such as:
 
 ## To Do
 
-### "Mainframe"
+### Mainframe
 
-- Auto-updater
-    - trigger: schedule plugin, hourly
-    - check if an update is available (via last downloaded commit)
-    - if yes:
-        - copy current files to a backup location
-        - pull the latest changes from GitHub
-            - subprocess.Popen("home/pi/Desktop/update_git.sh")
-        - stop and restart the server
-        - wait 2 minutes for the "ok"
-        - if there is no Ok-command: 
-            - stop the server
-            - restore the previously backed-up files
-            - start the Server again
-        - notify me about success/failure
-- react to input -> process()
-- eyecandy: create a website that is shown on raspberrypi2:5000/ which allows to enter commands and restart/stop the server
-- Multitasking
+#### Auto-updater
+
+- [ ] trigger: schedule plugin, hourly
+- [ ] check if an update is available (via last downloaded commit)
+- [ ] if yes:
+    - copy current files to a backup location
+    - pull the latest changes from GitHub
+        - subprocess.Popen("home/pi/Desktop/update_git.sh")
+    - stop and restart the server
+    - wait 2 minutes for the "ok"
+    - if there is no Ok-command: 
+        - stop the server
+        - restore the previously backed-up files
+        - start the Server again
+    - notify me about success/failure
+
+#### Processing
+- [ ] react to input -> process()
+- [ ] Multitasking
+
+#### Other
+
+- [ ] eyecandy: create a website that is shown on raspberrypi2:5000/ which allows to enter commands and restart/stop the server
 
 ### Plugins
 
@@ -108,7 +114,7 @@ Plugins can have different function such as:
 
 ### Other
 
-* Eventghost 
+- Eventghost 
     - magage autostart programs
-        - [ ] while home
+        - while home
             - Input Director (only while PC is running as well) <-> Presence
