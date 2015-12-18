@@ -52,38 +52,43 @@ Plugins can have different function such as:
 
 - Plugins
     - light
-        - Transfer daemon to plugin 
-        - Save {"red":redValue[0-255], "green":greenValue[0-255], "blue":blueValue[0-255], "brightness":redValue[Decimal(0-1)]}
-        - dim(): use Decimal() as factor while crossFade()
-        - store original color, always start dimming with that color
-        - Get brightest possible color while set()
-        - apply brightness while crossFade(), when generating the spreaded List
+        - [ ] Transfer daemon to plugin 
+        - [ ] Save {"red":redValue[0-255], "green":greenValue[0-255], "blue":blueValue[0-255], "brightness":redValue[Decimal(0-1)]}
+        - [ ] dim(): use Decimal() as factor while crossFade()
+        - [ ] store original color, always start dimming with that color
+        - [ ] Get brightest possible color while set()
+        - [ ] apply brightness while crossFade(), when generating the spreaded List
+        - [ ] fix incompatibility with Flask and/or the RFSniffer
     - Shows:
-        - find an episode from couchtuner's main page
-        - triggered by schedule_h = 5
+        - [ ] find an episode from couchtuner's main page
+        - [ ] triggered by schedule_h = 5
     - Download
-        - trigger should contain a source location and a destination
-        - Download videos while I'm not sleeping: store a queue of links/filenames until then
+        - [ ] trigger should contain a source location and a destination
+        - [ ] Download videos while I'm not sleeping: store a queue of links/filenames until then
     - Presence
-        - Pings devices every couple of minutes and manages which ones are available
-        - example: Force light to be off, if phone is not at home
+        - [ ] Pings devices every couple of minutes and manages which ones are available
+        - [ ] example: Force light to be off, if phone is not at home
+    - Schedule:
+        - [X] schedule Tasks, every x*5 minutes/hourly
     - 433
+        - [ ] fix incompatibility with the LED-Daemon
+        - [ ] increase performance of the receiver
+        - [X] send commands to devices using 433MHz signals
+        - [X] react to incoming 433MHz signals
         - http://www.princetronics.com/how-to-read-433-mhz-codes-w-raspberry-pi-433-mhz-receiver/
-        - Done: send commands to devices using 433MHz signals
-        - Done: react to incoming 433MHz signals
     - Chromecast
+        - [ ] Dim Light while casting is active
+        - [ ] Remote Controls?
         - https://github.com/balloob/pychromecast
-        - Remote Controls?
-        - Dim Light while casting is active
     - Images
-        - Done: grab an image from the earthview collection, add the colored overlay with shadows, eyecandy 'n stuff, and upload it to Dropbox; finally send it to my phone.
-        - Done: create a new wallpaper everyday at midnight and send it to the phone
-        - Todo: speed improvements (currently takes roughly 90 sec from getting the command to finishing the upload)
-            - combine iterating over the image multiple times into one action
-            - Multithreading?
-        - Todo: finetuning of the shadow - maybe apply the blur to a 2x zoomed overlay and scale that down
+        - [ ] speed improvements (currently takes roughly 90 sec from getting the command to finishing the upload)
+        - [ ]     combine iterating over the image multiple times into one action
+        - [ ]     Multithreading?
+        - [ ] finetuning of the shadow - maybe apply the blur to a 2x zoomed overlay and scale that down
+        - [X] grab an image from the earthview collection, add the colored overlay with shadows, eyecandy 'n stuff, and upload it to Dropbox; finally send it to my phone.
+        - [X] create a new wallpaper everyday at midnight and send it to the phone
 
 * Eventghost 
     - magage autostart programs
-        - while home
+        - [ ] while home
             - Input Director (only while PC is running as well) <-> Presence
