@@ -238,14 +238,21 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
 
 def set_daily_wallpaper(path="/data/wallpaper.png"):
     
+    core.log(name, "    Sending the Wallpaper to the phone")
     destination = "/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
+    core.log(name, "      Initializing the Dropbox-Client")
     client = dropbox.client.DropboxClient(private_variables.dropbox_token)
     f = open(path, 'rb')
+    core.log(name, "      Uploading")
     response = client.put_file(destination, f)
+    core.log(name, "      Accessing the public Link")
     response = client.share(destination, short_url=False)
     url = response["url"].replace("www.dropbox", "dl.dropboxusercontent").replace("?dl=0", "")
+    core.log(name, "        {}".format(url))
     payload = {'message': 'wallpaper.set', 'files': url}
+    core.log(name, "      Sending the AR-Message")
     response = requests.get(private_variables.autoremote_baseurl["g2"], payload)
+    core.log(name, "      {}".format(response))
     
 def process(key, param, comm):
     try:
