@@ -52,7 +52,7 @@ def import_plugins():
             core.log(name, ["  Error: {} is not a valid Plugin.".format(filenames[i])])
     for p in plugins:
         plugin_names.append(p.name)
-    core.log(name, ["Imported plugins:"] + [plugin_names])
+    core.log(name, ["Imported plugins:"] + plugin_names)
     return plugins
 
 def generate_index():
