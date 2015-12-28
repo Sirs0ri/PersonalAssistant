@@ -85,7 +85,7 @@ def process():
     key = request.args.get('key')
     param = request.args.get('param')
     comm = request.args.get('comm')
-    core.log("Incoming", ["New Command:","Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)]
+    core.log("Incoming", ["New Command:","Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)])
     #process the command
     processed = 0
     '''
