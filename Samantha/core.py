@@ -137,7 +137,7 @@ def log(name="None", content=["None"], level="info"):
     l = len(name)
     if l < 9:
         name += " " * (9-l)
-    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content="\n                          ".join(content))
+    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content="\n                            ".join(content))
     print(s)
     '''
     #log in file
