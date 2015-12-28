@@ -260,13 +260,13 @@ class Plugin_Thread(threading.Thread):
         self.daemon = LightDaemon(pidfile="/tmp/lightDaemon.pid")
         
     def run(self):
-        core.log(self.name, "Starting")
-        core.log(self.name, "Initializing 1")
+        core.log(self.name, ["Starting"])
+        core.log(self.name, ["Initializing 1"])
         self.daemon.create()
-        core.log(self.name, "Initialized")
+        core.log(self.name, ["Initialized"])
         
     def stop(self):
-        core.log(self.name, "  Exiting")
+        core.log(self.name, ["  Exiting"])
         self.daemon.restart()
         self.daemon.destroy()
         
@@ -286,19 +286,19 @@ def process(key, param, comm):
         if param == "pause":
             print("Pausing..")
             t.daemon.restart()
-            core.log(name, "  LEDs Paused.")
+            core.log(name, ["  LEDs Paused."])
         elif param == "fade":
             t.daemon.restart()
             t.daemon.fade()
-            core.log(name, "  LEDs now fading.")
+            core.log(name, ["  LEDs now fading."])
         elif param == "strobe":
             t.daemon.restart()
             t.daemon.strobe()
-            core.log(name, "  Party mode activated.")
+            core.log(name, ["  Party mode activated."])
         elif param == "toggle":
             t.daemon.restart()
             t.daemon.toggle()
-            core.log(name, "  Toggled the light.")
+            core.log(name, ["  Toggled the light."])
         elif param == "set":
             #check that the values the light will be set to are valid as numbers between 0 and 255.
             try:
@@ -321,7 +321,7 @@ def process(key, param, comm):
                 blueIn = 0
             t.daemon.restart()
             t.daemon.set(r=redIn, g=greenIn, b=blueIn)
-            core.log(name, "  Set the LEDs to ({},{},{}).".format(redIn, greenIn, blueIn))
+            core.log(name, ["  Set the LEDs to ({},{},{}).".format(redIn, greenIn, blueIn)])
         '''
         elif "dim" == sys.argv[1]:
             print("Changing Brightness")
@@ -337,8 +337,8 @@ def process(key, param, comm):
         if param == "off":
             t.daemon.restart()
             t.daemon.set(r=0, g=0, b=0)
-            core.log(name, "Set the LEDs to (0,0,0).")
+            core.log(name, ["Set the LEDs to (0,0,0)."])
         elif param == "on":
             t.daemon.restart()
             t.daemon.set(r=255, g=85, b=17)
-            core.log(name, "Set the LEDs to (255,85,17).")
+            core.log(name, ["Set the LEDs to (255,85,17)."])

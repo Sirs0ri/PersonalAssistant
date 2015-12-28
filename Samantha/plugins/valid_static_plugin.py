@@ -11,12 +11,11 @@ has_set = 0
 
 
 def initialize():
-    core.log(name, "Startup")
-    core.log(name, "Hello World!")
+    core.log(name, ["Startup","Hello World!"])
 
 def stop():
-    core.log(name, "I'm not even running anymore!")
+    core.log(name, ["I'm not even running anymore!"])
 
 def process(key, param, comm):
-    core.log(name, "  I could do sth now")
+    core.log(name, ["  I could do sth now"])
     pass

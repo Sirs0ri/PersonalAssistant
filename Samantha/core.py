@@ -131,13 +131,13 @@ class Daemon:
 
 name="Core"
 #def log(interfaces, name="", content=""):
-def log(name="None", content="None"):
+def log(name="None", content=["None"], level="info"):
     
     #print to the script calling .log(); usually Mainframe.py
     l = len(name)
     if l < 9:
         name += " " * (9-l)
-    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content=content)
+    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content="\n                 ".join(content))
     print(s)
     '''
     #log in file
@@ -153,12 +153,12 @@ def get_answer(k, p=None, c=None, attempt=1):
         try:
             answer = urllib.urlopen("http://127.0.0.1:5000/?{k}&{p}&{c}".format(k=key, p=param, c=comm)).read()
         except IOError:
-            log(name, "Couldn't connect to Flask. Retrying in 5 seconds.")
+            log(name, ["Couldn't connect to Flask. Retrying in 5 seconds."])
             time.sleep(5)
             attempt += 1
             answer = get_answer(k, p, c, attempt)
     else:
-        log(name, "aborted command {}, {}, {}".format(k, p, c))
+        log(name, ["aborted command {}, {}, {}".format(k, p, c)])
         answer = "!CONNECTION_ERROR"
     if answer:
         return answer

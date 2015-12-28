@@ -10,15 +10,15 @@ has_toggle = 0
 has_set = 0
 
 def initialize():
-    core.log(name, "      I don't need to be started.")
+    core.log(name, ["      I don't need to be started."])
 
 def stop():
-    core.log(name, "  I'm not running in the Background")
+    core.log(name, ["  I'm not running in the Background"])
 
 def send(scode, dcode, state):
     subprocess.call(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/send", scode, dcode, state], stdout=subprocess.PIPE)
     #time.sleep(0.1)
-    core.log(name, "  Code {} {} {} sent successfully.".format(scode, dcode, state))
+    core.log(name, ["  Code {} {} {} sent successfully.".format(scode, dcode, state)])
 
 def process(key, param, comm):
     """
@@ -33,7 +33,7 @@ def process(key, param, comm):
     4199697    01 00 00 00 00   01 01 01 00 01   00   01
     4199700    01 00 00 00 00   01 01 01 00 01   01   00
     """
-    core.log(name, "  Processing: {}, {}, {}".format(key, param, comm))
+    core.log(name, ["  Processing: {}, {}, {}".format(key, param, comm)])
     if key == "433":
         if param == "4195665":
             #turn on LEDs under bed
@@ -66,7 +66,7 @@ def process(key, param, comm):
             send("11111", "2", "0")
             send("11111", "3", "0")
         else:
-            core.log(name, "  Error: illegal parameter.")
+            core.log(name, ["  Error: illegal parameter."])
     elif key == "light":
         if param == "off":
             send("11111", "1", "0")
@@ -77,6 +77,6 @@ def process(key, param, comm):
             send("11111", "2", "1")
             send("11111", "3", "1")
         else:
-            core.log(name, "  Error: illegal parameter.")
+            core.log(name, ["  Error: illegal parameter."])
     else:
-        core.log(name, "  Error: illegal command.")
+        core.log(name, ["  Error: illegal command."])
