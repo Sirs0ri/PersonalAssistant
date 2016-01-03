@@ -14,7 +14,6 @@ name = "Mainframe"
 app = Flask(__name__)
 
 restart = 1
-threads = []
 plugins = []
 key_index = {}
 
@@ -116,7 +115,7 @@ def shutdown():
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
     core.log(name, ["  Flask stopped successfully. Waiting for plugins to stop."])
-    for t in threads + plugins:
+    for t in plugins:
         t.stop()
     core.log(name, ["  Plugins stopped."])
     return 'Server shutting down...'
