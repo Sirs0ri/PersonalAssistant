@@ -112,6 +112,13 @@ Plugins can have different function such as:
 - [X] grab an image from the earthview collection, add the colored overlay with shadows, eyecandy 'n stuff, and upload it to Dropbox; finally send it to my phone.
 - [X] create a new wallpaper everyday at midnight and send it to the phone
 
+#### A/V-Receiver
+
+- [ ] turn on Receiver when my alarm goes off
+- [ ] turn of receiver as soon as the night-profile is activated
+- commands listed at https://drive.google.com/open?id=0B53k79HXVZRbZVhIdFIwb3Z1SEU
+- send them via HTTP GET to <IP>/goform/formiPhoneAppDirect.xml?<COMMAND>
+
 ### Other
 
 - Eventghost 
