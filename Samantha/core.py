@@ -8,16 +8,69 @@ name="Core"
 plugins = []
 key_index = {}
 
+class str_format:
+    """
+    These formatters can be used to manipulate output via a console.
+    Usage, for example for Bold, Red text:
+    
+        text = "TEXT"
+        attr = ["1", "91"]
+        s = "\033[{attrs}m{text}\33[0m".format(attrs = ";".join(attr), text=text)
+        print s
+    """
+    ENDC = "0"
+    BOLD = "1"
+    UNDERLINE = "4"
+    
+    FG_BLACK = "30"
+    FG_DARKGREY = "90"
+    FG_LIGHTGREY = "37"
+    FG_WHITE = "97"
+    FG_DARKRED = "31"
+    FG_LIGHTRED = "91"
+    FG_DARKMAGENTA = "35"
+    FG_LIGHTMAGENTA = "95"
+    FG_DARKBLUE = "34"
+    FG_LIGHTBLUE = "94"
+    FG_DARKCYAN = "36"
+    FG_LIGHTCYAN = "96"
+    FG_DARKGREEN = "32"
+    FG_LIGHTGREEN = "92"
+    FG_DARKYELLOW = "33"
+    FG_LIGHTYELLOW = "93"
+    
+    BG_BLACK = "40"
+    BG_RED = "41"
+    BG_GREEN = "42"
+    BG_YELLOW = "43"
+    BG_BLUE = "44"
+    BG_MAGENTA = "45"
+    BG_CYAN = "46"
+    BG_WHITE = "47"
+
 def log(name="None", content=["None"], level="info"):
     """
     A simple logging-function that prints the input.
     
     TODO: Save log to a file, maybe upload it somewhere
     """
-    l = len(name)
-    if l < 9:
-        name += " " * (9-l)
-    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content="\n                            ".join(content))
+    if level == "error":
+        lvl_str = "ERR "
+        attr = [str_format.FG_LIGHTRED]
+    elif level == "warning":
+        lvl_str = "WARN" 
+        attr = [str_format.FG_LIGHTYELLOW]
+    elif level == "info":
+        lvl_str = "INFO"
+        attr = [str_format.FG_WHITE]
+    elif level == "debug":
+        lvl_str = "DEBG"
+        attr = [str_format.FG_LIGHTCYAN]
+    else:
+        attr = []
+        lvl_str="LVL"
+        
+    s = "[\033[{lvl_begin}m{lvl_str}{lvl_end}]\t{time}  {name}:\n\t{content}".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, lvl_end='\033[0m', time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n\t".join(content))
     print(s)
     '''
     #log in file
