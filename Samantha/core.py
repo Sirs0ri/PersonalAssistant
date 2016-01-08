@@ -4,6 +4,25 @@
 import urllib, sys, os, time, atexit
 from signal import SIGTERM
 
+def generate_index():
+    """
+    Generates and returns an index of keywords and the plugins that react to them.
+    Exmple: key_index = {"344":[<433-Plugin>], "light":[<433-plugin>, <LED-Plugin>], "led":[<LED-Plugin>]}
+    """
+    global plugins
+    key_index = {}
+    log(name, ["Indexing Keywords"])
+    for p in plugins:
+        for k in p.keywords:
+            try:
+                key_index[k].append(p)
+            except KeyError:    #key isn't indexed yet
+                key_index[k] = []
+                key_index[k].append(p)
+                log(name, ["  Created new Key: '{}'".format(k)])
+    log(name, ["  Indexed Keywords."])
+    return key_index
+
 class Daemon:
     """
     A generic daemon class.

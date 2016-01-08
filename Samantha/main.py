@@ -54,25 +54,6 @@ def import_plugins():
     core.log(name, ["Imported plugins:"] + plugin_names)
     return plugins
 
-def generate_index():
-    """
-    Generates and returns an index of keywords and the plugins that react to them.
-    Exmple: key_index = {"344":[<433-Plugin>], "light":[<433-plugin>, <LED-Plugin>], "led":[<LED-Plugin>]}
-    """
-    global plugins
-    key_index = {}
-    core.log(name, ["Indexing Keywords"])
-    for p in plugins:
-        for k in p.keywords:
-            try:
-                key_index[k].append(p)
-            except KeyError:    #key isn't indexed yet
-                key_index[k] = []
-                key_index[k].append(p)
-                core.log(name, ["  Created new Key: '{}'".format(k)])
-    core.log(name, ["  Indexed Keywords."])
-    return key_index
-
 @app.route("/")
 def process():
     """
