@@ -14,9 +14,6 @@ name = "Mainframe"
 app = Flask(__name__)
 
 restart = 1
-plugins = []
-key_index = {}
-
 
 @app.route("/")
 def process():
@@ -70,7 +67,11 @@ def main():
     #core.log(name, ["Starting up!"])
     
     restart = 0
-    key_index = generate_index()
+    startup = core.startup()
+    '''
+    if not startup:
+        #initialisation went wrong, abort 
+    '''
     core.log(name, ["Startup finished."])
         
     #don't log "INFO"-messages from Flask/werkzeug

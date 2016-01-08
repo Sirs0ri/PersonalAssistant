@@ -4,6 +4,8 @@
 import urllib, sys, os, time, atexit
 from signal import SIGTERM
 
+plugins = []
+key_index = {}
 def import_plugins():
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
@@ -85,6 +87,18 @@ def process(key, param="None", comm="None"):
     if not processed:
         log(name, ["  No matching Plugin found."])
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
+
+def startup():
+    """
+    This is the main function. 
+    It starts everything and does stuff.
+    """
+    global plugins
+    global key_index
+    plugins = import_plugins()
+    key_index = generate_index()
+    core.log(name, ["Startup finished."])
+    return True
 
 def shutdown():
     """
