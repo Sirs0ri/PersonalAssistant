@@ -86,6 +86,18 @@ def process(key, param="None", comm="None"):
         log(name, ["  No matching Plugin found."])
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
 
+def shutdown():
+    """
+    Shuts down first the Flask-Server, then every Thread started by the main module and all the plugins.
+    """
+    global plugins
+    log(name, ["Shutting down."])
+    log(name, ["  Waiting for plugins to stop."])
+    for p in plugins:
+        p.stop()
+    log(name, ["  Plugins stopped."])
+    return True
+
 class Daemon:
     """
     A generic daemon class.

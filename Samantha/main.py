@@ -43,8 +43,7 @@ def shutdown():
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
     core.log(name, ["  Flask stopped successfully. Waiting for plugins to stop."])
-    for t in plugins:
-        t.stop()
+    core.shutdown()
     core.log(name, ["  Plugins stopped."])
     return 'Server shutting down...'
 
