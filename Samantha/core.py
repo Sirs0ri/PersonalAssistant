@@ -4,8 +4,27 @@
 import urllib, sys, os, time, atexit
 from signal import SIGTERM
 
+name="Core"
 plugins = []
 key_index = {}
+
+def log(name="None", content=["None"], level="info"):
+    """
+    A simple logging-function that prints the input.
+    
+    TODO: Save log to a file, maybe upload it somewhere
+    """
+    l = len(name)
+    if l < 9:
+        name += " " * (9-l)
+    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content="\n                            ".join(content))
+    print(s)
+    '''
+    #log in file
+    logfile=open("log.txt", 'r+')
+    logfile.write(s)
+    '''
+
 def import_plugins():
     """
     Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
@@ -87,6 +106,26 @@ def process(key, param="None", comm="None"):
     if not processed:
         log(name, ["  No matching Plugin found."])
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
+
+def get_answer(k, p=None, c=None, attempt=1):
+    key = urllib.urlencode({"key":k})
+    param = urllib.urlencode({"param":p})
+    comm = urllib.urlencode({"comm":c})
+    if attempt < 5:
+        try:
+            answer = urllib.urlopen("http://127.0.0.1:5000/?{k}&{p}&{c}".format(k=key, p=param, c=comm)).read()
+        except IOError:
+            log(name, ["Couldn't connect to Flask. Retrying in 5 seconds."])
+            time.sleep(5)
+            attempt += 1
+            answer = get_answer(k, p, c, attempt)
+    else:
+        log(name, ["aborted command {}, {}, {}".format(k, p, c)])
+        answer = "!CONNECTION_ERROR"
+    if answer:
+        return answer
+    else:
+        return "!NULL_ANSWER"
 
 def startup():
     """
@@ -236,39 +275,3 @@ class Daemon:
         You should override this method when you subclass Daemon. It will be called after the process has been
         daemonized by start() or restart().
         """
-
-name="Core"
-#def log(interfaces, name="", content=""):
-def log(name="None", content=["None"], level="info"):
-    
-    #print to the script calling .log(); usually Mainframe.py
-    l = len(name)
-    if l < 9:
-        name += " " * (9-l)
-    s = "{name}\t{time}: {content}".format(name=name, time=time.strftime("%H:%M:%S", time.localtime()), content="\n                            ".join(content))
-    print(s)
-    '''
-    #log in file
-    logfile=open("log.txt", 'r+')
-    logfile.write(s)
-    '''
-
-def get_answer(k, p=None, c=None, attempt=1):
-    key = urllib.urlencode({"key":k})
-    param = urllib.urlencode({"param":p})
-    comm = urllib.urlencode({"comm":c})
-    if attempt < 5:
-        try:
-            answer = urllib.urlopen("http://127.0.0.1:5000/?{k}&{p}&{c}".format(k=key, p=param, c=comm)).read()
-        except IOError:
-            log(name, ["Couldn't connect to Flask. Retrying in 5 seconds."])
-            time.sleep(5)
-            attempt += 1
-            answer = get_answer(k, p, c, attempt)
-    else:
-        log(name, ["aborted command {}, {}, {}".format(k, p, c)])
-        answer = "!CONNECTION_ERROR"
-    if answer:
-        return answer
-    else:
-        return "!NULL_ANSWER"
