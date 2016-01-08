@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-import urllib, sys, os, time, atexit
+import glob, imp, global_variables, urllib, sys, os, time, atexit
 from signal import SIGTERM
 
 name="Core"

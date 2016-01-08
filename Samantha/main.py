@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import glob, imp, sys, threading, time, urllib, logging, global_variables
+import logging
 from flask import Flask,request
 import core
 
