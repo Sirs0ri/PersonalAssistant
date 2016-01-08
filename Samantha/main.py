@@ -155,7 +155,7 @@ def main():
     
     #app.debug = True
     core.log(name, ["Starting Flask."])
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0:80")
     
     #this'll be executed when Flask stops.
     core.log(name, ["Shut down successfully."])
