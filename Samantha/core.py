@@ -23,6 +23,32 @@ def generate_index():
     log(name, ["  Indexed Keywords."])
     return key_index
 
+def process(key, param="None", comm="None"):
+    """
+    Process the data received via Flask
+    Accesses the parameters "Keyword", "Parameter" and "Command"
+    """
+    global plugins
+    log(name, ["Processing:","Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)])
+    #process the command
+    processed = 0
+    '''
+    try:
+        for p in key_index[key]:
+            log(name, ["  The plugin {} matches the keyword.".format(p.name)])
+            p.process(key, param, comm)
+            processed=1
+    except KeyError as e:
+        log(name, ["  Error: This Keyword isn't indexed. [{}]".format(e)])
+    '''
+    for p in key_index[key]:
+        log(name, ["  The plugin {} matches the keyword.".format(p.name)])
+        p.process(key, param, comm)
+        processed=1
+    if not processed:
+        log(name, ["  No matching Plugin found."])
+    return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
+
 class Daemon:
     """
     A generic daemon class.

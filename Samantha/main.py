@@ -60,29 +60,12 @@ def process():
     Process the data received via Flask
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
-    global plugins
     #get parameters
     key = request.args.get('key')
     param = request.args.get('param')
     comm = request.args.get('comm')
     core.log("Incoming", ["New Command:","Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)])
-    #process the command
-    processed = 0
-    '''
-    try:
-        for p in key_index[key]:
-            core.log(name, ["  The plugin {} matches the keyword.".format(p.name)])
-            p.process(key, param, comm)
-            processed=1
-    except KeyError as e:
-        core.log(name, ["  Error: This Keyword isn't indexed. [{}]".format(e)])
-    '''
-    for p in key_index[key]:
-        core.log(name, ["  The plugin {} matches the keyword.".format(p.name)])
-        p.process(key, param, comm)
-        processed=1
-    if not processed:
-        core.log(name, ["  No matching Plugin found."])
+    core.process(key, param, comm)
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
 
 @app.route('/shutdown/')
