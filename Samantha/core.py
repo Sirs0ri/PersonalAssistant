@@ -4,6 +4,43 @@
 import urllib, sys, os, time, atexit
 from signal import SIGTERM
 
+def import_plugins():
+    """
+    Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
+    """
+    plugins = []
+    plugin_names = []
+    #list files in Samantha's /plugin folder
+    log(name, ["Importing Plugins."])
+    filenames = glob.glob(global_variables.folder_base + "/plugins/*_plugin.py")
+    log(name, ["  {} possible plugins found.".format(len(filenames))])
+
+    #try importing each plugin
+    for i in range(0,len(filenames)):
+        log(name, ["  Found {}".format(filenames[i])])
+        try:
+            new_plugin = imp.load_source("samplugin{}".format(i), filenames[i])
+            log(name, ["    Successfully imported {}.".format(filenames[i])])
+            #Test if the imported file is a valid Plugin
+            if new_plugin.is_sam_plugin:
+                #add it to the list of plugins
+                plugins.append(new_plugin)
+                log(name, ["    Name: {}".format(new_plugin.name), "    Keywords: {}".format(new_plugin.keywords)])
+                #initialize the plugin
+                new_plugin.initialize()
+                log(name, ["    {} initialized successfully".format(new_plugin.name, new_plugin.keywords)])
+            else: 
+                #is_sam_plugin == 0 -> the plugin is not supposed to be imported.
+                log(name, ["    {} is not a valid Plugin (no error).".format(filenames[i])])
+        except ImportError:
+            log(name, ["  Error: {} wasn't imported successfully.".format(filenames[i])])
+        except AttributeError:
+            log(name, ["  Error: {} is not a valid Plugin.".format(filenames[i])])
+    for p in plugins:
+        plugin_names.append(p.name)
+    log(name, ["Imported plugins:"] + plugin_names)
+    return plugins
+
 def generate_index():
     """
     Generates and returns an index of keywords and the plugins that react to them.

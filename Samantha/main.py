@@ -17,42 +17,6 @@ restart = 1
 plugins = []
 key_index = {}
 
-def import_plugins():
-    """
-    Function to import plugins from the /plugins folder. Valid plugins are marked by <name>.is_sam_plugin == 1.
-    """
-    plugins = []
-    plugin_names = []
-    #list files in Samantha's /plugin folder
-    core.log(name, ["Importing Plugins."])
-    filenames = glob.glob(global_variables.folder_base + "/plugins/*_plugin.py")
-    core.log(name, ["  {} possible plugins found.".format(len(filenames))])
-
-    #try importing each plugin
-    for i in range(0,len(filenames)):
-        core.log(name, ["  Found {}".format(filenames[i])])
-        try:
-            new_plugin = imp.load_source("samplugin{}".format(i), filenames[i])
-            core.log(name, ["    Successfully imported {}.".format(filenames[i])])
-            #Test if the imported file is a valid Plugin
-            if new_plugin.is_sam_plugin:
-                #add it to the list of plugins
-                plugins.append(new_plugin)
-                core.log(name, ["    Name: {}".format(new_plugin.name), "    Keywords: {}".format(new_plugin.keywords)])
-                #initialize the plugin
-                new_plugin.initialize()
-                core.log(name, ["    {} initialized successfully".format(new_plugin.name, new_plugin.keywords)])
-            else: 
-                #is_sam_plugin == 0 -> the plugin is not supposed to be imported.
-                core.log(name, ["    {} is not a valid Plugin (no error).".format(filenames[i])])
-        except ImportError:
-            core.log(name, ["  Error: {} wasn't imported successfully.".format(filenames[i])])
-        except AttributeError:
-            core.log(name, ["  Error: {} is not a valid Plugin.".format(filenames[i])])
-    for p in plugins:
-        plugin_names.append(p.name)
-    core.log(name, ["Imported plugins:"] + plugin_names)
-    return plugins
 
 @app.route("/")
 def process():
@@ -101,15 +65,12 @@ def main():
     This is the main function. 
     It starts everything and does stuff.
     """
-    global plugins
-    global key_index
     global app
     global restart
     core.log(name, ["Starting up!","  ____    _    __  __    _    _   _ _____ _   _    _     "," / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    "," \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ","  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  "," |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                     hi~"])
     #core.log(name, ["Starting up!"])
     
     restart = 0
-    plugins = import_plugins()
     key_index = generate_index()
     core.log(name, ["Startup finished."])
         
