@@ -138,7 +138,7 @@ def generate_index():
 
 def process(key, param="None", comm="None"):
     """
-    Process the data received via Flask
+    Process data
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
     global plugins
@@ -162,6 +162,8 @@ def process(key, param="None", comm="None"):
         log(name, ["  No matching Plugin found."])
     return results
 
+'''
+# NOTE: This code is depreceated! process() is now used instead.
 def get_answer(k, p=None, c=None, attempt=1):
     key = urllib.urlencode({"key":k})
     param = urllib.urlencode({"param":p})
@@ -181,6 +183,7 @@ def get_answer(k, p=None, c=None, attempt=1):
         return answer
     else:
         return "!NULL_ANSWER"
+'''
 
 def startup():
     """
