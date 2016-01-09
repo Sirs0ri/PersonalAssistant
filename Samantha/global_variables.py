@@ -5,4 +5,4 @@ redPins=[12,25]
 greenPins=[20,23]
 bluePins=[21,18]
 
-folder_base = "/home/pi/Desktop/PersonalAssistant-TEST/Samantha"
+folder_base = "/home/pi/Desktop/PersonalAssistant/Samantha"
