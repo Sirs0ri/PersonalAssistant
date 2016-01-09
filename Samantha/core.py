@@ -72,7 +72,7 @@ def log(name="None", content=["None"], level="info_white"):
         attr = []
         lvl_str="LVL"
         
-    s = "[\033[{lvl_begin}m{lvl_str}{lvl_end}]\t{time}  {name}:\n\t{content}".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, lvl_end='\033[0m', time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n\t  ".join(content))
+    s = "[\033[{lvl_begin}m{lvl_str}{lvl_end}]\t{time}  {name}:\n\t  {content}".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, lvl_end='\033[0m', time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n\t  ".join(content))
     print(s)
     '''
     #log in file
