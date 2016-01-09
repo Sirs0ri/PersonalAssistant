@@ -145,21 +145,12 @@ def process(key, param="None", comm="None"):
     """
     global plugins
     results = {}
-    
     try:
         for p in key_index[key]:
             log(name, ["  The plugin {} matches the keyword.".format(p.name)])
             results[p.name] = p.process(key, param, comm)
     except KeyError as e:
         log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
-    '''
-    for p in key_index[key]:
-        log(name, ["  The plugin {} matches the keyword.".format(p.name)])
-        results[p.name] = p.process(key, param, comm)
-        processed=1
-    if not processed:
-        log(name, ["  No matching Plugin found."])
-    '''
     return results
 
 '''
