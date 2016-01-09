@@ -31,7 +31,7 @@ class Interface(Daemon):
             elif command==None:
                 sys.exit()
             else:
-                core.get_answer("process", command)
+                core.process("process", command)
                 easygui.msgbox(answer)
 
 
