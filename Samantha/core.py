@@ -102,9 +102,11 @@ def import_plugins():
                 #add it to the list of plugins
                 plugins.append(new_plugin)
                 log(name, ["    Name: {}".format(new_plugin.name), "    Keywords: {}".format(new_plugin.keywords)])
+                '''
                 #initialize the plugin
                 new_plugin.initialize()
                 log(name, ["    {} initialized successfully".format(new_plugin.name, new_plugin.keywords)])
+                '''
             else: 
                 #is_sam_plugin == 0 -> the plugin is not supposed to be imported.
                 log(name, ["    {} is not a valid Plugin (no error).".format(filenames[i])])
@@ -194,6 +196,11 @@ def startup():
     global key_index
     plugins = import_plugins()
     key_index = generate_index()
+    for p in plugins:
+        #initialize the plugin
+        p.initialize()
+        log(name, ["    {} initialized successfully".format(p.name, p.keywords)])
+        
     log(name, ["Startup finished."])
     return True
 
