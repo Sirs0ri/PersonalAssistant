@@ -142,6 +142,7 @@ def process(key, param="None", comm="None"):
     log(name, ["Processing:","Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)])
     #process the command
     processed = 0
+    results = {}
     '''
     try:
         for p in key_index[key]:
@@ -153,11 +154,11 @@ def process(key, param="None", comm="None"):
     '''
     for p in key_index[key]:
         log(name, ["  The plugin {} matches the keyword.".format(p.name)])
-        p.process(key, param, comm)
+        results[p.name] = p.process(key, param, comm)
         processed=1
     if not processed:
         log(name, ["  No matching Plugin found."])
-    return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
+    return results
 
 def get_answer(k, p=None, c=None, attempt=1):
     key = urllib.urlencode({"key":k})
