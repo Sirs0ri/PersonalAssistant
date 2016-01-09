@@ -33,7 +33,7 @@ def shutdown():
     """
     Shuts down first the Flask-Server, then every Thread started by the main module and all the plugins.
     """
-    core.log("Incoming", ["Received the request to shut down."])
+    core.log("Incoming", ["Received the request to shut down."], "warning")
     func = request.environ.get("werkzeug.server.shutdown")
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
