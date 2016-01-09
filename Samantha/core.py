@@ -188,7 +188,7 @@ def startup():
     global key_index
     plugins = import_plugins()
     key_index = generate_index()
-    core.log(name, ["Startup finished."])
+    log(name, ["Startup finished."])
     return True
 
 def shutdown():
