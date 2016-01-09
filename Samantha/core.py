@@ -138,11 +138,12 @@ def generate_index():
     log(name, ["  Indexed Keywords."])
     return key_index
 
-def process(key, param="None", comm="None"):
+def process(key, param="None", comm="None", origin="None"):
     """
     Process data
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
+    core.log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)], "info_cyan")
     global plugins
     results = {}
     try:

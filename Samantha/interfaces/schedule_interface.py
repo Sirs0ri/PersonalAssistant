@@ -26,4 +26,4 @@ class Interface(Daemon):
         while True:
             time.sleep(300)
             i += 5
-            core.process("schedule", i, "schedule {}".format(i % 60))
+            core.process("schedule", i, "schedule {}".format(i % 60), origin=name)

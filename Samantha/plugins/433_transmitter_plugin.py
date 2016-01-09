@@ -55,13 +55,13 @@ def process(key, param, comm):
             send("11111", "3", "0")
         elif param == "4199697":
             #turn ambient lights on
-            #core.process("light", "on")
+            #core.process("light", "on", origin=name)
             send("11111", "1", "1")
             send("11111", "2", "0")
             send("11111", "3", "1")
         elif param == "4199700":
             #turn all lights off
-            core.process("light", "off")
+            core.process("light", "off", origin=name)
             # send("11111", "1", "0")
             # send("11111", "2", "0")
             # send("11111", "3", "0")
