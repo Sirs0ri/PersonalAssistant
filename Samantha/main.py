@@ -25,7 +25,7 @@ def process():
     key = request.args.get('key')
     param = request.args.get('param')
     comm = request.args.get('comm')
-    core.log("Incoming", ["New Command:","Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)])
+    core.log("Incoming", ["New Command:","Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)], "info_cyan")
     core.process(key, param, comm)
     return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,param,comm)
 

@@ -47,7 +47,7 @@ class str_format:
     BG_CYAN = "46"
     BG_WHITE = "47"
 
-def log(name="None", content=["None"], level="info"):
+def log(name="None", content=["None"], level="info_white"):
     """
     A simple logging-function that prints the input.
     
@@ -59,12 +59,15 @@ def log(name="None", content=["None"], level="info"):
     elif level == "warning":
         lvl_str = "WARN" 
         attr = [str_format.FG_LIGHTYELLOW]
-    elif level == "info":
+    elif level == "info_white":
         lvl_str = "INFO"
         attr = [str_format.FG_WHITE]
+    elif level == "info_cyan":
+        lvl_str = "INFO"
+        attr = [str_format.FG_LIGHTCYAN]
     elif level == "debug":
         lvl_str = "DEBG"
-        attr = [str_format.FG_LIGHTCYAN]
+        attr = [str_format.FG_LIGHTMAGENTA]
     else:
         attr = []
         lvl_str="LVL"
@@ -139,7 +142,6 @@ def process(key, param="None", comm="None"):
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
     global plugins
-    log(name, ["Processing:","Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)])
     #process the command
     processed = 0
     results = {}
