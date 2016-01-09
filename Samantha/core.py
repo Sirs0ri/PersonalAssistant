@@ -144,17 +144,14 @@ def process(key, param="None", comm="None"):
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
     global plugins
-    #process the command
-    processed = 0
     results = {}
-    '''
+    
     try:
         for p in key_index[key]:
             log(name, ["  The plugin {} matches the keyword.".format(p.name)])
-            p.process(key, param, comm)
-            processed=1
+            results[p.name] = p.process(key, param, comm)
     except KeyError as e:
-        log(name, ["  Error: This Keyword isn't indexed. [{}]".format(e)])
+        log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
     '''
     for p in key_index[key]:
         log(name, ["  The plugin {} matches the keyword.".format(p.name)])
@@ -162,6 +159,7 @@ def process(key, param="None", comm="None"):
         processed=1
     if not processed:
         log(name, ["  No matching Plugin found."])
+    '''
     return results
 
 '''
