@@ -301,6 +301,9 @@ def process(key, param, comm):
             core.log(name, ["  Toggled the light."])
         elif param == "set":
             #check that the values the light will be set to are valid as numbers between 0 and 255.
+            '''
+            comm[] will need to be changed before this can work!
+            '''
             try:
                 redIn = int(comm[0])
             except IndexError:
