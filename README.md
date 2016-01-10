@@ -63,17 +63,21 @@ Plugins can have different function such as:
 #### light
 
 - [ ] Transfer daemon to plugin 
-- [ ] Save {"red":redValue[0-255], "green":greenValue[0-255], "blue":blueValue[0-255], "brightness":redValue[Decimal(0-1)]}
-- [ ] dim(): use Decimal() as factor while crossFade()
-- [ ] store original color, always start dimming with that color
-- [ ] Get brightest possible color while set()
-- [ ] apply brightness while crossFade(), when generating the spreaded List
+- [ ] Dimming
+    - [ ] Save the absolute values for Red, Green and Blue and the brightness to calculate the current value:
+        - Red (R), Green (G) & Blue (B): min=0, max=255
+        - Brightness (A): Decimal, min=0, max=1
+        - the values for R, G and B are the brightest possible combination, A is the factor required to achieve the actual Color. Example "set(r=127, g=127, b=127)" becomes "set(r=255, g=255, b=255, a=0.5)"
+    - [ ] Get brightest possible color while set()
+    - [ ] apply brightness while crossFade(), when generating the spreaded List
 - [ ] fix incompatibility with Flask and/or the RFSniffer
+- Good RGB-value for warm white light?
 
 #### Shows:
 
 - [ ] find an episode from couchtuner's main page
 - [ ] triggered by schedule_h = 5
+- [ ] monitor my library to download only new episodes
 
 #### Download
 
@@ -83,11 +87,16 @@ Plugins can have different function such as:
 #### Presence
 
 - [ ] Pings devices every couple of minutes and manages which ones are available
-- [ ] example: Force light to be off, if phone is not at home
+- [ ] Turn Light off, while I'm not at home
+- [ ] Forward stored URLs as soon as a device becomes available
+- [ ] Location based Reminders ("at Home")
 
 #### Schedule
 
-- [X] schedule Tasks, every x*5 minutes/hourly
+- [ ] schedule Tasks, every x*5 minutes/hourly
+    - [X] hourly
+    - [X] every x*5 minutes since start
+    - [ ] every x minutes (0:00, 0:05, 0:10, etc)
 
 #### 433
 
@@ -95,6 +104,7 @@ Plugins can have different function such as:
 - [ ] increase performance of the receiver
 - [X] send commands to devices using 433MHz signals
 - [X] react to incoming 433MHz signals
+- [ ] Cache current status of devices and send commands accordingly (Devices which will be toggled first, those that are already on/off last)
 - http://www.princetronics.com/how-to-read-433-mhz-codes-w-raspberry-pi-433-mhz-receiver/
 
 #### Chromecast
@@ -118,6 +128,10 @@ Plugins can have different function such as:
 - [ ] turn of receiver as soon as the night-profile is activated
 - commands listed at https://drive.google.com/open?id=0B53k79HXVZRbZVhIdFIwb3Z1SEU
 - send them via HTTP GET to <IP>/goform/formiPhoneAppDirect.xml?<COMMAND>
+
+### Automation
+
+- [ ] Save when which command is executed, find Patterns and then run Tasks automatically
 
 ### Other
 
