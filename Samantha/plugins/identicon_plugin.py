@@ -33,15 +33,15 @@ def initialize():
 def stop():
     core.log(name, ["I'm not even running anymore!"])
     
-def process(key, param, comm):
+def process(key, params):
     if key == "identicon":
-        core.log(name, ["  Generating an Identicon with the data '{}'.".format(param)])
-        if param:
-            generate_identicon(param)
+        core.log(name, ["  Generating an Identicon with the data '{}'.".format(params[0])])
+        if params:
+            generate_identicon(params[0])
         else:
             generate_identicon()
     elif key == "schedule_h":
-        if param == "0":
+        if "0" in params:
             generate_identicon(time.time())
         else:
             core.log(name, ["  Error: illegal parameter."])

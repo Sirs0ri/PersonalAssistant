@@ -20,7 +20,7 @@ def send(scode, dcode, state):
     #time.sleep(0.1)
     core.log(name, ["  Code {} {} {} sent successfully.".format(scode, dcode, state)])
 
-def process(key, param, comm):
+def process(key, params):
     """
     Funfact: this is how the Codes work:
     Dec-Code   System-Code      Device-Code      off  on
@@ -35,44 +35,44 @@ def process(key, param, comm):
     """
     core.log(name, ["  Processing: {}, {}, {}".format(key, param, comm)])
     if key == "433":
-        if param == "4195665":
+        if "4195665" in params:
             #turn on LEDs under bed
             send("11111", "1", "1")
-        elif param == "4195668":
+        elif "4195668" in params:
             #turn off LEDs under bed
             send("11111", "1", "0")
-        elif param == "4198737":
+        elif "4198737" in params:
             #turn on standing lamp1
             send("11111", "2", "1")
-        elif param == "4198740":
+        elif "4198740" in params:
             #turn off standing lamp1
             send("11111", "2", "0")
-        elif param == "4199505":
+        elif "4199505" in params:
             #turn on standing lamp2
             send("11111", "3", "1")
-        elif param == "4199508":
+        elif "4199508" in params:
             #turn off standing lamp2
             send("11111", "3", "0")
-        elif param == "4199697":
+        elif "4199697" in params:
             #turn ambient lights on
-            #core.process("light", "on", origin=name)
+            #core.process(key="light", params=["on"], origin=name)
             send("11111", "1", "1")
             send("11111", "2", "0")
             send("11111", "3", "1")
-        elif param == "4199700":
+        elif "4199700" in params:
             #turn all lights off
-            core.process("light", "off", origin=name)
+            core.process(key="light", params=["off"], origin=name)
             # send("11111", "1", "0")
             # send("11111", "2", "0")
             # send("11111", "3", "0")
         else:
             core.log(name, ["  Error: illegal parameter."])
     elif key == "light":
-        if param == "off":
+        if "off" in params:
             send("11111", "1", "0")
             send("11111", "2", "0")
             send("11111", "3", "0")
-        elif param == "on":
+        elif "on" in params:
             send("11111", "1", "1")
             send("11111", "2", "1")
             send("11111", "3", "1")

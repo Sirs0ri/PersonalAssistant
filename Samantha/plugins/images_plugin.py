@@ -253,10 +253,10 @@ def set_daily_wallpaper(path="/data/wallpaper.png"):
     response = requests.get(private_variables.autoremote_baseurl["g2"], payload)
     core.log(name, ["      The Image was sent successfully. {}".format(response)])
     
-def process(key, param, comm):
+def process(key, params):
     try:
         if key == "schedule_h":
-            if param == "0":
+            if "0" in params:
                 path = "/data/wallpaper_{time}.png".format(time=time.strftime("%Y-%j_%H:%M:%S", time.localtime()))
                 core.log(name, ["  Generating the daily wallpaper at {}.".format(path)])
                 wallpaper_bg = get_wallpaper()
@@ -264,7 +264,7 @@ def process(key, param, comm):
                 wallpaper = generate_wallpaper(wallpaper_bg, identicon, path)
                 set_daily_wallpaper(wallpaper)
             else:
-                core.log(name, ["  Warning: parameter {} not in use.".format(param)])
+                core.log(name, ["  Warning: parameter {} not in use.".format(", ".join(params))])
         elif key == "wallpaper":
             core.log(name, ["  Generating a new wallpaper."])
             wallpaper_bg = get_wallpaper()
@@ -273,11 +273,11 @@ def process(key, param, comm):
             set_daily_wallpaper(wallpaper)
         elif key == "identicon":
             core.log(name, ["  Generating an Identicon with the data '{}'.".format(param)])
-            if param:
-                generate_identicon(param)
+            if params:
+                generate_identicon(params[0])
             else:
                 generate_identicon()
         else:
-            core.log(name, ["  Warning: parameter {} not in use.".format(param)])
+            core.log(name, ["  Warning: parameter {} not in use.".format(", ".join(params))])
     except Exception as e:
         core.log(name, ["Error: {}".format(e)])

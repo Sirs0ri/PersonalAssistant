@@ -138,18 +138,18 @@ def generate_index():
     log(name, ["  Indexed Keywords."])
     return key_index
 
-def process(key, param="None", comm="None", origin="None"):
+def process(key, params=[], comm="None", origin="None"):
     """
     Process data
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
-    log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(param),"Command {}".format(comm)], "info_cyan")
+    log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(", ".join(params))], "info_cyan")
     global plugins
     results = {}
     try:
         for p in key_index[key]:
             log(name, ["  The plugin {} matches the keyword.".format(p.name)])
-            results[p.name] = p.process(key, param, comm)
+            results[p.name] = p.process(key, params)
     except KeyError as e:
         log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
     return results

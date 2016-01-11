@@ -6,6 +6,10 @@ from signal import SIGTERM
 import global_variables as gvars
 import core
 
+'''
+TODO:
+switch from param to params!
+'''
 
 is_sam_plugin = 0
 name = "LED"

@@ -46,5 +46,5 @@ def stop():
     t.stop()
     t.join()
 
-def process(key, param, comm):
+def process(key, params):
     core.log(name, ["  Error: illegal command."])
