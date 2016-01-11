@@ -138,7 +138,7 @@ def generate_index():
     log(name, ["  Indexed Keywords."], "info")
     return key_index
 
-def process(key, params=[], comm="None", origin="None"):
+def process(key, params=[], origin="None"):
     """
     Process data
     Accesses the parameters "Keyword", "Parameter" and "Command"
