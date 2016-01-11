@@ -61,7 +61,7 @@ def process(key, params):
                 # send("11111", "2", "0")
                 # send("11111", "3", "0")
             else:
-                core.log(name, ["  Illegal parameter."], "warning")
+                core.log(name, ["  Illegal parameter(s)."], "warning")
         elif key == "light":
             if "off" in params:
                 send("11111", "1", "0")
