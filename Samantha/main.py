@@ -23,10 +23,10 @@ def process():
     """
     #get parameters
     key = request.args.get('key')
-    params = request.args.get('params')
+    params = request.args.get('params').split("=:=")
     comm = request.args.get('comm')
     core.process(key=key, params=params, origin="Flask")
-    return "Processing\nKeyword {}\nParameter {}\nCommand {}".format(key,", ".join(params),comm)
+    return "Processing\nKeyword {}\nParameter {}".format(key,", ".join(params))
 
 @app.route('/shutdown/')
 def shutdown():
