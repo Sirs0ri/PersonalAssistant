@@ -273,8 +273,9 @@ class Plugin_Thread(threading.Thread):
         core.log(self.name, ["  Exiting"], "logging")
         self.daemon.restart()
         self.daemon.destroy()
-t = Plugin_Thread(name)
 
+if is_sam_plugin:
+    t = Plugin_Thread(name)
 
 def process(key, param, comm):
     '''TODO: Add try/except'''
