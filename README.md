@@ -53,6 +53,7 @@ Plugins can have different function such as:
 #### Processing
 - [ ] react to input -> process()
 - [ ] Multitasking
+- [ ] switch from process(key, param, comm) to process(key, params)
 
 #### Other
 
