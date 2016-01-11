@@ -154,29 +154,6 @@ def process(key, params=[], comm="None", origin="None"):
         log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
     return results
 
-'''
-# NOTE: This code is depreceated! process() is now used instead.
-def get_answer(k, p=None, c=None, attempt=1):
-    key = urllib.urlencode({"key":k})
-    param = urllib.urlencode({"param":p})
-    comm = urllib.urlencode({"comm":c})
-    if attempt < 5:
-        try:
-            answer = urllib.urlopen("http://127.0.0.1:5000/?{k}&{p}&{c}".format(k=key, p=param, c=comm)).read()
-        except IOError:
-            log(name, ["Couldn't connect to Flask. Retrying in 5 seconds."])
-            time.sleep(5)
-            attempt += 1
-            answer = get_answer(k, p, c, attempt)
-    else:
-        log(name, ["aborted command {}, {}, {}".format(k, p, c)])
-        answer = "!CONNECTION_ERROR"
-    if answer:
-        return answer
-    else:
-        return "!NULL_ANSWER"
-'''
-
 def startup():
     """
     This is the main function. 
