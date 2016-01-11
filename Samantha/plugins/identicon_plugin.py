@@ -26,12 +26,6 @@ def generate_identicon(data="I'm Samantha"):
     f.write(identicon)
     f.close()
     # Send image to phone
-
-def initialize():
-    core.log(name, ["Everything's fine."], "logging")
-
-def stop():
-    core.log(name, ["I'm not even running anymore!"], "logging")
     
 def process(key, params):
     try:

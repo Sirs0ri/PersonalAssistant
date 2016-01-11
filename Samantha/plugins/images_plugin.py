@@ -13,13 +13,6 @@ has_set = 0
 
 DEBUG = 0
 
-
-def initialize():
-    core.log(name, ["Startup","Ready to draw? ^-^"], "logging")
-
-def stop():
-    core.log(name, ["I'm not even running anymore!"], "logging")
-
 def get_wallpaper():
     core.log(name, ["    Downloading the baseimage."], "logging")
     path = "/data/wallpaper_background.png"

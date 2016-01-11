@@ -9,12 +9,6 @@ keywords = ["433", "light"]
 has_toggle = 0
 has_set = 0
 
-def initialize():
-    core.log(name, ["      I don't need to be started."], "logging")
-
-def stop():
-    core.log(name, ["  I'm not running in the Background"], "logging")
-
 def send(scode, dcode, state):
     subprocess.call(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/send", scode, dcode, state], stdout=subprocess.PIPE)
     #time.sleep(0.1)

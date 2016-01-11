@@ -5,7 +5,7 @@ import core, subprocess, os, threading, signal, time
 
 is_sam_plugin = 1
 name = "433_RX"
-keywords = []
+keywords = ["onstart", "onexit"]
 has_toggle = 0
 has_set = 0
 
@@ -35,16 +35,17 @@ class Plugin_Thread(threading.Thread):
 if is_sam_plugin:
     t = Plugin_Thread(name)
 
-def initialize():
-    global t
-    core.log(name, ["      Starting thread."], "logging")
-    t.start()
-
-def stop():
-    global t
-    core.log(name, ["  Exiting"], "logging")
-    t.stop()
-    t.join()
-
 def process(key, params):
-    core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+    global t
+    try:
+        if key == "onstart":
+            core.log(name, ["      Starting thread."], "logging")
+            t.start()
+        elif key == "onexit":
+            core.log(name, ["  Exiting"], "logging")
+            t.stop()
+            t.join()
+        else: 
+            core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+    except Exception as e:
+        core.log(name, ["{}".format(e)], "error")

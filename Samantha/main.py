@@ -39,8 +39,6 @@ def shutdown():
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
     core.log(name, ["  Flask stopped successfully. Waiting for plugins to stop."], "info")
-    core.shutdown()
-    core.log(name, ["  Plugins stopped."], "logging")
     return 'Server shutting down...'
 
 @app.route('/restart/')
@@ -79,6 +77,9 @@ def main():
     #app.debug = True
     core.log(name, ["Starting Flask."], "info")
     app.run(host="0.0.0.0")
+    
+    core.process(key="onexit", origin=name)
+    core.log(name, ["  Plugins stopped."], "logging")
     
     #this'll be executed when Flask stops.
     core.log(name, ["Shut down successfully."], "info")

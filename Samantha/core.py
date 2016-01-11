@@ -163,24 +163,8 @@ def startup():
     global key_index
     plugins = import_plugins()
     key_index = generate_index()
-    for p in plugins:
-        #initialize the plugin
-        p.initialize()
-        log(name, ["    {} initialized successfully".format(p.name, p.keywords)], "logging")
-        
+    core.process(key="onstart", origin=name)
     log(name, ["Startup finished."], "info")
-    return True
-
-def shutdown():
-    """
-    Shuts down first the Flask-Server, then every Thread started by the main module and all the plugins.
-    """
-    global plugins
-    log(name, ["Shutting down."], "info")
-    log(name, ["  Waiting for plugins to stop."], "logging")
-    for p in plugins:
-        p.stop()
-    log(name, ["  Plugins stopped."], "info")
     return True
 
 class Daemon:
