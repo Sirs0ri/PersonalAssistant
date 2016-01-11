@@ -285,6 +285,7 @@ def stop():
     t.stop()
 
 def process(key, param, comm):
+    '''TODO: Add try/except'''
     global t
     if key == "led":
         if param == "pause":

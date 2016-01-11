@@ -34,16 +34,19 @@ def stop():
     core.log(name, ["I'm not even running anymore!"])
     
 def process(key, params):
-    if key == "identicon":
-        core.log(name, ["  Generating an Identicon with the data '{}'.".format(params[0])])
-        if params:
-            generate_identicon(params[0])
+    try:
+        if key == "identicon":
+            core.log(name, ["  Generating an Identicon with the data '{}'.".format(params[0])])
+            if params:
+                generate_identicon(params[0])
+            else:
+                generate_identicon()
+        elif key == "schedule_h":
+            if "0" in params:
+                generate_identicon(time.time())
+            else:
+                core.log(name, ["  Error: illegal parameter."])
         else:
-            generate_identicon()
-    elif key == "schedule_h":
-        if "0" in params:
-            generate_identicon(time.time())
-        else:
-            core.log(name, ["  Error: illegal parameter."])
-    else:
-        core.log(name, ["  Error: illegal command."])
+            core.log(name, ["  Error: illegal command."])
+    except Exception as e:
+        core.log(name, ["Error: {}".format(e)])

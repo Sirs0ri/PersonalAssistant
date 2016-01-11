@@ -17,5 +17,8 @@ def stop():
     core.log(name, ["I'm not even running anymore!"])
 
 def process(key, params):
-    core.log(name, ["  I could do sth now"])
-    pass
+    try:
+        core.log(name, ["  I could do sth now"])
+        pass
+    except Exception as e:
+        core.log(name, ["Error: {}".format(e)])
