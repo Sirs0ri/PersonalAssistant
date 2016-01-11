@@ -163,7 +163,7 @@ def startup():
     global key_index
     plugins = import_plugins()
     key_index = generate_index()
-    core.process(key="onstart", origin=name)
+    process(key="onstart", origin=name)
     log(name, ["Startup finished."], "info")
     return True
 
