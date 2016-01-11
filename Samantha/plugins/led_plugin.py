@@ -13,7 +13,7 @@ switch from param to params!
 
 is_sam_plugin = 0
 name = "LED"
-keywords = ["led", "light"]
+keywords = ["led", "light", "onstart", "onexit"]
 has_toggle = 1
 has_set = 1
 
@@ -273,80 +273,87 @@ class Plugin_Thread(threading.Thread):
         core.log(self.name, ["  Exiting"], "logging")
         self.daemon.restart()
         self.daemon.destroy()
-        
 t = Plugin_Thread(name)
 
-def initialize():
-    global t
-    t.start()
-
-def stop():
-    global t
-    t.stop()
 
 def process(key, param, comm):
     '''TODO: Add try/except'''
     global t
-    if key == "led":
-        if param == "pause":
-            print("Pausing..")
-            t.daemon.restart()
-            core.log(name, ["  LEDs Paused."], "info")
-        elif param == "fade":
-            t.daemon.restart()
-            t.daemon.fade()
-            core.log(name, ["  LEDs now fading."], "info")
-        elif param == "strobe":
-            t.daemon.restart()
-            t.daemon.strobe()
-            core.log(name, ["  Party mode activated."], "info")
-        elif param == "toggle":
-            t.daemon.restart()
-            t.daemon.toggle()
-            core.log(name, ["  Toggled the light."], "info")
-        elif param == "set":
-            #check that the values the light will be set to are valid as numbers between 0 and 255.
+    try:
+        if key == "onstart":
+            core.log(name, ["      Starting thread."], "logging")
+            t.start()
+        elif key == "onexit":
+            core.log(name, ["  Exiting"], "logging")
+            t.stop()
+        elif key == "led":
+            if param == "pause":
+                print("Pausing..")
+                t.daemon.restart()
+                core.log(name, ["  LEDs Paused."], "info")
+            elif param == "fade":
+                t.daemon.restart()
+                t.daemon.fade()
+                core.log(name, ["  LEDs now fading."], "info")
+            elif param == "strobe":
+                t.daemon.restart()
+                t.daemon.strobe()
+                core.log(name, ["  Party mode activated."], "info")
+            elif param == "toggle":
+                t.daemon.restart()
+                t.daemon.toggle()
+                core.log(name, ["  Toggled the light."], "info")
+            elif param == "set":
+                #check that the values the light will be set to are valid as numbers between 0 and 255.
+                '''
+                comm[] will need to be changed before this can work!
+                '''
+                try:
+                    redIn = int(comm[0])
+                except IndexError:
+                    redIn = 0
+                try:
+                    greenIn = int(comm[1])
+                except IndexError:
+                    greenIn = 0
+                try:
+                    blueIn = int(comm[2])
+                except IndexError:
+                    blueIn = 0
+                if not (0 <= redIn <= 255):
+                    redIn = 0
+                if not (0 <= greenIn <= 255):
+                    greenIn = 0
+                if not (0 <= blueIn <= 255):
+                    blueIn = 0
+                t.daemon.restart()
+                t.daemon.set(r=redIn, g=greenIn, b=blueIn)
+                core.log(name, ["  Set the LEDs to ({},{},{}).".format(redIn, greenIn, blueIn)], "info")
             '''
-            comm[] will need to be changed before this can work!
+            elif "dim" == sys.argv[1]:
+                print("Changing Brightness")
+                try:
+                    brightness = float(sys.argv[2])
+                except IndexError:
+                    brightness = 1.0
+                print("Changing Brightness to %f" % brightness)
+                daemon.restart()
+                daemon.dim(brightness)
             '''
-            try:
-                redIn = int(comm[0])
-            except IndexError:
-                redIn = 0
-            try:
-                greenIn = int(comm[1])
-            except IndexError:
-                greenIn = 0
-            try:
-                blueIn = int(comm[2])
-            except IndexError:
-                blueIn = 0
-            if not (0 <= redIn <= 255):
-                redIn = 0
-            if not (0 <= greenIn <= 255):
-                greenIn = 0
-            if not (0 <= blueIn <= 255):
-                blueIn = 0
-            t.daemon.restart()
-            t.daemon.set(r=redIn, g=greenIn, b=blueIn)
-            core.log(name, ["  Set the LEDs to ({},{},{}).".format(redIn, greenIn, blueIn)], "info")
-        '''
-        elif "dim" == sys.argv[1]:
-            print("Changing Brightness")
-            try:
-                brightness = float(sys.argv[2])
-            except IndexError:
-                brightness = 1.0
-            print("Changing Brightness to %f" % brightness)
-            daemon.restart()
-            daemon.dim(brightness)
-        '''
-    elif key == "light":
-        if param == "off":
-            t.daemon.restart()
-            t.daemon.set(r=0, g=0, b=0)
-            core.log(name, ["Set the LEDs to (0,0,0)."], "info")
-        elif param == "on":
-            t.daemon.restart()
-            t.daemon.set(r=255, g=85, b=17)
-            core.log(name, ["Set the LEDs to (255,85,17)."], "info")
+            else:
+                core.log(name, ["  Illegal parameter(s)."], "warning")
+        elif key == "light":
+            if param == "off":
+                t.daemon.restart()
+                t.daemon.set(r=0, g=0, b=0)
+                core.log(name, ["Set the LEDs to (0,0,0)."], "info")
+            elif param == "on":
+                t.daemon.restart()
+                t.daemon.set(r=255, g=85, b=17)
+                core.log(name, ["Set the LEDs to (255,85,17)."], "info")
+            else:
+                core.log(name, ["  Illegal parameter(s)."], "warning")
+        else: 
+            core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+    except Exception as e:
+        core.log(name, ["{}".format(e)], "error")
