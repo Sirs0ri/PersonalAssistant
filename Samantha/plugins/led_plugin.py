@@ -330,6 +330,8 @@ def process(key, param, comm):
                 t.daemon.restart()
                 t.daemon.set(r=redIn, g=greenIn, b=blueIn)
                 core.log(name, ["  Set the LEDs to ({},{},{}).".format(redIn, greenIn, blueIn)], "info")
+            else:
+                core.log(name, ["  Illegal parameter(s)."], "warning")
             '''
             elif "dim" == sys.argv[1]:
                 print("Changing Brightness")
@@ -341,8 +343,6 @@ def process(key, param, comm):
                 daemon.restart()
                 daemon.dim(brightness)
             '''
-            else:
-                core.log(name, ["  Illegal parameter(s)."], "warning")
         elif key == "light":
             if param == "off":
                 t.daemon.restart()
