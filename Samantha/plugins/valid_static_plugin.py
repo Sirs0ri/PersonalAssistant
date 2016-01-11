@@ -9,11 +9,6 @@ keywords = ["test", "static", "onstart", "onexit"]
 has_toggle = 0
 has_set = 0
 
-
-def initialize():
-
-def stop():
-
 def process(key, params):
     try:
         if key == "onstart":
