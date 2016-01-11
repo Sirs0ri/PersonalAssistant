@@ -16,14 +16,14 @@ class Interface(Daemon):
         self.stderr = stderr
         self.pidfile = pidfile
         self.interfaces = interfaces
-        core.log(name, ["Created myself."])
+        core.log(name, ["Created myself."], "logging")
 
     def log(self, content):
         #easygui.msgbox(content)
         pass
 
     def run(self):
-        core.log(name, ["Started myself."])
+        core.log(name, ["Started myself."], "logging")
         while True:
             command=easygui.enterbox(title="W.I.L.L.", msg="Please enter a command")
             if command=="exit":
@@ -36,9 +36,9 @@ class Interface(Daemon):
 
 
 def create(interfaces, pidfile):
-    core.log(name, ["Starting up. " + pidfile])
+    core.log(name, ["Starting up. " + pidfile], "logging")
     d = Interface(pidfile)
-    core.log(name, ["Created the daemon."])
+    core.log(name, ["Created the daemon."], "logging")
     d.start()
-    core.log(name, ["Started the daemon."])
+    core.log(name, ["Started the daemon."], "logging")
     return d

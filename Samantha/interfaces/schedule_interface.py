@@ -16,7 +16,7 @@ class Interface(Daemon):
         self.stderr = stderr
         self.pidfile = pidfile
         self.interfaces = interfaces
-        core.log(name, ["Created myself."])
+        core.log(name, ["Created myself."], "loggign")
 
     def log(content):
         pass

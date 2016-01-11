@@ -17,7 +17,7 @@ class Plugin_Thread(threading.Thread):
         self.running = 1
         
     def run(self):
-        core.log(self.name, ["      Started"])
+        core.log(self.name, ["      Started"], "logging")
         #initialisation
         nexttime=time.time()
         i = 0
@@ -26,7 +26,7 @@ class Plugin_Thread(threading.Thread):
         while self.running == 1:
             a_min = core.process(key="schedule_min", params=[str(i), "schedule_min {}".format(i % 60)], origin=name)
             if "!CONNECTION_ERROR" == a_min:
-                core.log(self.name, ["Couldn't connect to flask. Aborting."])
+                core.log(self.name, ["Couldn't connect to flask. Aborting."], "error")
                 break
             i += 5
             nexttime += 300
@@ -38,23 +38,23 @@ class Plugin_Thread(threading.Thread):
                     self.old_hour = self.hour
                 #sleep to take work from the CPU
                 time.sleep(1)
-        core.log(self.name, ["  Not running anymore."])
+        core.log(self.name, ["  Not running anymore."], "logging")
         
     def stop(self):
         self.running = 0
-        core.log(self.name, ["  Exited"])
+        core.log(self.name, ["  Exited"], "logging")
 
 if is_sam_plugin:
     t = Plugin_Thread(name)
 
 def initialize():
     global t
-    core.log(name, ["      Starting thread."])
+    core.log(name, ["      Starting thread."], "logging")
     t.start()
 
 def stop():
     global t
-    core.log(name, ["  Exiting"])
+    core.log(name, ["  Exiting"], "logging")
     t.stop()
     t.join()
 

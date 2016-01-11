@@ -17,32 +17,32 @@ class Plugin_Thread(threading.Thread):
         self.running = 1
         
     def run(self):
-        core.log(self.name, ["Started"])
+        core.log(self.name, ["Started"], "logging")
         while self.running:
             time.sleep(1)
-        core.log(self.name, ["Not running anymore."])
+        core.log(self.name, ["Not running anymore."], "logging")
         
     def stop(self):
         self.running = 0
-        core.log(self.name, ["Exited"])
+        core.log(self.name, ["Exited"], "info")
 
 if is_sam_plugin:
     t = Plugin_Thread(name)
 
 def initialize():
     global t
-    core.log(name, ["Starting thread."])
+    core.log(name, ["Starting thread."], "logging")
     t.start()
 
 def stop():
     global t
-    core.log(name, ["Exiting"])
+    core.log(name, ["Exiting"], "logging")
     t.stop()
     t.join()
 
 def process(key, params):
     try:
-        core.log(name, ["  I could do sth now"])
+        core.log(name, ["  I could do sth now"], "debug")
         pass
     except Exception as e:
-        core.log(name, ["Error: {}".format(e)])
+        core.log(name, ["{}".format(e)], "error")

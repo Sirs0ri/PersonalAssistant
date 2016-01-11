@@ -38,9 +38,9 @@ def shutdown():
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
-    core.log(name, ["  Flask stopped successfully. Waiting for plugins to stop."])
+    core.log(name, ["  Flask stopped successfully. Waiting for plugins to stop."], "info")
     core.shutdown()
-    core.log(name, ["  Plugins stopped."])
+    core.log(name, ["  Plugins stopped."], "logging")
     return 'Server shutting down...'
 
 @app.route('/restart/')
@@ -49,7 +49,7 @@ def restart():
     Restart the complete program. It'll shutdown Flask and set the Restart-Flag back to 1 so that main() will be executed again after it's completed (aka after Flask and the Plugins are shut down correctly.) 
     """
     global restart
-    core.log(name, ["Received the request to restart."])
+    core.log(name, ["Received the request to restart."], "warning")
     restart = 1
     # this will cause main() to restart itself after the server's shut down.
     shutdown()
@@ -62,8 +62,7 @@ def main():
     """
     global app
     global restart
-    core.log(name, ["Starting up!","  ____    _    __  __    _    _   _ _____ _   _    _     "," / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    "," \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ","  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  "," |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                     hi~"])
-    #core.log(name, ["Starting up!"])
+    core.log(name, ["Starting up!","  ____    _    __  __    _    _   _ _____ _   _    _     "," / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    "," \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ","  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  "," |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                     hi~"], "info")
     
     restart = 0
     startup = core.startup()
@@ -71,20 +70,20 @@ def main():
     if not startup:
         #initialisation went wrong, abort 
     '''
-    core.log(name, ["Startup finished."])
+    core.log(name, ["Startup finished."], "logging")
         
     #don't log "INFO"-messages from Flask/werkzeug
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.WARNING)
     
     #app.debug = True
-    core.log(name, ["Starting Flask."])
+    core.log(name, ["Starting Flask."], "info")
     app.run(host="0.0.0.0")
     
     #this'll be executed when Flask stops.
-    core.log(name, ["Shut down successfully."])
+    core.log(name, ["Shut down successfully."], "info")
 
 if __name__ == "__main__":
     while restart:
         main()
-    core.log(name, ["See you next mission!","  ____    _    __  __    _    _   _ _____ _   _    _     "," / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    "," \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ","  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  "," |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                    bye~"])
+    core.log(name, ["See you next mission!","  ____    _    __  __    _    _   _ _____ _   _    _     "," / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    "," \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ","  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  "," |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                    bye~"], "info")

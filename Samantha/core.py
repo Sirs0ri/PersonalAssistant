@@ -47,7 +47,7 @@ class str_format:
     BG_CYAN = "46"
     BG_WHITE = "47"
 
-def log(name="None", content=["None"], level="info_white"):
+def log(name="None", content=["None"], level="logging"):
     """
     A simple logging-function that prints the input.
     
@@ -59,12 +59,12 @@ def log(name="None", content=["None"], level="info_white"):
     elif level == "warning":
         lvl_str = "WARN" 
         attr = [str_format.FG_LIGHTYELLOW]
-    elif level == "info_white":
-        lvl_str = "INFO"
-        attr = [str_format.FG_WHITE]
-    elif level == "info_cyan":
+    elif level == "info":
         lvl_str = "INFO"
         attr = [str_format.FG_LIGHTCYAN]
+    elif level == "logging":
+        lvl_str = "INFO"
+        attr = [str_format.FG_WHITE]
     elif level == "debug":
         lvl_str = "DEBG"
         attr = [str_format.FG_LIGHTMAGENTA]
@@ -87,36 +87,36 @@ def import_plugins():
     plugins = []
     plugin_names = []
     #list files in Samantha's /plugin folder
-    log(name, ["Importing Plugins."])
+    log(name, ["Importing Plugins."], "info")
     filenames = glob.glob(global_variables.folder_base + "/plugins/*_plugin.py")
-    log(name, ["  {} possible plugins found.".format(len(filenames))])
+    log(name, ["  {} possible plugins found.".format(len(filenames))], "logging")
 
     #try importing each plugin
     for i in range(0,len(filenames)):
-        log(name, ["  Found {}".format(filenames[i])])
+        log(name, ["  Found {}".format(filenames[i])], "logging")
         try:
             new_plugin = imp.load_source("samplugin{}".format(i), filenames[i])
-            log(name, ["    Successfully imported {}.".format(filenames[i])])
+            log(name, ["    Successfully imported {}.".format(filenames[i])], "logging")
             #Test if the imported file is a valid Plugin
             if new_plugin.is_sam_plugin:
                 #add it to the list of plugins
                 plugins.append(new_plugin)
-                log(name, ["    Name: {}".format(new_plugin.name), "    Keywords: {}".format(new_plugin.keywords)])
+                log(name, ["    Name: {}".format(new_plugin.name), "    Keywords: {}".format(new_plugin.keywords)], "logging")
                 '''
                 #initialize the plugin
                 new_plugin.initialize()
-                log(name, ["    {} initialized successfully".format(new_plugin.name, new_plugin.keywords)])
+                log(name, ["    {} initialized successfully".format(new_plugin.name, new_plugin.keywords)], "logging")
                 '''
             else: 
                 #is_sam_plugin == 0 -> the plugin is not supposed to be imported.
-                log(name, ["    {} is not a valid Plugin (no error).".format(filenames[i])])
+                log(name, ["    {} is not a valid Plugin (no error).".format(filenames[i])], "warning")
         except ImportError:
-            log(name, ["  Error: {} wasn't imported successfully.".format(filenames[i])])
+            log(name, ["  {} wasn't imported successfully.".format(filenames[i])], "error")
         except AttributeError:
-            log(name, ["  Error: {} is not a valid Plugin.".format(filenames[i])])
+            log(name, ["  {} is not a valid Plugin.".format(filenames[i])], "error")
     for p in plugins:
         plugin_names.append(p.name)
-    log(name, ["Imported plugins:"] + plugin_names)
+    log(name, ["Imported plugins:"] + plugin_names, "info")
     return plugins
 
 def generate_index():
@@ -126,7 +126,7 @@ def generate_index():
     """
     global plugins
     key_index = {}
-    log(name, ["Indexing Keywords"])
+    log(name, ["Indexing Keywords"], "info")
     for p in plugins:
         for k in p.keywords:
             try:
@@ -134,8 +134,8 @@ def generate_index():
             except KeyError:    #key isn't indexed yet
                 key_index[k] = []
                 key_index[k].append(p)
-                log(name, ["  Created new Key: '{}'".format(k)])
-    log(name, ["  Indexed Keywords."])
+                log(name, ["  Created new Key: '{}'".format(k)], "logging")
+    log(name, ["  Indexed Keywords."], "info")
     return key_index
 
 def process(key, params=[], comm="None", origin="None"):
@@ -143,13 +143,12 @@ def process(key, params=[], comm="None", origin="None"):
     Process data
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
-    log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(", ".join(params))], "info_cyan")
-    log("Processing", ["Parameter 1 {}".format(params[0])], "debug")
+    log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(", ".join(params))], "info")
     global plugins
     results = {}
     try:
         for p in key_index[key]:
-            log(name, ["  The plugin {} matches the keyword.".format(p.name)])
+            log(name, ["  The plugin {} matches the keyword.".format(p.name)], "logging")
             results[p.name] = p.process(key, params)
     except KeyError as e:
         log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
@@ -167,9 +166,9 @@ def startup():
     for p in plugins:
         #initialize the plugin
         p.initialize()
-        log(name, ["    {} initialized successfully".format(p.name, p.keywords)])
+        log(name, ["    {} initialized successfully".format(p.name, p.keywords)], "logging")
         
-    log(name, ["Startup finished."])
+    log(name, ["Startup finished."], "info")
     return True
 
 def shutdown():
@@ -177,11 +176,11 @@ def shutdown():
     Shuts down first the Flask-Server, then every Thread started by the main module and all the plugins.
     """
     global plugins
-    log(name, ["Shutting down."])
-    log(name, ["  Waiting for plugins to stop."])
+    log(name, ["Shutting down."], "info")
+    log(name, ["  Waiting for plugins to stop."], "logging")
     for p in plugins:
         p.stop()
-    log(name, ["  Plugins stopped."])
+    log(name, ["  Plugins stopped."], "info")
     return True
 
 class Daemon:

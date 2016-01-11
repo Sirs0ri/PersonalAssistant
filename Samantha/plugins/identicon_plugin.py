@@ -28,15 +28,15 @@ def generate_identicon(data="I'm Samantha"):
     # Send image to phone
 
 def initialize():
-    core.log(name, ["Everything's fine."])
+    core.log(name, ["Everything's fine."], "logging")
 
 def stop():
-    core.log(name, ["I'm not even running anymore!"])
+    core.log(name, ["I'm not even running anymore!"], "logging")
     
 def process(key, params):
     try:
         if key == "identicon":
-            core.log(name, ["  Generating an Identicon with the data '{}'.".format(params[0])])
+            core.log(name, ["  Generating an Identicon with the data '{}'.".format(params[0])], "info")
             if params:
                 generate_identicon(params[0])
             else:
@@ -45,8 +45,8 @@ def process(key, params):
             if "0" in params:
                 generate_identicon(time.time())
             else:
-                core.log(name, ["  Error: illegal parameter."])
+                core.log(name, ["  Illegal parameter."], "warning")
         else:
-            core.log(name, ["  Error: illegal command."])
+            core.log(name, ["  Illegal command."], "warning")
     except Exception as e:
-        core.log(name, ["Error: {}".format(e)])
+        core.log(name, ["{}".format(e)], "error")
