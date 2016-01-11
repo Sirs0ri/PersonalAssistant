@@ -144,6 +144,7 @@ def process(key, params=[], comm="None", origin="None"):
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
     log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(", ".join(params))], "info_cyan")
+    log("Processing", ["Parameter 1 {},".format(params[0])], "debug")
     global plugins
     results = {}
     try:
