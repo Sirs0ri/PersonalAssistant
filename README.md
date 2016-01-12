@@ -119,6 +119,7 @@ Plugins can have different function such as:
 - [ ] speed improvements (currently takes roughly 90 sec from getting the command to finishing the upload)
     - [ ] combine iterating over the image multiple times into one action
     - [ ] Multithreading?
+    - [ ] Create an image and store it for later use? (at 0.00: Send old image, then create a new "cached" one)
 - [ ] finetuning of the shadow - maybe apply the blur to a 2x zoomed overlay and scale that down
 - [X] grab an image from the earthview collection, add the colored overlay with shadows, eyecandy 'n stuff, and upload it to Dropbox; finally send it to my phone.
 - [X] create a new wallpaper everyday at midnight and send it to the phone
