@@ -76,7 +76,10 @@ def main():
     
     #app.debug = True
     core.log(name, ["Starting Flask."], "info")
-    app.run(host="0.0.0.0", port=80)
+    try:
+        app.run(host="0.0.0.0", port=80)
+    except Exception as e:
+        core.log(name, ["{}".format(e)], "error")
     
     core.process(key="onexit", origin=name)
     core.log(name, ["  Plugins stopped."], "logging")
