@@ -76,7 +76,7 @@ def main():
     
     #app.debug = True
     core.log(name, ["Starting Flask."], "info")
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=80)
     
     core.process(key="onexit", origin=name)
     core.log(name, ["  Plugins stopped."], "logging")
