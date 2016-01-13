@@ -131,6 +131,14 @@ Plugins can have different function such as:
 - commands listed at https://drive.google.com/open?id=0B53k79HXVZRbZVhIdFIwb3Z1SEU
 - send them via HTTP GET to <IP>/goform/formiPhoneAppDirect.xml?<COMMAND>
 
+#### AutoRemote
+
+- [ ] React to incoming messages
+- [ ] React to URL-Messages
+- [ ] Send messages
+- [ ] Send files
+- [ ] Send Notifications
+
 ### Automation
 
 - [ ] Save when which command is executed, find Patterns and then run Tasks automatically
