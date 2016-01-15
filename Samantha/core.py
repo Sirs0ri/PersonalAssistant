@@ -143,13 +143,13 @@ def process(key, params=[], origin="None"):
     Process data
     Accesses the parameters "Keyword", "Parameters"
     """
-    log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(", ".join(params))], "info")
-    global plugins
-    results = {}
+    results = []
     try:
-        for p in key_index[key]:
-            log(name, ["  The plugin {} matches the keyword.".format(p.name)], "logging")
-            results[p.name] = p.process(key, params)
+        if key_index[key]:
+            log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(", ".join(params))], "info")
+            for p in key_index[key]:
+                log(name, ["  The plugin {} matches the keyword.".format(p.name)], "logging")
+                results.append(value = p.process(key, params), name = p.name)
     except KeyError as e:
         log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
     return results
