@@ -140,8 +140,11 @@ def generate_index():
     for key in key_index.keys():
         key_plugins = []
         for p in key_index[key]:
+            name = p.name + ":"
+            if len(name) < 14:
+                name += " "*(11-len(name))
             key_plugins.append(p.name)
-        key_index_list.append("{key}:\t{plugins}".format(key=key, plugins=", ".join(sorted(key_plugins))))
+        key_index_list.append("{key} {plugins}".format(key=key, plugins=", ".join(sorted(key_plugins))))
     log(name, ["Indexed Keywords:"] + sorted(key_index_list), "info")
     return key_index
 
