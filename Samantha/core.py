@@ -75,6 +75,8 @@ def log(name="None", content=["None"], level="logging"):
         attr = []
         lvl_str="LVL"
     
+    if len(name) < 10:
+        name += " "*(10-len(name))
     s = "\033[90m[\033[{lvl_begin}m{lvl_str}\033[90m]  {time}  {name}:\t\033[97m{content}\033[0m".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n                  \t  ".join(content))
     print(s)
     '''
@@ -90,7 +92,7 @@ def import_plugins():
     plugins = []
     plugin_names = []
     #list files in Samantha's /plugin folder
-    log(name, ["Importing Plugins."], "info")
+    log(name, ["Importing Plugins..."], "info")
     filenames = glob.glob(global_variables.folder_base + "/plugins/*_plugin.py")
     log(name, ["  {} possible plugins found.".format(len(filenames))], "logging")
 
@@ -105,18 +107,14 @@ def import_plugins():
                 #add it to the list of plugins
                 plugins.append(new_plugin)
                 log(name, ["    Name: {}".format(new_plugin.name), "    Keywords: {}".format(new_plugin.keywords)], "logging")
-                '''
-                #initialize the plugin
-                new_plugin.initialize()
-                log(name, ["    {} initialized successfully".format(new_plugin.name, new_plugin.keywords)], "logging")
-                '''
+
             else: 
                 #is_sam_plugin == 0 -> the plugin is not supposed to be imported.
-                log(name, ["    {} is not a valid Plugin (no error).".format(filenames[i])], "warning")
+                log(name, ["    This Plugin is not meant to be loaded.".format(filenames[i])], "warning")
         except ImportError:
-            log(name, ["  {} wasn't imported successfully.".format(filenames[i])], "error")
+            log(name, ["  The Plugin wasn't imported successfully.".format(filenames[i])], "error")
         except AttributeError:
-            log(name, ["  {} is not a valid Plugin.".format(filenames[i])], "error")
+            log(name, ["  This is not a valid Plugin.".format(filenames[i])], "error")
     for p in plugins:
         plugin_names.append(p.name)
     log(name, ["Imported plugins:"] + plugin_names, "info")
@@ -129,7 +127,7 @@ def generate_index():
     """
     global plugins
     key_index = {}
-    log(name, ["Indexing Keywords"], "info")
+    log(name, ["Indexing Keywords..."], "info")
     for p in plugins:
         for k in p.keywords:
             try:
@@ -154,14 +152,14 @@ def process(key, params=[], origin="None", target="any"):
     results = []
     try:
         if key_index[key]:
-            log("Processing", ["New Command from {}:".format(origin),"Keyword: {},".format(key),"Parameter: {},".format(", ".join(params)), "Target: {}".format(target)], "info")
+            log("Processing", ["New Command from {}:".format(origin),"  Keyword: {},".format(key),"  Parameter: {},".format(", ".join(params)), "  Target: {}".format(target)], "info")
             for p in key_index[key]:
                 # iterate over every plugin that reacts to the given keyword
                 if target in ["all", "any", p.name]: 
                     # this will be true unless the name of a specifc plugin to process the command is given
-                    log(name, ["  The plugin {} matches the keyword.".format(p.name)], "logging")
                     result = p.process(key, params)
                     if target == "all" or result["processed"]:
+                        log(name, ["  Successfully processed by {}.".format(p.name)], "logging")
                         # unless the target is "all", failed attempts to process a command are ignored
                         results.append(result)
                 if results and not target == "all":
@@ -175,7 +173,7 @@ def process(key, params=[], origin="None", target="any"):
         results = [{"processed": False, "value": e, "plugin": name}]
         
     if results == []:
-        log(name, ["  No matching plugin found for {}.".format(target)], "warning")
+        log(name, ["  No matching plugin found."], "warning")
         results = [{"processed": False, "value": None, "plugin": name}]
     return results
 

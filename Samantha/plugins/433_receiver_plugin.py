@@ -13,13 +13,13 @@ class Plugin_Thread(threading.Thread):
 
     def __init__(self, name):
         threading.Thread.__init__(self)
-        self.name = name + "_Thread"
+        self.name = name + "_T"
         self.process = None
         
     def run(self):
-        core.log(self.name, ["      Started"], "logging")
+        core.log(self.name, ["      Started."], "logging")
         self.process = subprocess.Popen(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/RFSniffer"], stdout=subprocess.PIPE)
-        core.log(self.name, ["Subprocess started"], "logging")
+        core.log(self.name, ["Subprocess started."], "logging")
         while True:
             if self.process.poll() is not None: 
                 #Would return the process' return code once it's terminated. 
@@ -43,12 +43,12 @@ def process(key, params):
             t.start()
             return {"processed": True, "value": None, "plugin": name}
         elif key == "onexit":
-            core.log(name, ["  Exiting"], "logging")
+            core.log(name, ["  Exiting..."], "logging")
             t.stop()
             t.join()
             return {"processed": True, "value": None, "plugin": name}
         else: 
-            core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Illegal Command", "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")

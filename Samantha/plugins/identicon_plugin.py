@@ -20,14 +20,14 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     generates an identicon and sends it to the G2
     possibly via an AutoRemote Plugin?
     """
-    core.log(name, ["    Generating the Identicon.","Data is {}".format(data)], "logging")
+    core.log(name, ["    Generating the Identicon...","    Data is {}".format(data)], "logging")
     generator = pydenticon.Generator(5, 5)
     identicon = generator.generate(data, 300, 300)
-    core.log(name, ["    Generated the Identicon. Saving at {}.".format(global_variables.folder_base + path)], "logging")
+    core.log(name, ["    Generated the Identicon. Saving at {}...".format(global_variables.folder_base + path)], "logging")
     f = open(global_variables.folder_base + path, "wb")
     f.write(identicon)
     f.close()
-    core.log(name, ["    Generated the Identicon at {}.".format(global_variables.folder_base + path)], "info")
+    core.log(name, ["    Saved the Identicon at {}.".format(global_variables.folder_base + path)], "info")
     return path
 
 def process(key, params):
@@ -40,7 +40,7 @@ def process(key, params):
                 result = generate_identicon()
             return {"processed": True, "value": result, "plugin": name}
         else:
-            core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Illegal command.", "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")

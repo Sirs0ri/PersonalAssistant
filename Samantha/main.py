@@ -63,7 +63,7 @@ def main():
     """
     global app
     global restart
-    core.log(name, ["Starting up!","  ____    _    __  __    _    _   _ _____ _   _    _     "," / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    "," \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ","  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  "," |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                     hi~"], "info")
+    core.log(name, ["  ____    _    __  __    _    _   _ _____ _   _    _     "," / ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    "," \___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ","  ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  "," |____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                     hi~", "Starting up!"], "info")
     
     restart = 0
     startup = core.startup()
@@ -71,14 +71,13 @@ def main():
     if not startup:
         #initialisation went wrong, abort 
     '''
-    core.log(name, ["Startup finished."], "logging")
         
     #don't log "INFO"-messages from Flask/werkzeug
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.WARNING)
     
     #app.debug = True
-    core.log(name, ["Starting Flask."], "info")
+    core.log(name, ["Starting Flask..."], "info")
     try:
         app.run(host="0.0.0.0")
     except Exception as e:

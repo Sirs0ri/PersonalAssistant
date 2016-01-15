@@ -13,11 +13,11 @@ class Plugin_Thread(threading.Thread):
 
     def __init__(self, name):
         threading.Thread.__init__(self)
-        self.name = name + "_Thread"
+        self.name = name + "_T"
         self.running = 1
         
     def run(self):
-        core.log(self.name, ["      Started"], "logging")
+        core.log(self.name, ["      Started."], "logging")
         #initialisation
         nexttime=time.time()
         i = 0
@@ -42,7 +42,7 @@ class Plugin_Thread(threading.Thread):
         
     def stop(self):
         self.running = 0
-        core.log(self.name, ["  Exited"], "logging")
+        core.log(self.name, ["  Exited."], "logging")
 
 if is_sam_plugin:
     t = Plugin_Thread(name)
@@ -51,16 +51,16 @@ def process(key, params):
     global t
     try:
         if key == "onstart":
-            core.log(name, ["      Starting thread."], "logging")
+            core.log(name, ["      Starting thread..."], "logging")
             t.start()
             return {"processed": True, "value": None, "plugin": name}
         elif key == "onexit":
-            core.log(name, ["  Exiting"], "logging")
+            core.log(name, ["  Exiting.."], "logging")
             t.stop()
             t.join()
             return {"processed": True, "value": None, "plugin": name}
         else: 
-            core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Illegal command", "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")

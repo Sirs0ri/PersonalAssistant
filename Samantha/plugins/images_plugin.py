@@ -14,7 +14,7 @@ has_set = 0
 DEBUG = 0
 
 def get_wallpaper():
-    core.log(name, ["    Downloading the baseimage."], "logging")
+    core.log(name, ["    Downloading the baseimage..."], "logging")
     path = "/data/wallpaper_background.png"
     response = requests.get("https://earthview.withgoogle.com/")
     html = response.text
@@ -27,7 +27,7 @@ def get_wallpaper():
             image_url = None
     else: 
         image_url = None
-    core.log(name, ["    The URL is {}.".format(image_url),"    Downloading to {}.".format(global_variables.folder_base + path)], "logging")
+    core.log(name, ["    The URL is {}.".format(image_url),"    Downloading to {}...".format(global_variables.folder_base + path)], "logging")
     
     if image_url:
         f = open(global_variables.folder_base + path, "wb")
@@ -56,13 +56,13 @@ def resize(im, size, offset=(0,0)):
 
 def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png"):
 
-    core.log(name, ["    Creating the final image"], "info")
+    core.log(name, ["    Creating the final image..."], "info")
     
     framwewidth = 3
 
     #generate the background
 
-    core.log(name, ["      Creating the background"], "logging")
+    core.log(name, ["      Creating the background..."], "logging")
     bg_layer = Image.open(global_variables.folder_base + background_path)    #the background in color
     bg_layer = bg_layer.convert("RGBA")
     converter_color = ImageEnhance.Color(bg_layer)
@@ -70,12 +70,12 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     converter_brightness = ImageEnhance.Brightness(bg_layer)
     bg_layer = converter_brightness.enhance(0.8)
     if DEBUG:
-        core.log(name, ["      Saving the background"], "debug")
+        core.log(name, ["      Saving the background..."], "debug")
         bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
 
     #generate the masks
 
-    core.log(name, ["      Creating the normal masks"], "logging")
+    core.log(name, ["      Creating the normal masks..."], "logging")
     size = bg_layer.size
     mask_BoW = Image.open(global_variables.folder_base + mask_path)     #"BoW" means black icon on white background.
     mask_WoB = ImageOps.invert(mask_BoW)                                #"WoB" is a white icon on black bg.
@@ -85,11 +85,11 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_WoB = mask_WoB.convert("1")
     mask_BoW = mask_BoW.convert("1")
     if DEBUG:
-        core.log(name, ["      Saving the normal masks"], "debug")
+        core.log(name, ["      Saving the normal masks..."], "debug")
         mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
         mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
 
-    core.log(name, ["      Creating the small masks"], "info")
+    core.log(name, ["      Creating the small masks..."], "info")
     mask_WoB_small = mask_WoB.convert("RGB")
 
     offset_layers = []
@@ -115,33 +115,33 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoW_small = ImageOps.invert(mask_WoB_small.convert("RGB"))
     mask_BoW_small = mask_BoW_small.convert("1")
     if DEBUG:
-        core.log(name, ["      Saving the small masks"], "debug")
+        core.log(name, ["      Saving the small masks..."], "debug")
         mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small.png")
         mask_BoW_small.save(global_variables.folder_base + "/data/mask_BoW_small.png")
 
 
     #generate the colored overlay
 
-    core.log(name, ["      Creating the colored overlay"], "logging")
+    core.log(name, ["      Creating the colored overlay..."], "logging")
     overlay_layer = Image.open(global_variables.folder_base + background_path)
     overlay_layer.putalpha(mask_WoB_small)
     if DEBUG:
-        core.log(name, ["      Saving the colored overlay"], "debug")
+        core.log(name, ["      Saving the colored overlay..."], "debug")
         overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
 
     #generate the frame around the colored overlay
 
-    core.log(name, ["      Creating the frame around the overlay"], "logging")
+    core.log(name, ["      Creating the frame around the overlay..."], "logging")
     frame_layer = Image.open(global_variables.folder_base + background_path)
     frame_layer = Image.blend(Image.new("RGB", size, "white"), frame_layer, 0.65)
     frame_layer.putalpha(mask_WoB)
     if DEBUG:
-        core.log(name, ["      Saving the frame"], "debug")
+        core.log(name, ["      Saving the frame..."], "debug")
         frame_layer.save(global_variables.folder_base + "/data/frame_layer.png")
 
     #generate the shadow
 
-    core.log(name, ["      Creating the dropshadow"], "logging")
+    core.log(name, ["      Creating the dropshadow..."], "logging")
     shadow_layer =  mask_BoW.convert("RGBA")
     shadow_layer.putalpha(mask_WoB)
     """
@@ -157,14 +157,14 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     for offset_layer in offset_layers:
         shadow_layer.paste(offset_layer, None, offset_layer)
     
-    core.log(name, ["        Blurring the shadow"], "logging")
+    core.log(name, ["        Blurring the shadow..."], "logging")
     for n in range(3):      #as noted above, the Blur is applied multiple times for a stronger effect. 3 has proven as a good compromise between a good effect and not too much necessary calculation.
-        core.log(name, ["          Step {}/{}".format(n + 1, 3)], "logging")
+        core.log(name, ["          Step {}/{}.".format(n + 1, 3)], "logging")
         shadow_layer = shadow_layer.filter(ImageFilter.BLUR)
-    core.log(name, ["        Adding transparency"], "logging")
+    core.log(name, ["        Adding transparency..."], "logging")
     shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.8)
     if DEBUG:
-        core.log(name, ["      Saving the dropshadow"], "debug")
+        core.log(name, ["      Saving the dropshadow..."], "debug")
         shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
 
     #merge the shadow with the background
@@ -174,7 +174,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     To prevent this behaviour, this tool iterates over the pixels of the whole image and changes the colorvalues according to the alphavalue of the corresponding image in the mask.
     If the pixel in the mask is completely transparent (a_mask == 0) the calculation will be skipped and the original pixel won't be changed. If the pixel in the mask is completely opaque (a_mask == 255) the pixel in the original image will be turned black. For every other alpha value the new color is calculated via new = old * (1 - (a_mask / 255)).
     """
-    core.log(name, ["      Merging the shadow with the background"], "logging")
+    core.log(name, ["      Merging the shadow with the background..."], "logging")
     try:
         pixels_changed_count = 0
         pixels_bg = bg_layer.load()
@@ -199,12 +199,12 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     finally: 
         core.log(name, ["        {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1])], "logging")
     if DEBUG:
-        core.log(name, ["      Saving the background+shadow"], "debug")
+        core.log(name, ["      Saving the background and shadow..."], "debug")
         bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
 
     #merge the layers
     
-    core.log(name, ["      Merging the layers"], "logging")
+    core.log(name, ["      Merging the layers..."], "logging")
     final = Image.new("RGBA", size)
     final.paste(bg_layer)
     final.paste(frame_layer, None, frame_layer)
@@ -215,19 +215,19 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
 def set_daily_wallpaper(path="/data/wallpaper.png"):
     
-    core.log(name, ["    Sending the Wallpaper to the phone"], "info")
+    core.log(name, ["    Sending the Wallpaper to the phone..."], "info")
     destination = "/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
-    core.log(name, ["      Initializing the Dropbox-Client"], "logging")
+    core.log(name, ["      Initializing the Dropbox-Client..."], "logging")
     client = dropbox.client.DropboxClient(private_variables.dropbox_token)
     f = open(global_variables.folder_base + path, 'rb')
-    core.log(name, ["      Uploading"], "logging")
+    core.log(name, ["      Uploading..."], "logging")
     response = client.put_file(destination, f)
-    core.log(name, ["      Accessing the public Link"], "logging")
+    core.log(name, ["      Accessing the public Link..."], "logging")
     response = client.share(destination, short_url=False)
     url = response["url"].replace("www.dropbox", "dl.dropboxusercontent").replace("?dl=0", "")
     core.log(name, ["        {}".format(url)], "logging")
     payload = {'message': 'wallpaper.set', 'files': url}
-    core.log(name, ["      Sending the AR-Message"], "logging")
+    core.log(name, ["      Sending the AR-Message..."], "logging")
     response = requests.get(private_variables.autoremote_baseurl["g2"], payload)
     core.log(name, ["      The Image was sent successfully. {}".format(response)], "info")
     
@@ -236,7 +236,7 @@ def process(key, params):
         if key == "schedule_h":
             if "0" in params:
                 path = "/data/wallpaper_{time}.png".format(time=time.strftime("%Y-%j_%H:%M:%S", time.localtime()))
-                core.log(name, ["  Generating the daily wallpaper at {}.".format(path)], "info")
+                core.log(name, ["  Generating the daily wallpaper at {}...".format(path)], "info")
                 wallpaper_bg = get_wallpaper()
                 identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
                 wallpaper = generate_wallpaper(wallpaper_bg, identicon, path)
@@ -246,20 +246,20 @@ def process(key, params):
                 core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
                 return {"processed": False, "value": "Parameter {} not in use.".format(", ".join(params)), "plugin": name}
         elif key == "set_wallpaper":
-            core.log(name, ["  Generating and setting a new wallpaper."], "info")
+            core.log(name, ["  Generating and setting a new wallpaper..."], "info")
             wallpaper_bg = get_wallpaper()
             identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
             set_daily_wallpaper(wallpaper)
             return {"processed": True, "value": None, "plugin": name}
         elif key == "wallpaper":
-            core.log(name, ["  Generating a new wallpaper."], "info")
+            core.log(name, ["  Generating a new wallpaper..."], "info")
             wallpaper_bg = get_wallpaper()
             identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
             return {"processed": True, "value": wallpaper, "plugin": name}
         else:
-            core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Illegal command", "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")

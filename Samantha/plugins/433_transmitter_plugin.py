@@ -86,7 +86,7 @@ def process(key, params):
                 core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
                 return {"processed": False, "value": "Parameter {} not in use.".format(", ".join(params)), "plugin": name}
         else:
-            core.log(name, ["  Illegal command."], "warning")
+            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Illegal command", "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
