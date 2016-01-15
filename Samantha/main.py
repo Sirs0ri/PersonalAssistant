@@ -77,6 +77,7 @@ def main():
     #app.debug = True
     core.log(name, ["Starting Flask."], "info")
     try:
+        app.debug=True
         app.run(host="0.0.0.0")
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
