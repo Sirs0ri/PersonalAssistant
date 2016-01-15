@@ -33,15 +33,15 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
 def process(key, params):
     try:
         if key == "identicon":
-            core.log(name, ["  Generating an Identicon with the data '{}'.".format(param)], "info")
+            core.log(name, ["  Generating an Identicon with the data '{}'.".format(params)], "info")
             if params:
                 result = generate_identicon(params[0])
             else:
                 result = generate_identicon()
-            return result
+            return {"processed": True, "value": result, "plugin": name}
         else:
-            core.log(name, ["  Parameter(s) {} not in use.".format(", ".join(params))], "warning")
-            return
+            core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+            return {"processed": False, "value": "Illegal command.", "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
-        return
+        return {"processed": False, "value": e, "plugin": name}

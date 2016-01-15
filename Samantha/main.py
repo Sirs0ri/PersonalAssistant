@@ -81,7 +81,7 @@ def main():
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
     
-    core.process(key="onexit", origin=name)
+    core.process(key="onexit", origin=name, target="all")
     core.log(name, ["  Plugins stopped."], "logging")
     
     #this'll be executed when Flask stops.

@@ -34,19 +34,19 @@ def process(key, params):
         if key == "onstart":
             core.log(name, ["Startup","Hello World!", "Starting thread."], "logging")
             t.start()
-            return True
+            return {"processed": True, "value": None, "plugin": name}
         elif key == "onexit":
             core.log(name, ["Exiting"], "logging")
             t.stop()
             t.join()
-            return True
+            return {"processed": True, "value": None, "plugin": name}
         elif key in ["test", "thread"]: 
             s = "I could do sth now"
             core.log(name, ["  " + s], "debug")
             return s
         else: 
             core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
-            return
+            return {"processed": False, "value": "Illegal command", "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
-        return
+        return {"processed": False, "value": e, "plugin": name}

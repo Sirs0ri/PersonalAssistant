@@ -138,22 +138,42 @@ def generate_index():
     log(name, ["  Indexed Keywords."], "info")
     return key_index
 
-def process(key, params=[], origin="None"):
+def process(key, params=[], origin="None", target="any"):
     """
     Process data
     Accesses the parameters "Keyword", "Parameters"
+    
+    Via target it can be specified, how the command should be processed:
+        "any":      will return the 1st successful result
+        "all":      will return all results
+        "PLUGIN":   Will return only the result of the specified plugin, or False
     """
     results = []
     try:
         if key_index[key]:
-            log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(", ".join(params))], "info")
+            log("Processing", ["New Command from {}:".format(origin),"Keyword: {},".format(key),"Parameter: {},".format(", ".join(params)), "Target: {}".format(target), "info")
             for p in key_index[key]:
-                log(name, ["  The plugin {} matches the keyword.".format(p.name)], "logging")
-                results.append({"value": p.process(key, params), "name": p.name})
+                # iterate over every plugin that reacts to the given keyword
+                if target in ["all", "any", p.name]: 
+                    # this will be true unless the name of a specifc plugin to process the command is given
+                    log(name, ["  The plugin {} matches the keyword.".format(p.name)], "logging")
+                    result = p.process(key, params)
+                    if target == "all" or result["processed"]:
+                        # unless the target is "all", failed attempts to process a command are ignored
+                        results.append(result)
+                if results and not target == "all":
+                    # stop the loop if the command has been processed successfully once and not all plugins are targeted
+                    break
     except KeyError as e:
         log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
+        results = [{"processed": False, "value": "Keyword not indexed", "plugin": name}]
     except Exception as e: 
         log(name, ["{}".format(e)], "error")
+        results = [{"processed": False, "value": e, "plugin": name}]
+        
+    if results == []:
+        log(name, ["  No matching plugin found for {}.".format(target)], "warning")
+        results = [{"processed": False, "value": None, "plugin": name}]
     return results
 
 def startup():
@@ -165,7 +185,7 @@ def startup():
     global key_index
     plugins = import_plugins()
     key_index = generate_index()
-    process(key="onstart", origin=name)
+    process(key="onstart", origin=name, target="all")
     log(name, ["Startup finished."], "info")
     return True
 

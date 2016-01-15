@@ -238,29 +238,29 @@ def process(key, params):
                 path = "/data/wallpaper_{time}.png".format(time=time.strftime("%Y-%j_%H:%M:%S", time.localtime()))
                 core.log(name, ["  Generating the daily wallpaper at {}.".format(path)], "info")
                 wallpaper_bg = get_wallpaper()
-                identicon = generate_identicon(str(time.time()))
+                identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
                 wallpaper = generate_wallpaper(wallpaper_bg, identicon, path)
                 set_daily_wallpaper(wallpaper)
-                return True
+                return {"processed": True, "value": None, "plugin": name}
             else:
-                core.log(name, ["  Warning: parameter {} not in use.".format(", ".join(params))], "warning")
-                return
+                core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
+                return {"processed": False, "value": "Parameter {} not in use.".format(", ".join(params)), "plugin": name}
         elif key == "set_wallpaper":
-            core.log(name, ["  Generating a new wallpaper."], "info")
+            core.log(name, ["  Generating and setting a new wallpaper."], "info")
             wallpaper_bg = get_wallpaper()
-            identicon = generate_identicon(str(time.time()))
+            identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
             set_daily_wallpaper(wallpaper)
-            return True
+            return {"processed": True, "value": None, "plugin": name}
         elif key == "wallpaper":
             core.log(name, ["  Generating a new wallpaper."], "info")
             wallpaper_bg = get_wallpaper()
-            identicon = generate_identicon(str(time.time()))
+            identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
-            return wallpaper
+            return {"processed": True, "value": wallpaper, "plugin": name}
         else:
-            core.log(name, ["  Parameter(s) {} not in use.".format(", ".join(params))], "warning")
-            return
+            core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+            return {"processed": False, "value": "Illegal command", "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
-        return
+        return {"processed": False, "value": e, "plugin": name}
