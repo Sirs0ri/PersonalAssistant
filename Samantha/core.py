@@ -151,7 +151,7 @@ def process(key, params=[], origin="None", target="any"):
     results = []
     try:
         if key_index[key]:
-            log("Processing", ["New Command from {}:".format(origin),"Keyword: {},".format(key),"Parameter: {},".format(", ".join(params)), "Target: {}".format(target), "info")
+            log("Processing", ["New Command from {}:".format(origin),"Keyword: {},".format(key),"Parameter: {},".format(", ".join(params)), "Target: {}".format(target)], "info")
             for p in key_index[key]:
                 # iterate over every plugin that reacts to the given keyword
                 if target in ["all", "any", p.name]: 
