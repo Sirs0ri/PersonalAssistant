@@ -149,7 +149,7 @@ def process(key, params=[], origin="None"):
             log("Processing", ["New Command from {}:".format(origin),"Keyword {},".format(key),"Parameter {},".format(", ".join(params))], "info")
             for p in key_index[key]:
                 log(name, ["  The plugin {} matches the keyword.".format(p.name)], "logging")
-                results.append(value = p.process(key, params), name = p.name)
+                results.append({"value": p.process(key, params), "name": p.name})
     except KeyError as e:
         log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
     except Exception as e: 
