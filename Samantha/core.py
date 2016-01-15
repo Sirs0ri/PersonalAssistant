@@ -77,7 +77,7 @@ def log(name="None", content=["None"], level="logging"):
     name += ":"
     if len(name) < 11:
         name += " "*(11-len(name))
-    s = "\033[90m[\033[{lvl_begin}m{lvl_str}\033[90m]  {time}  {name}\t\033[97m{content}\033[0m".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n\t\t\t\t\t  ".join(content))
+    s = "\033[90m[\033[{lvl_begin}m{lvl_str}\033[90m]  {time}  {name}\t\033[97m{content}\033[0m".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n\t\t\t\t  ".join(content))
     print(s)
     '''
     #log in file
@@ -101,7 +101,7 @@ def import_plugins():
         log(name, ["  Found {}".format(filenames[i])], "logging")
         try:
             new_plugin = imp.load_source("samplugin{}".format(i), filenames[i])
-            log(name, ["    Successfully imported {}.".format(filenames[i])], "logging")
+            log(name, ["    Successfully imported {}.".format(filenames[i][43:])], "logging")
             #Test if the imported file is a valid Plugin
             if new_plugin.is_sam_plugin:
                 #add it to the list of plugins
