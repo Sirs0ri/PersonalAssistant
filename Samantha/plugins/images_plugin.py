@@ -7,7 +7,7 @@ private_variables = imp.load_source("private_variables", "../../private_variable
 
 is_sam_plugin = 1
 name = "Images"
-keywords = ["identicon", "schedule_h", "wallpaper"]
+keywords = ["schedule_h", "wallpaper", "set_wallpaper"]
 has_toggle = 0
 has_set = 0
 
@@ -213,21 +213,6 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, ["    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path)], "info")
     return destination_path
 
-def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
-    """
-    generates an identicon and sends it to the G2
-    possibly via an AutoRemote Plugin?
-    """
-    core.log(name, ["    Generating the Identicon.","Data is {}".format(data)], "logging")
-    generator = pydenticon.Generator(5, 5)
-    identicon = generator.generate(data, 300, 300)
-    core.log(name, ["    Generated the Identicon. Saving at {}.".format(global_variables.folder_base + path)], "logging")
-    f = open(global_variables.folder_base + path, "wb")
-    f.write(identicon)
-    f.close()
-    core.log(name, ["    Generated the Identicon at {}.".format(global_variables.folder_base + path)], "info")
-    return path
-
 def set_daily_wallpaper(path="/data/wallpaper.png"):
     
     core.log(name, ["    Sending the Wallpaper to the phone"], "info")
@@ -273,13 +258,6 @@ def process(key, params):
             identicon = generate_identicon(str(time.time()))
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
             return wallpaper
-        elif key == "identicon":
-            core.log(name, ["  Generating an Identicon with the data '{}'.".format(param)], "info")
-            if params:
-                result = generate_identicon(params[0])
-            else:
-                result = generate_identicon()
-            return result
         else:
             core.log(name, ["  Parameter(s) {} not in use.".format(", ".join(params))], "warning")
             return
