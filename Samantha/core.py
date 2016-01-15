@@ -152,7 +152,7 @@ def process(key, params=[], origin="None"):
                 results.append(value = p.process(key, params), name = p.name)
     except KeyError as e:
         log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
-    except Exception: 
+    except Exception as e: 
         log(name, ["{}".format(e)], "error")
     return results
 
