@@ -13,11 +13,17 @@ def process(key, params):
     try:
         if key == "onstart":
             core.log(name, ["Startup","Hello World!"], "info")
+            return True
         elif key == "onexit":
             core.log(name, ["I'm not even running anymore!"], "logging")
+            return True
         elif key in ["test", "static"]: 
-            core.log(name, ["  I could do sth now"], "debug")
+            s = "I could do sth now"
+            core.log(name, ["  " + s], "debug")
+            return s
         else: 
             core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+            return
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
+        return

@@ -53,11 +53,15 @@ def process(key, params):
         if key == "onstart":
             core.log(name, ["      Starting thread."], "logging")
             t.start()
+            return True
         elif key == "onexit":
             core.log(name, ["  Exiting"], "logging")
             t.stop()
             t.join()
+            return True
         else: 
             core.log(name, ["  Illegal command.","Key:{}".format(key),"Parameters: {}".format(params)], "warning")
+            return
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
+        return

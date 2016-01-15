@@ -256,21 +256,33 @@ def process(key, params):
                 identicon = generate_identicon(str(time.time()))
                 wallpaper = generate_wallpaper(wallpaper_bg, identicon, path)
                 set_daily_wallpaper(wallpaper)
+                return True
             else:
                 core.log(name, ["  Warning: parameter {} not in use.".format(", ".join(params))], "warning")
-        elif key == "wallpaper":
+                return
+        elif key == "set_wallpaper":
             core.log(name, ["  Generating a new wallpaper."], "info")
             wallpaper_bg = get_wallpaper()
             identicon = generate_identicon(str(time.time()))
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
             set_daily_wallpaper(wallpaper)
+            return True
+        elif key == "wallpaper":
+            core.log(name, ["  Generating a new wallpaper."], "info")
+            wallpaper_bg = get_wallpaper()
+            identicon = generate_identicon(str(time.time()))
+            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
+            return wallpaper
         elif key == "identicon":
             core.log(name, ["  Generating an Identicon with the data '{}'.".format(param)], "info")
             if params:
-                generate_identicon(params[0])
+                result = generate_identicon(params[0])
             else:
-                generate_identicon()
+                result = generate_identicon()
+            return result
         else:
             core.log(name, ["  Parameter(s) {} not in use.".format(", ".join(params))], "warning")
+            return
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
+        return

@@ -15,32 +15,33 @@ keywords = ["identicon", "schedule_h"]
 has_toggle = 0
 has_set = 0
 
-def generate_identicon(data="I'm Samantha"):
+def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     """
     generates an identicon and sends it to the G2
     possibly via an AutoRemote Plugin?
     """
+    core.log(name, ["    Generating the Identicon.","Data is {}".format(data)], "logging")
     generator = pydenticon.Generator(5, 5)
-    identicon = generator.generate(data, 200, 200)
-    f = open(global_variables.folder_base + "/data/identicon.png", "wb")
+    identicon = generator.generate(data, 300, 300)
+    core.log(name, ["    Generated the Identicon. Saving at {}.".format(global_variables.folder_base + path)], "logging")
+    f = open(global_variables.folder_base + path, "wb")
     f.write(identicon)
     f.close()
-    # Send image to phone
-    
+    core.log(name, ["    Generated the Identicon at {}.".format(global_variables.folder_base + path)], "info")
+    return path
+
 def process(key, params):
     try:
         if key == "identicon":
-            core.log(name, ["  Generating an Identicon with the data '{}'.".format(params[0])], "info")
+            core.log(name, ["  Generating an Identicon with the data '{}'.".format(param)], "info")
             if params:
-                generate_identicon(params[0])
+                result = generate_identicon(params[0])
             else:
-                generate_identicon()
-        elif key == "schedule_h":
-            if "0" in params:
-                generate_identicon(time.time())
-            else:
-                core.log(name, ["  Illegal parameter."], "warning")
+                result = generate_identicon()
+            return result
         else:
-            core.log(name, ["  Illegal command."], "warning")
+            core.log(name, ["  Parameter(s) {} not in use.".format(", ".join(params))], "warning")
+            return
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
+        return

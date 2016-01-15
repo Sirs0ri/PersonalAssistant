@@ -33,47 +33,61 @@ def process(key, params):
             if "4195665" in params:
                 #turn on LEDs under bed
                 send("11111", "1", "1")
+                return True
             elif "4195668" in params:
                 #turn off LEDs under bed
                 send("11111", "1", "0")
+                return True
             elif "4198737" in params:
                 #turn on standing lamp1
                 send("11111", "2", "1")
+                return True
             elif "4198740" in params:
                 #turn off standing lamp1
                 send("11111", "2", "0")
+                return True
             elif "4199505" in params:
                 #turn on standing lamp2
                 send("11111", "3", "1")
+                return True
             elif "4199508" in params:
                 #turn off standing lamp2
                 send("11111", "3", "0")
+                return True
             elif "4199697" in params:
                 #turn ambient lights on
                 #core.process(key="light", params=["on"], origin=name)
                 send("11111", "1", "1")
                 send("11111", "2", "0")
                 send("11111", "3", "1")
+                return True
             elif "4199700" in params:
                 #turn all lights off
-                core.process(key="light", params=["off"], origin=name)
+                result = core.process(key="light", params=["off"], origin=name)
                 # send("11111", "1", "0")
                 # send("11111", "2", "0")
                 # send("11111", "3", "0")
+                return result
             else:
                 core.log(name, ["  Illegal parameter(s)."], "warning")
+                return
         elif key == "light":
             if "off" in params:
                 send("11111", "1", "0")
                 send("11111", "2", "0")
                 send("11111", "3", "0")
+                return True
             elif "on" in params:
                 send("11111", "1", "1")
                 send("11111", "2", "1")
                 send("11111", "3", "1")
+                return True
             else:
                 core.log(name, ["  Illegal parameter."], "warning")
+                return
         else:
             core.log(name, ["  Illegal command."], "warning")
+            return
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
+        return
