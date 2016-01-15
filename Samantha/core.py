@@ -16,6 +16,9 @@ class str_format:
         attr = ["1", "91"]
         s = "\033[{attrs}m{text}\33[0m".format(attrs = ";".join(attr), text=text)
         print s
+        
+        
+        \033[90m{text}\33[0m
     """
     ENDC = "0"
     BOLD = "1"
@@ -71,8 +74,8 @@ def log(name="None", content=["None"], level="logging"):
     else:
         attr = []
         lvl_str="LVL"
-        
-    s = "[\033[{lvl_begin}m{lvl_str}{lvl_end}]\t{time}  {name}:\n\t  {content}".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, lvl_end='\033[0m', time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n\t  ".join(content))
+    
+    s = "\033[90m[\033[{lvl_begin}m{lvl_str}\033[90m]  {time}  {name}:\t\033[97m{content}\033[0m".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n                  \t  ".join(content))
     print(s)
     '''
     #log in file
