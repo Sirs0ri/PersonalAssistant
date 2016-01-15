@@ -34,7 +34,7 @@ class Plugin_Thread(threading.Thread):
                 #check if the hour has changed
                 self.hour = datetime.datetime.now().hour
                 if not self.hour == self.old_hour:
-                    core.process(key="schedule_h", params=[str(self.hour)], origin=name)
+                    core.process(key="schedule_h", params=[str(self.hour)], origin=name, target="all")
                     self.old_hour = self.hour
                 #sleep to take work from the CPU
                 time.sleep(1)

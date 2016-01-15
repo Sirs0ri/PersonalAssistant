@@ -28,7 +28,7 @@ def process():
     params = request.args.get('params')
     if not params:
         params = ""
-    core.process(key=key, params=params.split("=:="), origin="Flask")
+    core.process(key=key, params=params.split("=:="), origin="Flask", target="all")
     return "Processing\nKeyword {}\nParameter {}".format(key,", ".join(params))
 
 @app.route('/shutdown/')

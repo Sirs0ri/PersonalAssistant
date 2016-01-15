@@ -56,17 +56,11 @@ def process(key, params):
                 return {"processed": True, "value": None, "plugin": name}
             elif "4199697" in params:
                 #turn ambient lights on
-                #core.process(key="light", params=["on"], origin=name)
-                send("11111", "1", "1")
-                send("11111", "2", "0")
-                send("11111", "3", "1")
-                return {"processed": True, "value": None, "plugin": name}
+                result = core.process(key="light", params=["ambient"], origin=name, target="all")
+                return {"processed": True, "value": result, "plugin": name}
             elif "4199700" in params:
                 #turn all lights off
-                result = core.process(key="light", params=["off"], origin=name)
-                # send("11111", "1", "0")
-                # send("11111", "2", "0")
-                # send("11111", "3", "0")
+                result = core.process(key="light", params=["off"], origin=name, target="all")
                 return {"processed": True, "value": result, "plugin": name}
             else:
                 core.log(name, ["  Illegal parameter(s)."], "warning")
@@ -80,6 +74,11 @@ def process(key, params):
             elif "on" in params:
                 send("11111", "1", "1")
                 send("11111", "2", "1")
+                send("11111", "3", "1")
+                return {"processed": True, "value": None, "plugin": name}
+            elif "ambient" in params:
+                send("11111", "1", "1")
+                send("11111", "2", "0")
                 send("11111", "3", "1")
                 return {"processed": True, "value": None, "plugin": name}
             else:
