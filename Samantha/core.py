@@ -141,7 +141,7 @@ def generate_index():
         key_plugins = []
         for p in key_index[key]:
             key_plugins.append(p.name)
-        key_index_list.append("{key}:\t{plugins}".format(", ".join(key_plugins)))
+        key_index_list.append("{key}:\t{plugins}".format(key=key, plugins=", ".join(key_plugins)))
         log(name, ["  Indexed Keywords:"] + key_index_list, "info")
     return key_index
 
