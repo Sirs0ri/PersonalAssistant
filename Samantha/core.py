@@ -127,6 +127,7 @@ def generate_index():
     """
     global plugins
     key_index = {}
+    key_index_list = []
     log(name, ["Indexing Keywords..."], "info")
     for p in plugins:
         for k in p.keywords:
@@ -136,7 +137,9 @@ def generate_index():
                 key_index[k] = []
                 key_index[k].append(p)
                 log(name, ["  Created new Key: '{}'".format(k)], "logging")
-    log(name, ["  Indexed Keywords."], "info")
+    for key in key_index.keys():
+        key_index_list.append("{key}:\t{plugins}".format(", ".join(key_index[key])))
+        log(name, ["  Indexed Keywords:"] + key_index_list, "info")
     return key_index
 
 def process(key, params=[], origin="None", target="any"):
@@ -152,14 +155,14 @@ def process(key, params=[], origin="None", target="any"):
     results = []
     try:
         if key_index[key]:
-            log("Processing", ["New Command from {}:".format(origin),"Keyword: {},".format(key),"Parameter: {},".format(", ".join(params)), "  Target: {}".format(target)], "info")
+            log("Processing", ["New Command from {}:".format(origin),"Keyword: {},".format(key),"Parameter: {},".format(", ".join(params)), "Target: {}".format(target)], "info")
             for p in key_index[key]:
                 # iterate over every plugin that reacts to the given keyword
                 if target in ["all", "any", p.name]: 
                     # this will be true unless the name of a specifc plugin to process the command is given
                     result = p.process(key, params)
                     if target == "all" or result["processed"]:
-                        log(name, ["  Successfully processed by {}.".format(p.name)], "logging")
+                        log(name, ["  Successfully processed {} by {}.".format(key, p.name)], "logging")
                         # unless the target is "all", failed attempts to process a command are ignored
                         results.append(result)
                 if results and not target == "all":
