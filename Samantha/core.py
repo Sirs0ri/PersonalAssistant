@@ -139,11 +139,11 @@ def generate_index():
                 log(name, ["  Created new Key: '{}'".format(k)], "logging")
     for key in key_index.keys():
         key_plugins = []
+        key_name = key + ":"
+        if len(key_name) < 14:
+            key_name += " "*(11-len(key_name))
         for p in key_index[key]:
-            p_name = p.name + ":"
-            if len(p_name) < 14:
-                p_name += " "*(11-len(p_name))
-            key_plugins.append(p_name)
+            key_plugins.append(p.name)
         key_index_list.append("{key} {plugins}".format(key=key, plugins=", ".join(sorted(key_plugins))))
     log(name, ["Indexed Keywords:"] + sorted(key_index_list), "info")
     return key_index
