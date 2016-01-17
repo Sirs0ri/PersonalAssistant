@@ -53,12 +53,12 @@ def process(key, params):
         if key == "onstart":
             core.log(name, ["      Starting thread..."], "logging")
             t.start()
-            return {"processed": True, "value": None, "plugin": name}
+            return {"processed": True, "value": "Success.", "plugin": name}
         elif key == "onexit":
             core.log(name, ["  Exiting.."], "logging")
             t.stop()
             t.join()
-            return {"processed": True, "value": None, "plugin": name}
+            return {"processed": True, "value": "Success.", "plugin": name}
         else: 
             core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Illegal command", "plugin": name}

@@ -33,27 +33,27 @@ def process(key, params):
             if "4195665" in params:
                 #turn on LEDs under bed
                 send("11111", "1", "1")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             elif "4195668" in params:
                 #turn off LEDs under bed
                 send("11111", "1", "0")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             elif "4198737" in params:
                 #turn on standing lamp1
                 send("11111", "2", "1")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             elif "4198740" in params:
                 #turn off standing lamp1
                 send("11111", "2", "0")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             elif "4199505" in params:
                 #turn on standing lamp2
                 send("11111", "3", "1")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             elif "4199508" in params:
                 #turn off standing lamp2
                 send("11111", "3", "0")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             elif "4199697" in params:
                 #turn ambient lights on
                 result = core.process(key="light", params=["ambient"], origin=name, target="all")
@@ -70,17 +70,17 @@ def process(key, params):
                 send("11111", "1", "0")
                 send("11111", "2", "0")
                 send("11111", "3", "0")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "All lights turned off successfully.", "plugin": name}
             elif "on" in params:
                 send("11111", "1", "1")
                 send("11111", "2", "1")
                 send("11111", "3", "1")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             elif "ambient" in params:
                 send("11111", "1", "1")
                 send("11111", "2", "0")
                 send("11111", "3", "1")
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             else:
                 core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
                 return {"processed": False, "value": "Parameter {} not in use.".format(", ".join(params)), "plugin": name}

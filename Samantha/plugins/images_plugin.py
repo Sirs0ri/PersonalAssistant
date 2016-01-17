@@ -241,7 +241,7 @@ def process(key, params):
                 identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
                 wallpaper = generate_wallpaper(wallpaper_bg, identicon, path)
                 set_daily_wallpaper(wallpaper)
-                return {"processed": True, "value": None, "plugin": name}
+                return {"processed": True, "value": "Success.", "plugin": name}
             else:
                 core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
                 return {"processed": False, "value": "Parameter {} not in use.".format(", ".join(params)), "plugin": name}
@@ -251,7 +251,7 @@ def process(key, params):
             identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
             set_daily_wallpaper(wallpaper)
-            return {"processed": True, "value": None, "plugin": name}
+            return {"processed": True, "value": "Success.", "plugin": name}
         elif key == "wallpaper":
             core.log(name, ["  Generating a new wallpaper..."], "info")
             wallpaper_bg = get_wallpaper()

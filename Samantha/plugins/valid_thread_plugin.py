@@ -34,12 +34,12 @@ def process(key, params):
         if key == "onstart":
             core.log(name, ["Startup...","Hello World!", "Starting thread..."], "logging")
             t.start()
-            return {"processed": True, "value": None, "plugin": name}
+            return {"processed": True, "value": "Success.", "plugin": name}
         elif key == "onexit":
             core.log(name, ["Exiting..."], "logging")
             t.stop()
             t.join()
-            return {"processed": True, "value": None, "plugin": name}
+            return {"processed": True, "value": "Success.", "plugin": name}
         elif key in ["test", "thread"]: 
             s = "I could do sth now..."
             core.log(name, ["  " + s], "debug")

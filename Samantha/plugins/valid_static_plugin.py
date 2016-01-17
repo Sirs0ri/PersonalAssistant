@@ -13,10 +13,10 @@ def process(key, params):
     try:
         if key == "onstart":
             core.log(name, ["Startup...","Hello World!"], "info")
-            return {"processed": True, "value": None, "plugin": name}
+            return {"processed": True, "value": "Success.", "plugin": name}
         elif key == "onexit":
             core.log(name, ["I'm not even running anymore!"], "logging")
-            return {"processed": True, "value": None, "plugin": name}
+            return {"processed": True, "value": "Success.", "plugin": name}
         elif key in ["test", "static"]: 
             s = "I could do sth now..."
             core.log(name, ["  " + s], "debug")
