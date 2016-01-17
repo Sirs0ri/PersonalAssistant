@@ -27,7 +27,7 @@ def get_wallpaper():
             image_url = None
     else: 
         image_url = None
-    core.log(name, ["    The URL is {}.".format(image_url),"    Downloading to {}...".format(global_variables.folder_base + path)], "logging")
+    core.log(name, ["    The URL is {}.".format(image_url),"    Downloading to {}...".format(global_variables.folder_base_short + path)], "logging")
     
     if image_url:
         f = open(global_variables.folder_base + path, "wb")
@@ -35,7 +35,7 @@ def get_wallpaper():
         f.close()
     else: 
         core.log(name, ["    Download not completed."], "error")
-    core.log(name, ["    Download completed to {}.".format(global_variables.folder_base + path)], "logging")
+    core.log(name, ["    Download completed to {}.".format(global_variables.folder_base_short + path)], "logging")
     return path
     
 def resize(im, size, offset=(0,0)):
@@ -71,7 +71,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     bg_layer = converter_brightness.enhance(0.8)
     if DEBUG:
         core.log(name, ["      Saving the background..."], "debug")
-        bg_layer.save(global_variables.folder_base + "/data/bg_layer.png")
+        bg_layer.save(global_variables.folder_base_short + "/data/bg_layer.png")
 
     #generate the masks
 
@@ -210,7 +210,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     final.paste(frame_layer, None, frame_layer)
     final.paste(overlay_layer, None, overlay_layer)
     final.save(global_variables.folder_base + destination_path)
-    core.log(name, ["    Created the wallpaper at {}.".format(global_variables.folder_base + destination_path)], "info")
+    core.log(name, ["    Created the wallpaper at {}.".format(global_variables.folder_base_short + destination_path)], "info")
     return destination_path
 
 def set_daily_wallpaper(path="/data/wallpaper.png"):

@@ -27,7 +27,7 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     f = open(global_variables.folder_base + path, "wb")
     f.write(identicon)
     f.close()
-    core.log(name, ["    Saved the Identicon at {}.".format(global_variables.folder_base + path)], "info")
+    core.log(name, ["    Saved the Identicon at {}.".format(global_variables.folder_base_short + path)], "info")
     return path
 
 def process(key, params):
