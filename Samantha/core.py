@@ -175,15 +175,22 @@ def process(key, params=[], origin="None", target="any"):
                     # stop the loop if the command has been processed successfully once and not all plugins are targeted
                     break
     except KeyError as e:
-        log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
-        results = [{"processed": False, "value": "Keyword not indexed", "plugin": name}]
+        #log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
+        results = [{"processed": False, "value": "This Keyword isn't indexed. [{}]".format(e), "plugin": name}]
     except Exception as e: 
-        log(name, ["{}".format(e)], "error")
-        results = [{"processed": False, "value": e, "plugin": name}]
+        #log(name, ["{}".format(e)], "error")
+        results = [{"processed": False, "value": "{}".format(e), "plugin": name}]
         
     if results == []:
-        log(name, ["  No matching plugin found."], "warning")
-        results = [{"processed": False, "value": None, "plugin": name}]
+        #log(name, ["  No matching plugin found."], "warning")
+        results = [{"processed": False, "value": "No matching plugin found.", "plugin": name}]
+
+    for r in results:
+        if r["processed"]:
+            log(name, [r["value"]], info)
+        else:
+            log(name, [r["value"]], warning)
+
     return results
 
 def startup():
