@@ -187,9 +187,9 @@ def process(key, params=[], origin="None", target="any"):
 
     for r in results:
         if r["processed"]:
-            log(name, [r["value"]], info)
+            log(name, [r["value"]], "info")
         else:
-            log(name, [r["value"]], warning)
+            log(name, [r["value"]], "warning")
 
     return results
 
