@@ -7,7 +7,7 @@ Reference: https://github.com/azaghal/pydenticon/blob/master/docs/usage.rst
 Might be used to create a colored overlay over a b/w wallpaper
 """
 
-import pydenticon, core, time, global_variables
+import pydenticon, core, time
 
 is_sam_plugin = 1
 name = "Identicon"
@@ -23,12 +23,12 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     core.log(name, ["    Generating the Identicon...","    Data is {}".format(data)], "logging")
     generator = pydenticon.Generator(5, 5)
     identicon = generator.generate(data, 300, 300)
-    core.log(name, ["    Generated the Identicon. Saving at {}...".format(global_variables.folder_base + path)], "logging")
-    f = open(global_variables.folder_base + path, "wb")
+    core.log(name, ["    Generated the Identicon. Saving at {}...".format(core.global_variables.folder_base + path)], "logging")
+    f = open(core.global_variables.folder_base + path, "wb")
     f.write(identicon)
     f.close()
-    core.log(name, ["    Saved the Identicon at {}.".format(global_variables.folder_base_short + path)], "info")
     return path
+    core.log(name, ["    Saved the Identicon at {}.".format(core.global_variables.folder_base_short + path)], "info")
 
 def process(key, params):
     try:

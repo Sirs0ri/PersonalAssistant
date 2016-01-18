@@ -76,7 +76,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     bg_layer = converter_brightness.enhance(0.8)
     if DEBUG:
         core.log(name, ["      Saving the background..."], "debug")
-        bg_layer.save(global_variables.folder_base_short + "/data/bg_layer.png")
+        bg_layer.save(core.global_variables.folder_base_short + "/data/bg_layer.png")
 
     #generate the masks
 
@@ -132,7 +132,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     overlay_layer.putalpha(mask_WoB_small)
     if DEBUG:
         core.log(name, ["      Saving the colored overlay..."], "debug")
-        overlay_layer.save(global_variables.folder_base + "/data/overlay_layer.png")
+        overlay_layer.save(core.global_variables.folder_base + "/data/overlay_layer.png")
 
     #generate the frame around the colored overlay
 
@@ -142,7 +142,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     frame_layer.putalpha(mask_WoB)
     if DEBUG:
         core.log(name, ["      Saving the frame..."], "debug")
-        frame_layer.save(global_variables.folder_base + "/data/frame_layer.png")
+        frame_layer.save(core.global_variables.folder_base + "/data/frame_layer.png")
 
     #generate the shadow
 
@@ -170,7 +170,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     shadow_layer = Image.blend(Image.new("RGBA", size), shadow_layer, 0.8)
     if DEBUG:
         core.log(name, ["      Saving the dropshadow..."], "debug")
-        shadow_layer.save(global_variables.folder_base + "/data/shadow_layer.png")
+        shadow_layer.save(core.global_variables.folder_base + "/data/shadow_layer.png")
 
     #merge the shadow with the background
     
@@ -205,7 +205,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
         core.log(name, ["        {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1])], "logging")
     if DEBUG:
         core.log(name, ["      Saving the background and shadow..."], "debug")
-        bg_layer.save(global_variables.folder_base + "/data/bg_layer_shadow.png")
+        bg_layer.save(core.global_variables.folder_base + "/data/bg_layer_shadow.png")
 
     #merge the layers
     
@@ -234,7 +234,7 @@ def set_daily_wallpaper(path="/data/wallpaper.png"):
     core.log(name, ["        {}".format(url)], "logging")
     payload = {'message': 'wallpaper.set', 'files': url}
     core.log(name, ["      Sending the AR-Message..."], "logging")
-    response = requests.get(private_variables.autoremote_baseurl["g2"], payload)
+    response = requests.get(core.private_variables.autoremote_baseurl["g2"], payload)
     core.log(name, ["      The Image was sent successfully. {}".format(response)], "info")
     '''
     

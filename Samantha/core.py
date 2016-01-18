@@ -6,6 +6,7 @@ from signal import SIGTERM
 name="Core"
 plugins = []
 key_index = {}
+private_variables = imp.load_source("private_variables", "../../private_variables.py")
 
 class str_format:
     """

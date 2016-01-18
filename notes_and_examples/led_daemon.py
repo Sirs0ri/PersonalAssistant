@@ -3,7 +3,6 @@
 import sys, os, time, atexit, pigpio
 from signal import SIGTERM
 from daemon import Daemon
-import Samantha.global_variables as gvars
  
 pi = pigpio.pi()
 
@@ -49,16 +48,16 @@ class LightDaemon(Daemon):
         """
         write values between 0 (=off) and 255 (=completely on) to the pins controlling the Lights
         
-        gvars.<color>Pins is a list that holds the pinnumbers I'm currently using.
+        core.global_variables.<color>Pins is a list that holds the pinnumbers I'm currently using.
         """
         if 0 <= r <= 255:
-            for pin in gvars.redPins:
+            for pin in core.global_variables.redPins:
                 pi.set_PWM_dutycycle(pin, r)
         if 0 <= g <= 255:
-            for pin in gvars.greenPins:
+            for pin in core.global_variables.greenPins:
                 pi.set_PWM_dutycycle(pin, g)
         if 0 <= b <= 255:
-            for pin in gvars.bluePins:
+            for pin in core.global_variables.bluePins:
                 pi.set_PWM_dutycycle(pin, b)
  
     def spread(self, m, n=256):
@@ -100,15 +99,15 @@ class LightDaemon(Daemon):
         """
         if 0 <= r <= 255:
             #calculate how many steps the single colors have to be turned up/down
-            redIs = pi.get_PWM_dutycycle(gvars.redPins[0])
+            redIs = pi.get_PWM_dutycycle(core.global_variables.redPins[0])
             redDiff = r - redIs
             redList = self.spread(m=redDiff)
         if 0 <= g <= 255:
-            greenIs = pi.get_PWM_dutycycle(gvars.greenPins[0])
+            greenIs = pi.get_PWM_dutycycle(core.global_variables.greenPins[0])
             greenDiff = g - greenIs
             greenList = self.spread(m=greenDiff)
         if 0 <= b <= 255:
-            blueIs = pi.get_PWM_dutycycle(gvars.bluePins[0])
+            blueIs = pi.get_PWM_dutycycle(core.global_variables.bluePins[0])
             blueDiff = b - blueIs
             blueList = self.spread(m=blueDiff)
             
@@ -168,7 +167,7 @@ class LightDaemon(Daemon):
         turns on a warm-white light if the LEDs are completely off and turns them off otherwise
         """
         #get the values of the pins for each color, if all 3 are 0 the light is completely off, otherwise it will be turned off.
-        if (abs(pi.get_PWM_dutycycle(gvars.redPins[0])) + abs(pi.get_PWM_dutycycle(gvars.greenPins[0])) + abs(pi.get_PWM_dutycycle(gvars.bluePins[0]))):
+        if (abs(pi.get_PWM_dutycycle(core.global_variables.redPins[0])) + abs(pi.get_PWM_dutycycle(core.global_variables.greenPins[0])) + abs(pi.get_PWM_dutycycle(core.global_variables.bluePins[0]))):
             self.crossFade(0,0,0)
         else:
             self.crossFade(255,85,17)
@@ -192,9 +191,9 @@ class LightDaemon(Daemon):
         change the brightness of the light. possible inputs are -x and +x to add/substract values and x to set a new brightness independendly of the current one.
         """
         #get current values
-        r = pi.get_PWM_dutycycle(gvars.redPins[0])
+        r = pi.get_PWM_dutycycle(core.global_variables.redPins[0])
         g = pi.get_PWM_dutycycle(greenPins[0])
-        b= pi.get_PWM_dutycycle(gvars.bluePins[0])
+        b= pi.get_PWM_dutycycle(core.global_variables.bluePins[0])
 
         if "-" in str(brightness) or "+" in str(brightness):
             #get current brightness

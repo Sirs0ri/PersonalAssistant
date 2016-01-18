@@ -3,7 +3,6 @@
  
 import sys, os, time, atexit, pigpio, threading
 from signal import SIGTERM
-import global_variables as gvars
 import core
 
 '''
@@ -62,16 +61,16 @@ class LightDaemon(core.Daemon):
         """
         write values between 0 (=off) and 255 (=completely on) to the pins controlling the Lights
         
-        gvars.<color>Pins is a list that holds the pinnumbers I'm currently using.
+        core.global_variables.<color>Pins is a list that holds the pinnumbers I'm currently using.
         """
         if 0 <= r <= 255:
-            for pin in gvars.redPins:
+            for pin in core.global_variables.redPins:
                 pi.set_PWM_dutycycle(pin, r)
         if 0 <= g <= 255:
-            for pin in gvars.greenPins:
+            for pin in core.global_variables.greenPins:
                 pi.set_PWM_dutycycle(pin, g)
         if 0 <= b <= 255:
-            for pin in gvars.bluePins:
+            for pin in core.global_variables.bluePins:
                 pi.set_PWM_dutycycle(pin, b)
  
     def spread(self, m, n=256):
