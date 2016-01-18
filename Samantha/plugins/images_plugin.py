@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re, pydenticon, core, time, global_variables, requests, dropbox, imp
+import re, pydenticon, core, time, requests, dropbox, imp
 from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
-private_variables = imp.load_source("private_variables", "../../private_variables.py")
 
 is_sam_plugin = 1
 name = "Images"
@@ -16,7 +15,11 @@ DEBUG = 0
 def get_wallpaper():
     core.log(name, ["    Downloading the baseimage..."], "logging")
     path = "/data/wallpaper_background.png"
-    response = requests.get("https://earthview.withgoogle.com/")
+    try: 
+        response = requests.get("https://earthview.withgoogle.com/")
+    except Exception as e:
+        return {"processed":False, "value":e, "plugin": name}
+
     html = response.text
     regex = r"background-image: url\((?P<link>.+)\);"
     m = re.search(regex, html, re.IGNORECASE)
@@ -25,18 +28,20 @@ def get_wallpaper():
             image_url = m.group("link")
         else: 
             image_url = None
+            return {"processed": False, "value": "No URL found.", "plugin": name}
     else: 
-        image_url = None
-    core.log(name, ["    The URL is {}.".format(image_url),"    Downloading to {}...".format(global_variables.folder_base_short + path)], "logging")
-    
-    if image_url:
-        f = open(global_variables.folder_base + path, "wb")
+        return {"processed": False, "value": "No URL found.", "plugin": name}
+    core.log(name, ["    The URL is {}.".format(image_url),"    Downloading to {}...".format(core.global_variables.folder_base_short + path)], "logging")
+
+    try: 
+        f = open(core.global_variables.folder_base + path, "wb")
         f.write(requests.get(image_url).content)
         f.close()
-    else: 
-        core.log(name, ["    Download not completed."], "error")
-    core.log(name, ["    Download completed to {}.".format(global_variables.folder_base_short + path)], "logging")
-    return path
+    except Exception as e:
+        return {"processed": False, "value": "Error while downloading: {}".format(e), "plugin":name}
+
+    core.log(name, ["    Download completed to {}.".format(core.global_variables.folder_base_short + path)], "logging")
+    return {"processed": True, "value":core.global_variables.folder_base + path, "plugin":name}
     
 def resize(im, size, offset=(0,0)):
     bg = Image.new(im.mode, size)
@@ -63,7 +68,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     #generate the background
 
     core.log(name, ["      Creating the background..."], "logging")
-    bg_layer = Image.open(global_variables.folder_base + background_path)    #the background in color
+    bg_layer = Image.open(background_path)    #the background in color
     bg_layer = bg_layer.convert("RGBA")
     converter_color = ImageEnhance.Color(bg_layer)
     bg_layer = converter_color.enhance(0.05)
@@ -77,8 +82,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
 
     core.log(name, ["      Creating the normal masks..."], "logging")
     size = bg_layer.size
-    mask_BoW = Image.open(global_variables.folder_base + mask_path)     #"BoW" means black icon on white background.
-    mask_WoB = ImageOps.invert(mask_BoW)                                #"WoB" is a white icon on black bg.
+    mask_BoW = Image.open(mask_path)                                #"BoW" means black icon on white background.
+    mask_WoB = ImageOps.invert(mask_BoW)                            #"WoB" is a white icon on black bg.
     if not mask_BoW.size == size:
         mask_WoB = resize(mask_WoB, size)
         mask_BoW = ImageOps.invert(mask_WoB)
@@ -86,8 +91,8 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoW = mask_BoW.convert("1")
     if DEBUG:
         core.log(name, ["      Saving the normal masks..."], "debug")
-        mask_WoB.save(global_variables.folder_base + "/data/mask_WoB.png")
-        mask_BoW.save(global_variables.folder_base + "/data/mask_BoW.png")
+        mask_WoB.save(core.global_variables.folder_base + "/data/mask_WoB.png")
+        mask_BoW.save(core.global_variables.folder_base + "/data/mask_BoW.png")
 
     core.log(name, ["      Creating the small masks..."], "info")
     mask_WoB_small = mask_WoB.convert("RGB")
@@ -116,14 +121,14 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     mask_BoW_small = mask_BoW_small.convert("1")
     if DEBUG:
         core.log(name, ["      Saving the small masks..."], "debug")
-        mask_WoB_small.save(global_variables.folder_base + "/data/mask_WoB_small.png")
-        mask_BoW_small.save(global_variables.folder_base + "/data/mask_BoW_small.png")
+        mask_WoB_small.save(core.global_variables.folder_base + "/data/mask_WoB_small.png")
+        mask_BoW_small.save(core.global_variables.folder_base + "/data/mask_BoW_small.png")
 
 
     #generate the colored overlay
 
     core.log(name, ["      Creating the colored overlay..."], "logging")
-    overlay_layer = Image.open(global_variables.folder_base + background_path)
+    overlay_layer = Image.open(background_path)
     overlay_layer.putalpha(mask_WoB_small)
     if DEBUG:
         core.log(name, ["      Saving the colored overlay..."], "debug")
@@ -132,7 +137,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     #generate the frame around the colored overlay
 
     core.log(name, ["      Creating the frame around the overlay..."], "logging")
-    frame_layer = Image.open(global_variables.folder_base + background_path)
+    frame_layer = Image.open(background_path)
     frame_layer = Image.blend(Image.new("RGB", size, "white"), frame_layer, 0.65)
     frame_layer.putalpha(mask_WoB)
     if DEBUG:
@@ -195,7 +200,7 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
                     pixels_bg[x, y] = (0, 0, 0, a_bg)
                     pixels_changed_count += 1
     except Exception as e:
-        core.log(name, ["{}".format(e)], "error")
+        return {"processed": False, "value": e, "plugin": name}
     finally: 
         core.log(name, ["        {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1])], "logging")
     if DEBUG:
@@ -209,17 +214,18 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     final.paste(bg_layer)
     final.paste(frame_layer, None, frame_layer)
     final.paste(overlay_layer, None, overlay_layer)
-    final.save(global_variables.folder_base + destination_path)
-    core.log(name, ["    Created the wallpaper at {}.".format(global_variables.folder_base_short + destination_path)], "info")
-    return destination_path
+    final.save(core.global_variables.folder_base + destination_path)
+    core.log(name, ["    Created the wallpaper at {}.".format(core.global_variables.folder_base_short + destination_path)], "info")
+    return {"processed": True, "value": core.global_variables.folder_base + destination_path, "plugin": name}
 
 def set_daily_wallpaper(path="/data/wallpaper.png"):
-    
+    result = core.process("ar_file", ["g2", "wallpaper.set", core.global_variables.folder_base + path])
+    '''
     core.log(name, ["    Sending the Wallpaper to the phone..."], "info")
     destination = "/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
     core.log(name, ["      Initializing the Dropbox-Client..."], "logging")
-    client = dropbox.client.DropboxClient(private_variables.dropbox_token)
-    f = open(global_variables.folder_base + path, 'rb')
+    client = dropbox.client.DropboxClient(core.private_variables.dropbox_token)
+    f = open(core.global_variables.folder_base + path, 'rb')
     core.log(name, ["      Uploading..."], "logging")
     response = client.put_file(destination, f)
     core.log(name, ["      Accessing the public Link..."], "logging")
@@ -230,34 +236,35 @@ def set_daily_wallpaper(path="/data/wallpaper.png"):
     core.log(name, ["      Sending the AR-Message..."], "logging")
     response = requests.get(private_variables.autoremote_baseurl["g2"], payload)
     core.log(name, ["      The Image was sent successfully. {}".format(response)], "info")
+    '''
     
 def process(key, params):
     try:
         if key == "schedule_h":
             if "0" in params:
-                path = "/data/wallpaper_{time}.png".format(time=time.strftime("%Y-%j_%H:%M:%S", time.localtime()))
-                core.log(name, ["  Generating the daily wallpaper at {}...".format(path)], "info")
-                wallpaper_bg = get_wallpaper()
-                identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
-                wallpaper = generate_wallpaper(wallpaper_bg, identicon, path)
-                set_daily_wallpaper(wallpaper)
-                return {"processed": True, "value": "Success.", "plugin": name}
+                result = core.process(key="set_wallpaper", origin=name)
+                return result
             else:
                 #core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
                 return {"processed": False, "value": "Parameter not in use. ({}, {})".format(key, params), "plugin": name}
-        elif key == "set_wallpaper":
+        elif key in ["set_wallpaper", "wallpaper"]:
             core.log(name, ["  Generating and setting a new wallpaper..."], "info")
             wallpaper_bg = get_wallpaper()
-            identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
-            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
-            set_daily_wallpaper(wallpaper)
-            return {"processed": True, "value": "Success.", "plugin": name}
-        elif key == "wallpaper":
-            core.log(name, ["  Generating a new wallpaper..."], "info")
-            wallpaper_bg = get_wallpaper()
-            identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]["value"]
-            wallpaper = generate_wallpaper(wallpaper_bg, identicon)
-            return {"processed": True, "value": wallpaper, "plugin": name}
+            if wallpaper_bg["processed"]:
+                identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")
+                if identicon["processed"]:
+                    wallpaper = generate_wallpaper(wallpaper_bg["value"], identicon["value"])
+                    if key == "wallpaper":
+                        return wallpaper
+                    elif wallpaper["processed"]:
+                        result = core.process("ar_file", ["g2", "wallpaper.set", wallpaper["value"]])
+                        return result
+                    else:
+                        return wallpaper
+                else: 
+                    return identicon
+            else:
+                return wallpaper_bg
         else:
             #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
