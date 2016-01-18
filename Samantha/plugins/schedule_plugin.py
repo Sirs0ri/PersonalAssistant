@@ -24,10 +24,7 @@ class Plugin_Thread(threading.Thread):
         delay = 5
         self.old_hour = None
         while self.running == 1:
-            a_min = core.process(key="schedule_min", params=[str(i), "schedule_min {}".format(i % 60)], origin=name)
-            if "!CONNECTION_ERROR" == a_min:
-                core.log(self.name, ["Couldn't connect to flask. Aborting."], "error")
-                break
+            core.process(key="schedule_min", params=[str(i), "schedule_min {}".format(i % 60)], origin=name)
             i += 5
             nexttime += 300
             while time.time() < nexttime and self.running == 1:
