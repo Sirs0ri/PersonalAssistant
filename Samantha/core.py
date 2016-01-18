@@ -176,7 +176,7 @@ def process(key, params=[], origin="None", target="any"):
                     break
     except KeyError as e:
         #log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
-        results = [{"processed": False, "value": "This Keyword isn't indexed. ({}, {})".format(e), "plugin": name}]
+        results = [{"processed": False, "value": "This Keyword isn't indexed. ({}, {})".format(key, params), "plugin": name}]
     except Exception as e: 
         #log(name, ["{}".format(e)], "error")
         results = [{"processed": False, "value": "{}".format(e), "plugin": name}]
