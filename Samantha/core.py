@@ -117,7 +117,7 @@ def import_plugins():
             log(name, ["  This is not a valid Plugin.".format(filenames[i])], "error")
     for p in plugins:
         plugin_names.append(p.name)
-    log(name, ["Imported plugins:"] + plugin_names, "info")
+    log(name, ["Imported plugins:"] + sorted(plugin_names), "info")
     return plugins
 
 def generate_index():
@@ -176,7 +176,7 @@ def process(key, params=[], origin="None", target="any"):
                     break
     except KeyError as e:
         #log(name, ["  This Keyword isn't indexed. [{}]".format(e)], "warning")
-        results = [{"processed": False, "value": "This Keyword isn't indexed. [{}]".format(e), "plugin": name}]
+        results = [{"processed": False, "value": "This Keyword isn't indexed. ({}, {})".format(e), "plugin": name}]
     except Exception as e: 
         #log(name, ["{}".format(e)], "error")
         results = [{"processed": False, "value": "{}".format(e), "plugin": name}]
@@ -187,9 +187,9 @@ def process(key, params=[], origin="None", target="any"):
 
     for r in results:
         if r["processed"]:
-            log(name, ["  {}: {}".format(r["plugin"], r["value"])], "info")
+            log(name, ["{}: {}".format(r["plugin"], r["value"])], "info")
         else:
-            log(name, ["  {}: {}".format(r["plugin"], r["value"])], "warning")
+            log(name, ["{}: {}".format(r["plugin"], r["value"])], "warning")
 
     return results
 
