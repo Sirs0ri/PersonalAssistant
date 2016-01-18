@@ -27,8 +27,8 @@ def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     f = open(core.global_variables.folder_base + path, "wb")
     f.write(identicon)
     f.close()
-    return path
     core.log(name, ["    Saved the Identicon at {}.".format(core.global_variables.folder_base_short + path)], "info")
+    return {"processed": True, "value": core.global_variables.folder_base + path, "plugin": name}
 
 def process(key, params):
     try:
@@ -38,7 +38,7 @@ def process(key, params):
                 result = generate_identicon(params[0])
             else:
                 result = generate_identicon()
-            return {"processed": True, "value": result, "plugin": name}
+            return result
         else:
             #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
