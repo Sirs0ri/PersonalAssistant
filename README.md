@@ -5,22 +5,22 @@ The home for Sam, Glyph, Will and all the other assistants out there
 
 ### Mainframe
 
-The "Mainframe" is the framework in which Samantha operates.
-It manages plugins and interfaces and the communication between the independent components. Some important functions which can be called by both, the mainframe and imported plugins are handled by a separate core which can be imported by the Mainframe and both, plugins and interfaces. An example is the "log()" function which is used to transfer data from every part of Sam to the active interfaces.
+    Samantha/main.py & Samantha/core.py
 
-The mainframe's function is to receive data from an Interface, distribute it to the correct plugin(s), collect the answers and direct the answers back to the Interface it came from as "output" and to ecery other interface as part of the log.
-
-### Interfaces
-
-The second biggest part next to the Mainframe are Interfaces. They are used to receive data from the user, preprocess it into a standardized format, forward it to the mainframe and finally bring a result (might be for example a confirmation, refining question or an answer) back to the user.
-
-Interfaces should have functions to:
-- receive data from the user
-- forward the preprocessed data to the mainframe
-- log data from different modules
-- display data directly to the user
+The "Mainframe" currently consists of main.py and core.py and is the framework in which Samantha operates.
+Main.py is the file you want to run to start Samantha. It will start a very basic web-interface via **Flask** and handle starting the core. 
+Core.py is a file that manages the different plugins. Upon being started by main.py, it imports and initializes the different plugins. It also provides the most important functions (process() and log(), to be exact) and handles system-wide variables.
+Via the core's process() function communication between plugins becomes possible. It requires a keyword to work and takes parameters and a target as optional parameters.
+When a command comes in, the core checks which Plugins can process it (via the keyword), forwards the data to them and then returns the results in a standardized format.
 
 ### Plugins
+
+    Samantha/plugins/
+
+Samantha's functionality comes from its different plugins. They can act as triggers/interface (see the Schedule-Plugin), pure processors (Identicon-Plugin) or a mix of both (433MHz-Transmitter-Plugin).
+Every plugin has to fulfill a couple of requirements to be loaded successfully:
+* It has to have a process()-function to handle input. 
+* It has to declare it's name and which keywords it can handle, as well if it's meant to be loaded.
 
 Plugins finally process the data received by interfaces. Each Plugin has a list of certain keywords. If a command matches any of these keywords, the plugin will be activated during the processing of the command by the mainframe.
 
@@ -29,6 +29,18 @@ Plugins can have different function such as:
 - Communicate
 - Researching (example: looking something up on Google, Wolfram Alpha, etc)
 - Controlling (starting or manipulating the playback) Media
+
+### Interfaces
+
+The second part next to the Mainframe are Interfaces. They are used to receive data from the user, preprocess it into a standardized format, forward it to the mainframe and finally bring a result (might be for example a confirmation, refining question or an answer) back to the user.
+
+The only interface for now is "Flask", a webserver which is started automatically via main.py and available in my local network.
+
+Interfaces should have functions to:
+- receive data from the user
+- forward the preprocessed data to the mainframe
+- log data from different modules
+- display data directly to the user
 
 ## To Do
 
@@ -79,6 +91,7 @@ Plugins can have different function such as:
 - [ ] find an episode from couchtuner's main page
 - [ ] triggered by schedule_h = 5
 - [ ] monitor my library to download only new episodes
+- [ ] crossreference with Netflix and maybe Plex
 
 #### Download
 
