@@ -161,14 +161,14 @@ def process(key, params=[], origin="None", target="any"):
     results = []
     try:
         if key_index[key]:
-            log("Processing", ["New Command from {}:".format(origin),"Keyword: {},".format(key),"Parameter: {},".format(", ".join(params)), "Target: {}".format(target)], "info")
+            #log("Processing", ["New Command from {}:".format(origin),"Keyword: {},".format(key),"Parameter: {},".format(", ".join(params)), "Target: {}".format(target)], "info")
             for p in key_index[key]:
                 # iterate over every plugin that reacts to the given keyword
                 if target in ["all", "any", p.name]: 
                     # this will be true unless the name of a specifc plugin to process the command is given
                     result = p.process(key, params)
                     if target == "all" or result["processed"]:
-                        log(name, ["  Successfully processed {} by {}.".format(key, p.name)], "logging")
+                        #log(name, ["  Successfully processed {} by {}.".format(key, p.name)], "logging")
                         # unless the target is "all", failed attempts to process a command are ignored
                         results.append(result)
                 if results and not target == "all":
@@ -187,9 +187,9 @@ def process(key, params=[], origin="None", target="any"):
 
     for r in results:
         if r["processed"]:
-            log(name, [r["value"]], "info")
+            log(name, ["  {}: {}".format(r["plugin"], r["value"])], "info")
         else:
-            log(name, [r["value"]], "warning")
+            log(name, ["  {}: {}".format(r["plugin"], r["value"])], "warning")
 
     return results
 

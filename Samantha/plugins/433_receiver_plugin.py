@@ -48,8 +48,8 @@ def process(key, params):
             t.join()
             return {"processed": True, "value": "Thread Exited", "plugin": name}
         else: 
-            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
-            return {"processed": False, "value": "Illegal Command", "plugin": name}
+            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
+            return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}

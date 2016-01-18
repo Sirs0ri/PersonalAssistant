@@ -243,8 +243,8 @@ def process(key, params):
                 set_daily_wallpaper(wallpaper)
                 return {"processed": True, "value": "Success.", "plugin": name}
             else:
-                core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
-                return {"processed": False, "value": "Parameter {} not in use.".format(", ".join(params)), "plugin": name}
+                #core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
+                return {"processed": False, "value": "Parameter not in use. ({}, {})".format(key, params), "plugin": name}
         elif key == "set_wallpaper":
             core.log(name, ["  Generating and setting a new wallpaper..."], "info")
             wallpaper_bg = get_wallpaper()
@@ -259,8 +259,8 @@ def process(key, params):
             wallpaper = generate_wallpaper(wallpaper_bg, identicon)
             return {"processed": True, "value": wallpaper, "plugin": name}
         else:
-            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
-            return {"processed": False, "value": "Illegal command", "plugin": name}
+            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
+            return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}

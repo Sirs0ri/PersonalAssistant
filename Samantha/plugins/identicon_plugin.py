@@ -40,8 +40,8 @@ def process(key, params):
                 result = generate_identicon()
             return {"processed": True, "value": result, "plugin": name}
         else:
-            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
-            return {"processed": False, "value": "Illegal command.", "plugin": name}
+            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
+            return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}

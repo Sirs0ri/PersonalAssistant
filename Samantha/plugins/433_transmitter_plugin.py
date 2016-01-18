@@ -63,8 +63,8 @@ def process(key, params):
                 result = core.process(key="light", params=["off"], origin=name, target="all")
                 return {"processed": True, "value": result, "plugin": name}
             else:
-                core.log(name, ["  Illegal parameter(s)."], "warning")
-                return {"processed": False, "value": "Illegal parameter(s)", "plugin": name}
+                #core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
+                return {"processed": False, "value": "Parameter not in use. ({}, {})".format(key, params), "plugin": name}
         elif key == "light":
             if "off" in params:
                 send("11111", "1", "0")
@@ -82,11 +82,11 @@ def process(key, params):
                 send("11111", "3", "1")
                 return {"processed": True, "value": "Success.", "plugin": name}
             else:
-                core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
-                return {"processed": False, "value": "Parameter {} not in use.".format(", ".join(params)), "plugin": name}
+                #core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
+                return {"processed": False, "value": "Parameter not in use. ({}, {})".format(key, params), "plugin": name}
         else:
-            core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
-            return {"processed": False, "value": "Illegal command", "plugin": name}
+            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
+            return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}
