@@ -6,7 +6,7 @@ from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
 
 is_sam_plugin = 1
 name = "Images"
-keywords = ["schedule_h", "wallpaper", "set_wallpaper"]
+keywords = ["schedule_day", "wallpaper", "set_wallpaper"]
 has_toggle = 0
 has_set = 0
 
@@ -240,7 +240,7 @@ def set_daily_wallpaper(path="/data/wallpaper.png"):
     
 def process(key, params):
     try:
-        if key == "schedule_h":
+        if key == "schedule_day":
             if "0" in params:
                 result = core.process(key="set_wallpaper", origin=name)
                 return result
