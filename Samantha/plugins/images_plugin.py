@@ -240,14 +240,7 @@ def set_daily_wallpaper(path="/data/wallpaper.png"):
     
 def process(key, params):
     try:
-        if key == "schedule_day":
-            if "0" in params:
-                result = core.process(key="set_wallpaper", origin=name)
-                return result
-            else:
-                #core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
-                return {"processed": False, "value": "Parameter not in use. ({}, {})".format(key, params), "plugin": name}
-        elif key in ["set_wallpaper", "wallpaper"]:
+        if key in ["schedule_day", "set_wallpaper", "wallpaper"]:
             core.log(name, ["  Generating and setting a new wallpaper..."], "info")
             wallpaper_bg = get_wallpaper()
             if wallpaper_bg["processed"]:
