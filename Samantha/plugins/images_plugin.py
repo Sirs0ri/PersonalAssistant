@@ -218,26 +218,6 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
     core.log(name, ["    Created the wallpaper at {}.".format(core.global_variables.folder_base_short + destination_path)], "info")
     return {"processed": True, "value": core.global_variables.folder_base + destination_path, "plugin": name}
 
-def set_daily_wallpaper(path="/data/wallpaper.png"):
-    result = core.process("ar_file", ["g2", "wallpaper.set", core.global_variables.folder_base + path])
-    '''
-    core.log(name, ["    Sending the Wallpaper to the phone..."], "info")
-    destination = "/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
-    core.log(name, ["      Initializing the Dropbox-Client..."], "logging")
-    client = dropbox.client.DropboxClient(core.private_variables.dropbox_token)
-    f = open(core.global_variables.folder_base + path, 'rb')
-    core.log(name, ["      Uploading..."], "logging")
-    response = client.put_file(destination, f)
-    core.log(name, ["      Accessing the public Link..."], "logging")
-    response = client.share(destination, short_url=False)
-    url = response["url"].replace("www.dropbox", "dl.dropboxusercontent").replace("?dl=0", "")
-    core.log(name, ["        {}".format(url)], "logging")
-    payload = {'message': 'wallpaper.set', 'files': url}
-    core.log(name, ["      Sending the AR-Message..."], "logging")
-    response = requests.get(core.private_variables.autoremote_baseurl["g2"], payload)
-    core.log(name, ["      The Image was sent successfully. {}".format(response)], "info")
-    '''
-    
 def process(key, params):
     try:
         if key in ["schedule_day", "set_wallpaper", "wallpaper"]:
@@ -259,7 +239,6 @@ def process(key, params):
             else:
                 return wallpaper_bg
         else:
-            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
