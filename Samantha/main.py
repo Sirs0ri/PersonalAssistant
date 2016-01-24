@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from flask import Flask,request
-import core
+import core, sys, traceback
 
 """
 This is the main part, the "core" of Samantha.
@@ -81,6 +81,11 @@ def main():
     try:
         app.run(host="0.0.0.0")
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         core.log(name, ["{}".format(e)], "error")
     
     core.process(key="onexit", origin=name, target="all")

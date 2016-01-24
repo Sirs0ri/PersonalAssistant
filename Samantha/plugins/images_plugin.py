@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re, pydenticon, core, time, requests, dropbox, imp
+import re, pydenticon, core, time, requests, dropbox, imp, sys, traceback
 from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
 
 is_sam_plugin = 1
@@ -18,6 +18,11 @@ def get_wallpaper():
     try: 
         response = requests.get("https://earthview.withgoogle.com/")
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         return {"processed":False, "value":e, "plugin": name}
 
     html = response.text
@@ -38,6 +43,11 @@ def get_wallpaper():
         f.write(requests.get(image_url).content)
         f.close()
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         return {"processed": False, "value": "Error while downloading: {}".format(e), "plugin":name}
 
     core.log(name, ["    Download completed to {}.".format(core.global_variables.folder_base_short + path)], "logging")
@@ -200,6 +210,11 @@ def generate_wallpaper(background_path, mask_path, destination_path="/data/wallp
                     pixels_bg[x, y] = (0, 0, 0, a_bg)
                     pixels_changed_count += 1
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         return {"processed": False, "value": e, "plugin": name}
     finally: 
         core.log(name, ["        {} out of {} pixels processed.".format(pixels_changed_count, bg_layer.size[0] * bg_layer.size[1])], "logging")
@@ -241,5 +256,10 @@ def process(key, params):
         else:
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}

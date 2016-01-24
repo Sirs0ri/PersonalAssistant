@@ -7,7 +7,7 @@ Reference: https://github.com/azaghal/pydenticon/blob/master/docs/usage.rst
 Might be used to create a colored overlay over a b/w wallpaper
 """
 
-import pydenticon, core, time
+import pydenticon, core, time, sys, traceback
 
 is_sam_plugin = 1
 name = "Identicon"
@@ -43,5 +43,10 @@ def process(key, params):
             #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}

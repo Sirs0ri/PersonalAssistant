@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import core, time, imp, dropbox, requests
+import core, time, imp, dropbox, requests, sys, traceback
 
 is_sam_plugin = 1
 name = "AutoRemote"
@@ -33,6 +33,11 @@ def send_file(device="g2", message="file", path=None):
     except KeyError as e:
         return {"processed": False, "value": "Device {} not found.".format(e), "plugin": name}
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         return {"processed": False, "value": "Unhandled Exception: {}".format(e), "plugin": name}
 
 def send_message(device="g2", message="file"):
@@ -44,6 +49,11 @@ def send_message(device="g2", message="file"):
     except KeyError as e:
         return {"processed": False, "value": "Device {} not found.".format(e), "plugin": name}
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         return {"processed": False, "value": "Unhandled Exception: {}".format(e), "plugin": name}
 
 def process(key, params):
@@ -66,5 +76,10 @@ def process(key, params):
     except KeyError as e:
         return {"processed": False, "value": "Missing Parameter ({})".format(e), "plugin": name}
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}

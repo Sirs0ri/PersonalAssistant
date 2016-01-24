@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import core
+import core, sys, traceback
 
 is_sam_plugin = 1
 name = "Presence"
@@ -20,5 +20,10 @@ def process(key, params):
         else: 
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import core, fritzconnection
+import core, fritzconnection, sys, traceback
 
 is_sam_plugin = 1
 name = "FritzBox"
@@ -31,6 +31,7 @@ def initialize():
 
 def update_devices():
     global old_devicesdict
+    global fritzhosts
     deviceslist = fritzhosts.get_hosts_info()
     devicesdict = { i["mac"]: i for i in deviceslist }
     updated = 0
@@ -64,5 +65,10 @@ def process(key, params):
         else: 
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         core.log(name, ["{}".format(e)], "error")
         return {"processed": False, "value": e, "plugin": name}

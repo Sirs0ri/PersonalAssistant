@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import glob, imp, global_variables, urllib, sys, os, time, atexit
+import glob, imp, global_variables, urllib, sys, os, time, atexit, traceback
 from signal import SIGTERM
 
 name="Core"
@@ -183,6 +183,11 @@ def process(key, params=[], origin="None", target="any", type="request"):
         results = [{"processed": False, "value": "This Keyword isn't indexed. ({}, {})".format(key, params), "plugin": name}]
     except Exception as e: 
         #log(name, ["{}".format(e)], "error")
+        print("-"*60)
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         results = [{"processed": False, "value": "{}".format(e), "plugin": name}]
         
     if results == []:
