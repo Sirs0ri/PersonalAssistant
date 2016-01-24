@@ -18,35 +18,65 @@ class Plugin_Thread(threading.Thread):
         
     def run(self):
         core.log(self.name, ["      Started."], "logging")
-        #initialisation
-        
-        
-        self.old_year = None
-        self.old_mon = None
-        self.old_day = None
-        self.old_hour = None
-        self.old_min = None
+        # #initialisation
+        # 
+        # 
+        # self.old_year = None
+        # self.old_mon = None
+        # self.old_day = None
+        # self.old_hour = None
+        # self.old_min = None
         while self.running == 1:
             timetuple = datetime.datetime.now().timetuple()
-            #value: time.struct_time(tm_year=2016, tm_mon=1, tm_mday=22, tm_hour=11, tm_min=26, tm_sec=13, tm_wday=4, tm_yday=22, tm_isdst=-1)
+            """
+            value: time.struct_time(tm_year=2016, tm_mon=1, tm_mday=22, tm_hour=11, tm_min=26, tm_sec=13, tm_wday=4, tm_yday=22, tm_isdst=-1)
+                0: tm_year=2016
+                1: tm_mon=1
+                2: tm_mday=22
+                3: tm_hour=11
+                4: tm_min=26
+                5: tm_sec=13
+                6: tm_wday=4
+                7: tm_yday=22
+                8: tm_isdst=-1
+            """
             timelist = list(timetuple)
             if timelist[5] in [0,10,20,30,40,50]:
                 core.process(key="schedule_10s", params=timelist, origin=name)
-                if not timelist[4] == self.old_min:
+                if timelist[5] == 0:
+                    # Seconds = 0 -> New Minute
+                    core.process(key="schedule_min", params=timelist, origin=name)
+                    if timelist[4] == 0:
+                        # Minutes = 0 -> New Hour
+                        core.process(key="schedule_hour", params=timelist, origin=name)
+                        if timelist[3] == 0:
+                            # Hours = 0 -> New Day
+                            core.process(key="schedule_day", params=timelist, origin=name)
+                            if timelist[2] == 1:
+                                # Day of Month = 1 -> New Month
+                                core.process(key="schedule_mon", params=timelist, origin=name)
+                                if timelist[1] == 1:
+                                    # Month = 1 -> New Year
+                                    core.process(key="schedule_year", params=timelist, origin=name)
+            '''
+            if timelist[5] in [0,10,20,30,40,50]:
+                core.process(key="schedule_10s", params=timelist, origin=name)
+                if timelist[5] == 0 and not timelist[4] == self.old_min:
                     core.process(key="schedule_min", params=timelist, origin=name)
                     self.old_min = timelist[4]
-                    if not timelist[3] == self.old_hour:
+                    if timelist[4] == 0 and not timelist[3] == self.old_hour:
                         core.process(key="schedule_hour", params=timelist, origin=name)
                         self.old_hour = timelist[3]
-                        if not timelist[8] == self.old_day:
+                        if timelist[3] == 0 and not timelist[8] == self.old_day:
                             core.process(key="schedule_day", params=timelist, origin=name)
                             self.old_day = timelist[8]
-                            if not timelist[1] == self.old_mon:
+                            if timelist[8] == 0 and not timelist[1] == self.old_mon:
                                 core.process(key="schedule_mon", params=timelist, origin=name)
                                 self.old_month = timelist[5]
                                 if not timelist[1] == self.old_year:
                                     core.process(key="schedule_year", params=timelist, origin=name)
                                     self.old_year = timelist[1]
+            '''
             #sleep to take work from the CPU
             time.sleep(1)
         core.log(self.name, ["  Not running anymore."], "logging")
