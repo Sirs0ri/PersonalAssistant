@@ -65,10 +65,10 @@ def process(key, params):
             result = send_message(message="sam_onexit")
             return result
         elif key == "ar_file":
-            result = send_file(device=params[0], message=[1], path=[2])
+            result = send_file(device=params[0], message=params[1], path=params[2])
             return result
         elif key == "ar_message":
-            result = send_file(device=params[0], message=[1])
+            result = send_file(device=params[0], message=params[1])
             return result
         else: 
             #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
