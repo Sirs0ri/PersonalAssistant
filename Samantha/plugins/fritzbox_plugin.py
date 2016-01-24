@@ -23,7 +23,7 @@ def initialize():
     deviceslist = fritzhosts.get_hosts_info()
     old_devicesdict = { i["mac"]: i for i in deviceslist }
     for device in deviceslist:  # I'm not comparing anything here, so it doesn't matter if i use the list or dict.
-        if device["status"]:
+        if device["status"] == "1":
             core.process(key="device_online", params=[device["name"]], origin=name, target="all")
         else:
             core.process(key="device_offline", params=[device["name"]], origin=name, target="all")
@@ -38,7 +38,7 @@ def update_devices():
     for key in devicesdict:
         if key in old_devicesdict:
             if not devicesdict[key]["status"] == old_devicesdict[key]["status"]:
-                if devicesdict[key]["status"]:
+                if devicesdict[key]["status"] == "1":
                     core.process(key="device_online", params=[devicesdict[key]["name"]], origin=name, target="all")
                     updated += 1
                 else:
