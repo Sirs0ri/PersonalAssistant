@@ -47,6 +47,7 @@ def update_devices():
         else:
             core.process(key="device_new", params=[devicesdict[key]["name"]], origin=name, target="all", type="trigger")
             new += 1
+    old_devicesdict = devicesdict
     if updated or new:
         return {"processed": True, "value": "Updated {} devices. Found {} new devices.".format(updated, new), "plugin": name}
     else: 
