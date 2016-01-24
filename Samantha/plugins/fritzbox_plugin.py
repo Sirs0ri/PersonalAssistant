@@ -19,7 +19,7 @@ def initialize():
     address = "192.168.178.1"
     user = "Samantha"
     password = core.private_variables.fritzbox_password
-    fritzhosts = fritzconnection.FritzHosts(address, user, password)
+    fritzhosts = fritzconnection.FritzHosts(address=address, user=user, password=password)
     deviceslist = fritzhosts.get_hosts_info()
     old_devicesdict = { i["mac"]: i for i in deviceslist }
     for device in deviceslist:  # I'm not comparing anything here, so it doesn't matter if i use the list or dict.
