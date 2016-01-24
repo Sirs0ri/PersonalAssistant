@@ -150,7 +150,7 @@ def generate_index():
     log(name, ["Indexed Keywords:"] + sorted(key_index_list), "info")
     return key_index
 
-def process(key, params=[], origin="None", target="any"):
+def process(key, params=[], origin="None", target="any", type="request"):
     """
     Process data
     Accesses the parameters "Keyword", "Parameters"
@@ -191,7 +191,7 @@ def process(key, params=[], origin="None", target="any"):
     for r in results:
         if r["processed"]:
             log(name, ["{}: {}".format(r["plugin"], r["value"])], "info")
-        else:
+        elif target == "request" or global_variables.DEBUG:
             log(name, ["{}: {}".format(r["plugin"], r["value"])], "warning")
 
     return results

@@ -56,11 +56,11 @@ def process(key, params):
                 return {"processed": True, "value": "Success.", "plugin": name}
             elif "4199697" in params:
                 #turn ambient lights on
-                result = core.process(key="light", params=["ambient"], origin=name, target="all")
+                result = core.process(key="light", params=["ambient"], origin=name, target="all", type="trigger")
                 return {"processed": True, "value": result, "plugin": name}
             elif "4199700" in params:
                 #turn all lights off
-                result = core.process(key="light", params=["off"], origin=name, target="all")
+                result = core.process(key="light", params=["off"], origin=name, target="all", type="trigger")
                 return {"processed": True, "value": result, "plugin": name}
             else:
                 #core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
