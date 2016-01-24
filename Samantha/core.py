@@ -69,7 +69,7 @@ def log(name="None", content=["None"], level="logging"):
     elif level == "logging":
         lvl_str = "INFO"
         attr = [str_format.FG_WHITE]
-    elif level == "debug":
+    elif level == "debug" and global_variables.DEBUG:
         lvl_str = "DEBG"
         attr = [str_format.FG_LIGHTMAGENTA]
     else:
