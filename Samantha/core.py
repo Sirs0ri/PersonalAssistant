@@ -159,6 +159,7 @@ def process(key, params=[], origin="None", target="any"):
         "all":      will return all results
         "PLUGIN":   Will return only the result of the specified plugin, or False
     """
+    log(name=name, content=["Processing:","Key: {}".format(key), "Params: {}".format(params), "Target: {}".format(target)], level="debug")
     results = []
     try:
         if key_index[key]:
