@@ -37,7 +37,7 @@ def update_devices():
     new = 0
     for key in devicesdict:
         if key in old_devicesdict:
-            if not devicesdict[key]["status"] == old_devicesdict[key]["status"]
+            if not devicesdict[key]["status"] == old_devicesdict[key]["status"]:
                 if devicesdict[key]["status"]:
                     core.process(key="device_online", params=[devicesdict[key]["name"]], origin=name, target="all")
                     updated += 1
