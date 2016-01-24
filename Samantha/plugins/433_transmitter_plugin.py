@@ -10,7 +10,7 @@ has_toggle = 0
 has_set = 0
 
 def send(scode, dcode, state):
-    subprocess.call(["sudo", "/home/pi/Desktop/libraries/433Utils/RPi_utils/send", scode, dcode, state], stdout=subprocess.PIPE)
+    subprocess.call(["sudo", core.global_variables.folder_base + "/tools/send", scode, dcode, state], stdout=subprocess.PIPE)
     #time.sleep(0.1)
     core.log(name, ["  Code {} {} {} sent successfully.".format(scode, dcode, state)], "info")
 
