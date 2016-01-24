@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import core, time, imp, dropbox
+import core, time, imp, dropbox, requests
 
 is_sam_plugin = 1
 name = "AutoRemote"
