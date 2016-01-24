@@ -58,25 +58,6 @@ class Plugin_Thread(threading.Thread):
                                 if timelist[1] == 1:
                                     # Month = 1 -> New Year
                                     core.process(key="schedule_year", params=timelist, origin=name, type="trigger")
-            '''
-            if timelist[5] in [0,10,20,30,40,50]:
-                core.process(key="schedule_10s", params=timelist, origin=name, type="trigger")
-                if timelist[5] == 0 and not timelist[4] == self.old_min:
-                    core.process(key="schedule_min", params=timelist, origin=name, type="trigger")
-                    self.old_min = timelist[4]
-                    if timelist[4] == 0 and not timelist[3] == self.old_hour:
-                        core.process(key="schedule_hour", params=timelist, origin=name, type="trigger")
-                        self.old_hour = timelist[3]
-                        if timelist[3] == 0 and not timelist[8] == self.old_day:
-                            core.process(key="schedule_day", params=timelist, origin=name, type="trigger")
-                            self.old_day = timelist[8]
-                            if timelist[8] == 0 and not timelist[1] == self.old_mon:
-                                core.process(key="schedule_mon", params=timelist, origin=name, type="trigger")
-                                self.old_month = timelist[5]
-                                if not timelist[1] == self.old_year:
-                                    core.process(key="schedule_year", params=timelist, origin=name, type="trigger")
-                                    self.old_year = timelist[1]
-            '''
             #sleep to take work from the CPU
             time.sleep(1)
         core.log(self.name, ["  Not running anymore."], "logging")
