@@ -69,7 +69,7 @@ def log(name="None", content=["None"], level="logging"):
     elif level == "logging":
         lvl_str = "INFO"
         attr = [str_format.FG_WHITE]
-    elif level == "debug" and global_variables.DEBUG:
+    elif level == "debug":
         lvl_str = "DEBG"
         attr = [str_format.FG_LIGHTMAGENTA]
     else:
@@ -79,7 +79,8 @@ def log(name="None", content=["None"], level="logging"):
     if len(name) < 11:
         name += " "*(11-len(name))
     s = "\033[90m[\033[{lvl_begin}m{lvl_str}\033[90m]  {time}  {name}\t\033[97m{content}\033[0m".format(lvl_begin = ";".join(attr), lvl_str=lvl_str, time=time.strftime("%H:%M:%S", time.localtime()), name=name, content="\n\t\t\t\t  ".join(content))
-    print(s)
+    if level in ["error", "warning", "info", "logging"] or level == "debug" and global_variables.DEBUG:
+        print(s)
     '''
     #log in file
     logfile=open("log.txt", 'r+')
