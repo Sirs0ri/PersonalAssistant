@@ -3,57 +3,61 @@
 
 import core, fritzconnection
 
-is_sam_plugin = 0
+is_sam_plugin = 1
 name = "FritzBox"
-keywords = ["schedule_10s"]
+keywords = ["onstart","schedule_10s"]
 has_toggle = 0
 has_set = 0
 
-def dictlist_to_dictdict(the_list, key):
-    """
-    This takes a list of dicts and converts it to a dict of dicts. The parameter "key" specifies which key of the original dicts will be used to generate the new dict.
-    
-    Example:
-    >>> the_list = [{"id": 1, "name": "One"}, {"id": 2, "name": "Two"}, {"id": 3, "name": "Three"}]
-    >>> print the_list[2]
-    {"id": 2, "name": "Two"}
-    >>> the_dict = dictlist_to_dictdict(the_list, "name")
-    >>> print the_dict
-    {"One": {"id": 1, "name": "One"}, "Two": {"id": 2, "name": "Two"}, "Three": {"id": 3, "name": "Three"}}
-    >>> print the_dict["two"]
-    {"id": 2, "name": "Two"}
-    """
-    the_dict = {}
-    try:
-        for item in the_list:
-            the_dict[key] = item
-    except Exception:
-        pass
-    return the_dict
-    
+if is_sam_plugin:
+    old_devicesdict = {}
+    fritzhosts = None
+
 def initialize():
+    global fritzhosts
+    global old_devicesdict
     address = "192.168.178.1"
     user = "Samantha"
     password = core.private_variables.fritzbox_password
-    old_deviceslist = []
     fritzhosts = fritzconnection.FritzHosts(address, user, password)
     deviceslist = fritzhosts.get_hosts_info()
-    devicesdict = dictlist_to_dictdict(deviceslist)
+    old_devicesdict = { i["mac"]: i for i in deviceslist }
+    for device in deviceslist:  # I'm not comparing anything here, so it doesn't matter if i use the list or dict.
+        if device["status"]:
+            core.process(key="device_online", params=[device["name"]], origin=name, target="all")
+        else:
+            core.process(key="device_offline", params=[device["name"]], origin=name, target="all")
+    return {"processed": True, "value": "Success. Initialized {} devices.".format(len(deviceslist)), "plugin": name}
+
+def update_devices():
+    global old_devicesdict
+    deviceslist = fritzhosts.get_hosts_info()
+    devicesdict = { i["mac"]: i for i in deviceslist }
+    updated = 0
+    new = 0
+    for key in devicesdict:
+        if key in old_devicesdict:
+            if not devicesdict[key]["status"] == old_devicesdict[key]["status"]
+                if devicesdict[key]["status"]:
+                    core.process(key="device_online", params=[devicesdict[key]["name"]], origin=name, target="all")
+                    updated += 1
+                else:
+                    core.process(key="device_offline", params=[devicesdict[key]["name"]], origin=name, target="all")
+                    updated += 1
+        else:
+            core.process(key="device_new", params=[devicesdict[key]["name"]], origin=name, target="all")
+            new += 1
+    return {"processed": True, "value": "Updated {} devices. Found {} new devices.".format(updated, new), "plugin": name}
 
 def process(key, params):
     try:
         if key == "onstart":
-            core.log(name, ["Startup...","Hello World!"], "info")
-            return {"processed": True, "value": "Success.", "plugin": name}
-        elif key == "onexit":
-            core.log(name, ["I'm not even running anymore!"], "logging")
-            return {"processed": True, "value": "Success.", "plugin": name}
-        elif key in ["test", "static"]: 
-            s = "I could do sth now..."
-            core.log(name, ["  " + s], "debug")
-            return {"processed": True, "value": s, "plugin": name}
+            result = initialize()
+            return result
+        elif key == "schedule_10s": 
+            result = update_devices()
+            return result
         else: 
-            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         core.log(name, ["{}".format(e)], "error")
