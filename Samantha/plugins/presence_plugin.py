@@ -4,7 +4,7 @@
 import core
 
 is_sam_plugin = 1
-name = "Test"
+name = "Presence"
 keywords = ["device_online", "device_offline", "device_new"]
 has_toggle = 0
 has_set = 0
