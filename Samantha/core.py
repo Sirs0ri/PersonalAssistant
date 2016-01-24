@@ -152,13 +152,14 @@ def generate_index():
 
 def process(key, params=[], origin="None", target="any", type="request"):
     """
-    Process data
-    Accesses the parameters "Keyword", "Parameters"
-    
-    Via target it can be specified, how the command should be processed:
-        "any":      will return the 1st successful result
-        "all":      will return all results
-        "PLUGIN":   Will return only the result of the specified plugin, or False
+    This is the function used to process any data. It can be called by plugins and then distributes the command to matching plugins.
+
+    Parameters:
+        * key:      Keyword. Based on this the program will select plugins to process the command
+        * params:   Parameters
+        * origin:   The plugin that sent the command, for logging purposes only
+        * target:   The name of a targeted plugin can be specified. In that case the command will be processec only via this plugin. Other valid options are "any", in which case the 1st successful result will be returned or "all", in which case the command will be processed by every mathing plugin.
+        * type:     "request" means that a plugin specifically requests the command, "trigger" means that the data is not needed for further processing. If no plugin mathces a keyword this'll be logged only if the command was a request and ignored if it's been a trigger
     """
     log(name=name, content=["Processing:","Key: {}".format(key), "Params: {}".format(params), "Target: {}".format(target)], level="debug")
     results = []
