@@ -24,9 +24,9 @@ def initialize():
     old_devicesdict = { i["mac"]: i for i in deviceslist }
     for device in deviceslist:  # I'm not comparing anything here, so it doesn't matter if i use the list or dict.
         if device["status"] == "1":
-            core.process(key="device_online", params=[device["name"], device], origin=name, target="all", type="trigger")
+            core.process(key="device_online", params=[device["name"], device["mac"], device["ip"]], origin=name, target="all", type="trigger")
         else:
-            core.process(key="device_offline", params=[device["name"], device], origin=name, target="all", type="trigger")
+            core.process(key="device_offline", params=[device["name"], device["mac"], device["ip"]], origin=name, target="all", type="trigger")
     return {"processed": True, "value": "Success. Initialized {} devices.".format(len(deviceslist)), "plugin": name}
 
 def update_devices():
@@ -40,13 +40,13 @@ def update_devices():
         if key in old_devicesdict:
             if not devicesdict[key]["status"] == old_devicesdict[key]["status"]:
                 if devicesdict[key]["status"] == "1":
-                    core.process(key="device_online", params=[devicesdict[key]["name"], devicesdict[key]], origin=name, target="all", type="trigger")
+                    core.process(key="device_online", params=[devicesdict[key]["name"], devicesdict[key]["mac"], devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
                     updated += 1
                 else:
-                    core.process(key="device_offline", params=[devicesdict[key]["name"], devicesdict[key]], origin=name, target="all", type="trigger")
+                    core.process(key="device_offline", params=[devicesdict[key]["name"], devicesdict[key]["mac"], devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
                     updated += 1
         else:
-            core.process(key="device_new", params=[devicesdict[key]["name"], devicesdict[key]], origin=name, target="all", type="trigger")
+            core.process(key="device_new", params=[devicesdict[key]["name"], devicesdict[key]["mac"], devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
             new += 1
     old_devicesdict = devicesdict
     if updated or new:
