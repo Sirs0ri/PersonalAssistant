@@ -107,10 +107,7 @@ Interfaces should have functions to:
 
 #### Schedule
 
-- [ ] schedule Tasks, every x*5 minutes/hourly
-    - [X] hourly
-    - [X] every x*5 minutes since start
-    - [ ] every x minutes (0:00, 0:05, 0:10, etc)
+- [X] schedule Tasks, every 10 seconds/every minute/hour/day/month/year
 
 #### 433
 
