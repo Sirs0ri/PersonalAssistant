@@ -239,7 +239,7 @@ def process(key, params):
             core.log(name, ["  Generating and setting a new wallpaper..."], "info")
             wallpaper_bg = get_wallpaper()
             if wallpaper_bg["processed"]:
-                identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")
+                identicon = core.process(key="identicon", params=[str(time.time())], origin=name, target="Identicon")[0]
                 if identicon["processed"]:
                     wallpaper = generate_wallpaper(wallpaper_bg["value"], identicon["value"])
                     if key == "wallpaper":
