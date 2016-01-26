@@ -30,7 +30,8 @@ def update_devices():
     global old_devicesdict
     global fritzhosts
     deviceslist = fritzhosts.get_hosts_info()
-    devicesdict = { i["mac"]: i for i in deviceslist }
+    ignored_macs = ["00:80:77:F2:71:23"]    # this list holds the mac-addresses of ignoreg devices.
+    devicesdict = { i["mac"]: i for i in deviceslist if i["mac"] not in ignored_macs}
     updated = 0
     new = 0
     for key in devicesdict:
