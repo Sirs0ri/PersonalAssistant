@@ -27,6 +27,15 @@ def initialize():
     return {"processed": True, "value": "Success. Initialized {} devices.".format(len(deviceslist)), "plugin": name}
 
 def update_devices():
+    """
+    ToDo (to ignore the DC's):
+    
+    have a list where the the statusses are saved (devicesdict) and the results of the last 2 polls cached (devicesdict_cache / devicesdict_cache_old)
+    
+    * poll the devices every 10 seconds
+    * for each device: if the 2 cached values match each other but not the saved value in devicesdict, update the value in devicesdict and trigger the event
+    
+    """
     global old_devicesdict
     global fritzhosts
     deviceslist = fritzhosts.get_hosts_info()
