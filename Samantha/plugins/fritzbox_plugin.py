@@ -21,14 +21,14 @@ has_set = 0
 if is_sam_plugin:
     devicesdict = {}
     old_cached_devicesdict = {}
-    fritzhosts = None
+    fritzhosts = fritzconnection.FritzHosts(address="192.168.178.1", user="Samantha", password=core.private_variables.fritzbox_password)
 
 def initialize():
     global fritzhosts
     global devicesdict
     global old_cached_devicesdict
     # establish a new connection via the FritzHosts-module
-    fritzhosts = fritzconnection.FritzHosts(address="192.168.178.1", user="Samantha", password=core.private_variables.fritzbox_password)
+    #fritzhosts = fritzconnection.FritzHosts(address="192.168.178.1", user="Samantha", password=core.private_variables.fritzbox_password)
     deviceslist = fritzhosts.get_hosts_info()
     devicesdict = { i["mac"]: i for i in deviceslist }
     old_cached_devicesdict = devicesdict
