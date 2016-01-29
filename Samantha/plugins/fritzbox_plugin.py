@@ -61,7 +61,7 @@ def update_devices():
                 else:
                     core.process(key="device_offline", params=[devicesdict[key]["name"], devicesdict[key]["mac"], devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
         else:
-            core.log(name, ["{}".format(cached_devicesdict[key])], "debug")
+            core.log(name, ["New Device:","Key: {}".format(key),"{}".format(cached_devicesdict[key]),"In devicesdict: {}".format(key in devicesdict),"In old_cached_devicesdict: {}".format(key in old_cached_devicesdict)], "info")
             devicesdict[key] = cached_devicesdict[key]
             core.process(key="device_new", params=[cached_devicesdict[key]["name"], cached_devicesdict[key]["mac"], cached_devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
             new += 1
