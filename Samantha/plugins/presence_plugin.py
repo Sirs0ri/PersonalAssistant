@@ -20,7 +20,7 @@ def process(key, params):
         elif key == "device_offline":
             return {"processed": True, "value": "Device {} now offline".format(params), "plugin": name}
         elif key == "device_new":
-            core.process("ar_message", ["g2", "notification=:=New Device registered=:={}".format(", ".join(params), wallpaper["value"]])
+            core.process("ar_message", ["g2", "notification=:=New Device registered=:={}".format(", ".join(params))])
             return {"processed": True, "value": "New Device: {}".format(params), "plugin": name}
         else: 
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
