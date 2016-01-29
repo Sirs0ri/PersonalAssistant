@@ -24,7 +24,7 @@ def send_file(device="g2", message="file", path=None):
             #core.log(name, ["        {}".format(url)], "logging")
             payload = {'message': message, 'files': url}
             #core.log(name, ["      Sending the AR-Message..."], "logging")
-            response = requests.get(core.private_variables.autoremote_baseurl["g2"], payload)
+            response = requests.get(core.private_variables.autoremote_baseurl["g2"], payload, timeout=20)
             return {"processed": True, "value": "The message {} with the file {} was sent successfully to {}".format(message, path, device), "plugin": name}
         else:
             return {"processed": False, "value": "Path not defined!", "plugin": name}
@@ -44,10 +44,12 @@ def send_message(device="g2", message="file"):
     try:
         payload = {'message': message}
         #core.log(name, ["      Sending the AR-Message..."], "logging")
-        response = requests.get(core.private_variables.autoremote_baseurl[device], payload)
+        response = requests.get(core.private_variables.autoremote_baseurl[device], payload, timeout=20)
         return {"processed": True, "value": "The message {} was sent successfully to {}".format(message, device), "plugin": name}
     except KeyError as e:
         return {"processed": False, "value": "Device {} not found.".format(e), "plugin": name}
+    except requests.exceptions.Timeout as e:
+        return {"processed": False, "value": "Timeout while sending the message. ({})".format(e), "plugin": name}
     except Exception as e:
         print("-"*60)
         print("Exception in user code:")
