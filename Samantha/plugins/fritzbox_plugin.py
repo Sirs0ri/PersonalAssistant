@@ -3,6 +3,15 @@
 
 import core, fritzconnection, sys, traceback
 
+"""
+This plugin implements the API of my router, a "FritzBox" (https://avm.de/produkte/fritzbox/). 
+Currently it triggers events if a new device connects to the router and if a known device (dis-)connects.
+
+Later usecases could be muting a phone placed in my bedroom during the night, opening ports, managing the NAS' shares and sending a Fax.
+
+The plugin is based on the fritzconnection-library (https://bitbucket.org/kbr/fritzconnection/)
+"""
+
 is_sam_plugin = 1
 name = "FritzBox"
 keywords = ["onstart","schedule_10s"]
@@ -18,6 +27,7 @@ def initialize():
     global fritzhosts
     global devicesdict
     global old_cached_devicesdict
+    # establish a new connection via the FritzHosts-module
     fritzhosts = fritzconnection.FritzHosts(address="192.168.178.1", user="Samantha", password=core.private_variables.fritzbox_password)
     deviceslist = fritzhosts.get_hosts_info()
     devicesdict = { i["mac"]: i for i in deviceslist }

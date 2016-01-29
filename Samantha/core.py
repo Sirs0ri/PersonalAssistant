@@ -3,6 +3,10 @@
 import glob, imp, global_variables, urllib, sys, os, time, atexit, traceback
 from signal import SIGTERM
 
+"""
+This module contains all the parts of Samantha that are accessible everywhere, such as the process()- and log()-functions and a set of variables.
+"""
+
 name="Core"
 plugins = []
 key_index = {}

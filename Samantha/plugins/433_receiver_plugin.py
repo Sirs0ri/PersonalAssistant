@@ -3,6 +3,13 @@
 
 import core, subprocess, os, threading, signal, time, sys, traceback
 
+"""
+This plugin starts a tool ("RFSniffer) that reads the data from a receiver for 433MHz signals connected to pin 27.
+The original source can be found at https://github.com/ninjablocks/433Utils, I modified it so that it sends a message to Flask whenever it reveived a command. 
+
+It's designed as a thread instide a thread to allow me to check when the sniffer has actally shut down.
+"""
+
 is_sam_plugin = 1
 name = "433_RX"
 keywords = ["onstart", "onexit"]
@@ -18,6 +25,7 @@ class Plugin_Thread(threading.Thread):
         
     def run(self):
         core.log(self.name, ["      Started."], "logging")
+        # Start the actual Sniffer as a Subprocess.
         self.process = subprocess.Popen(["sudo", core.global_variables.folder_base + "/tools/433Utils/RPi_utils/RFSniffer"], stdout=subprocess.PIPE)
         core.log(self.name, ["Subprocess started."], "logging")
         while True:
@@ -44,11 +52,12 @@ def process(key, params):
             return {"processed": True, "value": "Thread started", "plugin": name}
         elif key == "onexit":
             core.log(name, ["  Exiting..."], "logging")
+            # force-stop the sniffer
             t.stop()
+            # Wait for it to end. As soon as the process has ended, `self.process.poll()` in line 30 will return the sniffer's return-code which will then stop the containing thread which again will be registered by join().
             t.join()
             return {"processed": True, "value": "Thread Exited", "plugin": name}
         else: 
-            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         print("-"*60)

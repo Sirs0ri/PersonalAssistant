@@ -6,9 +6,9 @@ import core, sys, traceback
 
 """
 This is the main part, the "core" of Samantha.
-It starts a Flask-Server which is used to receive commands (via Lan or localhost) on port 5000.
-
+It starts a Flask-Server which is used to receive commands (via Lan or localhost) on port 5000 and initializes the plugins via 'core'.
 """
+
 name = "Mainframe"
 
 app = Flask(__name__)

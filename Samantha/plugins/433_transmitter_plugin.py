@@ -3,6 +3,10 @@
 
 import core, subprocess, os, threading, signal, time, sys, traceback
 
+"""
+This plugin uses the 433Utils library (https://github.com/ninjablocks/433Utils) to send signals via a 433MHz transmitter connected to the RasPi.
+"""
+
 is_sam_plugin = 1
 name = "433_TX"
 keywords = ["433", "light"]
@@ -10,13 +14,17 @@ has_toggle = 0
 has_set = 0
 
 def send(scode, dcode, state):
+    """
+    This method sends the commands via the aforementioned tool included in the 433Utils library. It requires a systemcode (00000-11111), a devicecode (1-4) and a state (0/1 for off and on)
+    """
     subprocess.call(["sudo", core.global_variables.folder_base + "/tools/433Utils/RPi_utils/send", scode, dcode, state], stdout=subprocess.PIPE)
     #time.sleep(0.1)
     core.log(name, ["  Code {} {} {} sent successfully.".format(scode, dcode, state)], "info")
 
 def process(key, params):
     """
-    Funfact: this is how the Codes work:
+    The received codes are transmittes via 'params'. They are a decimal expression of the original binary codes received by the system. 00 in the code means 'True' (-> AND), 01 means 'False':
+    
     Dec-Code   System-Code      Device-Code      off  on
     4195665    01 00 00 00 00   00 01 01 01 01   00   01
     4195668    01 00 00 00 00   00 01 01 01 01   01   00
@@ -26,6 +34,11 @@ def process(key, params):
     4199508    01 00 00 00 00   01 01 00 01 01   01   00
     4199697    01 00 00 00 00   01 01 01 00 01   00   01
     4199700    01 00 00 00 00   01 01 01 00 01   01   00
+    
+    That means: If the receiver reads the code '4195665', that means that the original signal was meant to 
+        * turn off (the two off-bits are identical) 
+        * the first device (1st pair of digits in the devicecode is 00, the other 5 are 01. For the 2nd device only the 2nd pair of the devicecode's digits would be '00') 
+        * in the set of devices with systemcode 01111 (on my remote that means that all but the 1st switches are in the up-position)
     """
     try:
         core.log(name, ["  Processing: {}, {}".format(key, params)], "info")
@@ -63,7 +76,6 @@ def process(key, params):
                 result = core.process(key="light", params=["off"], origin=name, target="all", type="trigger")
                 return {"processed": True, "value": result, "plugin": name}
             else:
-                #core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
                 return {"processed": False, "value": "Parameter not in use. ({}, {})".format(key, params), "plugin": name}
         elif key == "light":
             if "off" in params:
@@ -82,10 +94,8 @@ def process(key, params):
                 send("11111", "3", "1")
                 return {"processed": True, "value": "Success.", "plugin": name}
             else:
-                #core.log(name, ["  Parameter {} not in use.".format(", ".join(params))], "warning")
                 return {"processed": False, "value": "Parameter not in use. ({}, {})".format(key, params), "plugin": name}
         else:
-            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         print("-"*60)

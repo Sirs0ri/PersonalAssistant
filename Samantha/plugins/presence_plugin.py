@@ -3,6 +3,10 @@
 
 import core, sys, traceback
 
+"""
+This plugin is supposed to manage which devices are present where.
+At the moment it's not doing much. Further usecases could be triggering profiles depending on who's where or whatever. ^^
+"""
 is_sam_plugin = 1
 name = "Presence"
 keywords = ["device_online", "device_offline", "device_new"]

@@ -3,6 +3,11 @@
 
 import core, threading, time, datetime, sys, traceback
 
+"""
+This plugin demonstrates how a normal plugin using a Thread is built. 
+It can't do nothing fancy, and won't be loaded by default.
+"""
+
 is_sam_plugin = 0
 name = "Test"
 keywords = ["test", "thread"]

@@ -3,6 +3,11 @@
 
 import core, sys, traceback
 
+"""
+This plugin demonstrates how a normal plugin is built. 
+It can't do nothing fancy, and won't be loaded by default.
+"""
+
 is_sam_plugin = 0
 name = "Test"
 keywords = ["test", "static", "onstart", "onexit"]
@@ -22,7 +27,6 @@ def process(key, params):
             core.log(name, ["  " + s], "debug")
             return {"processed": True, "value": s, "plugin": name}
         else: 
-            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         print("-"*60)

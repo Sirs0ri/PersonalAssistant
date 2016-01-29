@@ -4,6 +4,12 @@
 import re, pydenticon, core, time, requests, dropbox, imp, sys, traceback
 from PIL import Image, ImageChops, ImageEnhance, ImageFilter, ImageOps
 
+"""
+This plugin is supposed to handle everything image-related.
+Currently, it is used to create a wallpaper from an image out of Google's 'EarthView' collection. 
+Examples can be seen at https://www.dropbox.com/sh/gz0aj2ghcf1p02s/AADp8WdhRRcMaHusyvjY2IOfa?dl=0
+"""
+
 is_sam_plugin = 1
 name = "Images"
 keywords = ["schedule_day", "wallpaper", "set_wallpaper"]
@@ -13,6 +19,10 @@ has_set = 0
 DEBUG = 0
 
 def get_wallpaper():
+    """
+    This method downloads an image from Google's EarthView collection and saves it to the local storage.
+    Therefore, the HTML-code of https://earthview.withgoogle.com/ is parsed to read the location of the background-image. 
+    """
     core.log(name, ["    Downloading the baseimage..."], "logging")
     path = "/data/wallpaper_background.png"
     try: 
@@ -54,6 +64,9 @@ def get_wallpaper():
     return {"processed": True, "value":core.global_variables.folder_base + path, "plugin":name}
     
 def resize(im, size, offset=(0,0)):
+    """
+    This method is used to resize an image by cropping it or adding a black frame around it. 
+    """
     bg = Image.new(im.mode, size)
     if im.size[0] < size[0]:
         factor_width = -1
@@ -70,7 +83,24 @@ def resize(im, size, offset=(0,0)):
     return im.crop((shift_left, shift_top, shift_right, shift_bottom))
 
 def generate_wallpaper(background_path, mask_path, destination_path="/data/wallpaper.png"):
+    """
+    This method creates the actual wallpaper in several steps:
+    
+    1. Convert the Wallpaper to (almost) b/w and lighten it up a bit.
+    2. Generate a set of normal and a bit smaller masks by basically resizing an Identicon to the size of the background and inverting it (to get a white on black and a black on white version). The different sizes will be used to place a colored overlay with a slightly brighter frame around it in the form of the Identicon ontop of the background.
+    3. Create the overlay: It's a cutout from the original (colored) background with the form of the Identicon
+    4. Create the frame: This does basically the same as 3.). The only difference is, that the cutout is brightened up a bit. 
+    5. Create a dropshadow underneath the overlay.
+    6. Merging the layers into one image.
+    
+    The final Image looks something like this:
+    
+        Overlay (colored)                                ____      ____      ____
+        Frame (colored, lighter than the overlay)       ______    ______    ______
+        Dropshadow                                     ________  ________  ________
+        Background                                 ____________________________________
 
+    """
     core.log(name, ["    Creating the final image..."], "info")
     
     framwewidth = 3

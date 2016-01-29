@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-plugin to create identicons
-Reference: https://github.com/azaghal/pydenticon/blob/master/docs/usage.rst
-Might be used to create a colored overlay over a b/w wallpaper
-"""
-
 import pydenticon, core, time, sys, traceback
+
+"""
+This plugin is used to create identicons (little Icons generated from a string, you might have seen them as default usericons on GitHub). It's based on the pydenticon-library (https://github.com/azaghal/pydenticon).
+
+Reference: https://github.com/azaghal/pydenticon/blob/master/docs/usage.rst
+The Idendicons are currently used to create a colored overlay over a b/w wallpaper, a later usecase might be in a GUI.
+"""
 
 is_sam_plugin = 1
 name = "Identicon"
@@ -17,11 +18,12 @@ has_set = 0
 
 def generate_identicon(data="I'm Samantha", path="/data/identicon.png"):
     """
-    generates an identicon and sends it to the G2
-    possibly via an AutoRemote Plugin?
+    This generates an identicon and saves it to th elocal storage.
     """
     core.log(name, ["    Generating the Identicon...","    Data is {}".format(data)], "logging")
+    # Initialize the generator with a 5x5-patches pattern
     generator = pydenticon.Generator(5, 5)
+    # Generate an Identicon with the given data and a size of 300x300px
     identicon = generator.generate(data, 300, 300)
     core.log(name, ["    Generated the Identicon. Saving at {}...".format(core.global_variables.folder_base + path)], "logging")
     f = open(core.global_variables.folder_base + path, "wb")
@@ -40,7 +42,6 @@ def process(key, params):
                 result = generate_identicon()
             return result
         else:
-            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         print("-"*60)

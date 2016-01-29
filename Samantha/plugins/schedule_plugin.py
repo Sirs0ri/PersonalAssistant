@@ -3,6 +3,17 @@
 
 import core, threading, time, datetime, sys, traceback
 
+"""
+This plugin triggers schedules events. the different commands are triggered:
+    * every 10 seconds
+    * at the start of every minute
+    * ..hour
+    * ..day
+    * ..month
+    * ..year
+All these events are triggered as soon as possible, i.e. 'Day' will be triggered at 0:00, month on the 1st at 0:00, etc.
+"""
+
 is_sam_plugin = 1
 name = "Schedule"
 keywords = ["onstart", "onexit"]
@@ -19,13 +30,6 @@ class Plugin_Thread(threading.Thread):
     def run(self):
         core.log(self.name, ["      Started."], "logging")
         # #initialisation
-        # 
-        # 
-        # self.old_year = None
-        # self.old_mon = None
-        # self.old_day = None
-        # self.old_hour = None
-        # self.old_min = None
         while self.running == 1:
             timetuple = datetime.datetime.now().timetuple()
             """
@@ -82,7 +86,6 @@ def process(key, params):
             t.join()
             return {"processed": True, "value": "Success.", "plugin": name}
         else: 
-            #core.log(name, ["  Illegal command.","  Key:{}".format(key),"  Parameters: {}".format(params)], "warning")
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
         print("-"*60)
