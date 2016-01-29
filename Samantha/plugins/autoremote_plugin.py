@@ -69,7 +69,7 @@ def process(key, params):
             return result
         elif key == "ar_file":
             if "wallpaper.set" in params:
-                result = send_file(device=params[0], message=params[1], path=params[2], destination="/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
+                result = send_file(device=params[0], message=params[1], path=params[2], destination="/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())))
             else:
                 result = send_file(device=params[0], message=params[1], path=params[2])
             return result
