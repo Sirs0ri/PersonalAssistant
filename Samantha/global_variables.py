@@ -8,4 +8,4 @@ bluePins=[21,18]
 folder_base = "/home/pi/Desktop/PersonalAssistant/Samantha"
 folder_base_short = "/PersonalAssistant/Samantha"
 
-DEBUG = 1
+DEBUG = 0
