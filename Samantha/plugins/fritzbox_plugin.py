@@ -55,14 +55,7 @@ def update_devices():
             core.process(key="device_new", params=[cached_devicesdict[key]["name"], cached_devicesdict[key]["mac"], cached_devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
             new += 1
     old_cached_devicesdict = cached_devicesdict
-    if updated and not new:
-        return {"processed": True, "value": "Updated {} devices.".format(updated, new), "plugin": name}
-    elif new and not updated:
-        return {"processed": True, "value": "Found {} new devices.".format(updated, new), "plugin": name}
-    elif updated and new:
-        return {"processed": True, "value": "Updated {} devices. Found {} new devices.".format(updated, new), "plugin": name}
-    else: 
-        return {"processed": True, "value": "None", "plugin": name}
+    return {"processed": True, "value": "None", "plugin": name}
 
 def process(key, params):
     try:
