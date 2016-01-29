@@ -200,7 +200,7 @@ def process(key, params=[], origin="None", target="any", type="request"):
 
     for r in results:
         if r["processed"]:
-            if target == "request" or not r["value"] == "None":
+            if target == "request" or not r["value"] == "None" or global_variables.DEBUG:
                 log(name, ["{}: {}".format(r["plugin"], r["value"])], "info")
         elif target == "request" or global_variables.DEBUG:
             log(name, ["{}: {}".format(r["plugin"], r["value"])], "warning")
