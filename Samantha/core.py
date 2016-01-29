@@ -175,10 +175,14 @@ def process(key, params=[], origin="None", target="any", type="request"):
                 if target in ["all", "any", p.name]: 
                     # this will be true unless the name of a specifc plugin to process the command is given
                     result = p.process(key, params)
-                    if target == "all" or result["processed"]:
-                        #log(name, ["  Successfully processed {} by {}.".format(key, p.name)], "logging")
-                        # unless the target is "all", failed attempts to process a command are ignored
-                        results.append(result)
+                    try:
+                        if target == "all" or result["processed"]:
+                            #log(name, ["  Successfully processed {} by {}.".format(key, p.name)], "logging")
+                            # unless the target is "all", failed attempts to process a command are ignored
+                            results.append(result)
+                    except TypeError:
+                        if target == "all" or result[0]["processed"]:
+                            results.append(result)
                 if results and not target == "all":
                     # stop the loop if the command has been processed successfully once and not all plugins are targeted
                     break
