@@ -9,11 +9,12 @@ keywords = ["ar_message", "ar_file", "ar_notification", "onstart", "onexit"]
 has_toggle = 0
 has_set = 0
 
-def send_file(device="g2", message="file", path=None):
+def send_file(device="g2", message="file", path=None, destination=None):
     try:
         if path:
-            destination = "/Samantha/file_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
-            #core.log(name, ["      Initializing the Dropbox-Client..."], "logging")
+            # Set the destination, where in my Dropbox the file should be saved.
+            if not destination:
+                destination = "/Samantha/file_{time}.{ending}".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()), ending=path.split(".")[-1])
             client = dropbox.client.DropboxClient(core.private_variables.dropbox_token)
             f = open(path, 'rb')
             #core.log(name, ["      Uploading..."], "logging")
@@ -67,7 +68,10 @@ def process(key, params):
             result = send_message(message="sam_onexit")
             return result
         elif key == "ar_file":
-            result = send_file(device=params[0], message=params[1], path=params[2])
+            if "wallpaper.set" in params:
+                result = send_file(device=params[0], message=params[1], path=params[2], destination="/Wallpapers/wallpaper_{time}.png".format(time=time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()))
+            else:
+                result = send_file(device=params[0], message=params[1], path=params[2])
             return result
         elif key == "ar_message":
             result = send_file(device=params[0], message=params[1])
