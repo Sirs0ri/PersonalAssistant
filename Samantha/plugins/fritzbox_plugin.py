@@ -22,7 +22,7 @@ def initialize():
     deviceslist = fritzhosts.get_hosts_info()
     devicesdict = { i["mac"]: i for i in deviceslist }
     old_cached_devicesdict = devicesdict
-    for device in deviceslist:  # I'm not comparing anything here, so it doesn't matter if i use the list or dict.
+    for device in sorted(deviceslist, key=lambda item:item["status"]):  # I'm not comparing anything here, so it doesn't matter if i use the list or dict.
         if device["status"] == "1":
             core.process(key="device_online", params=[device["name"], device["mac"], device["ip"]], origin=name, target="all", type="trigger")
         else:
