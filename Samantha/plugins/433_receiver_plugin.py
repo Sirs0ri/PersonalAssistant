@@ -18,7 +18,7 @@ class Plugin_Thread(threading.Thread):
         
     def run(self):
         core.log(self.name, ["      Started."], "logging")
-        self.process = subprocess.Popen(["sudo", core.global_variables.folder_base + "/tools/RFSniffer"], stdout=subprocess.PIPE)
+        self.process = subprocess.Popen(["sudo", core.global_variables.folder_base + "/tools/433Utils/RPi_utils/RFSniffer"], stdout=subprocess.PIPE)
         core.log(self.name, ["Subprocess started."], "logging")
         while True:
             if self.process.poll() is not None: 
