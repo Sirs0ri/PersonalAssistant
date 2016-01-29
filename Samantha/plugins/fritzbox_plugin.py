@@ -34,7 +34,8 @@ def update_devices():
     global old_cached_devicesdict
     global fritzhosts
     deviceslist = fritzhosts.get_hosts_info()
-    ignored_macs = ["00:80:77:F2:71:23"]    # this list holds the mac-addresses of ignored devices. They won't be able to trigger events such as coming on/offline or registering. The 1st listed address is for example my printer which dis- and reconnects every few minutes and only spams my logs.
+    #ignored_macs = ["00:80:77:F2:71:23"]    # this list holds the mac-addresses of ignored devices. They won't be able to trigger events such as coming on/offline or registering. The 1st listed address is for example my printer which dis- and reconnects every few minutes and only spams my logs.
+    ignored_macs = []
     # trasnform the list into a dict to be able to compare the entries (via a device's mac-address as unique key)
     cached_devicesdict = { i["mac"]: i for i in deviceslist if i["mac"] not in ignored_macs}
     updated = 0
