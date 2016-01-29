@@ -51,10 +51,16 @@ def update_devices():
     updated = 0
     new = 0
     for key in cached_devicesdict:
-        if key in old_cached_devicesdict and key in devicesdict:
+        if key in devicesdict:
+            if not key in old_cached_devicesdict:
+                old_cached_devicesdict[key] = cached_devicesdict[key]
+                """
+                There's a weird bug that causes one single device to be recognized as a new device over and over again, because it's only listed in devicesdict and not in old_cached_devicesdict. This should fix that.
+                I assume that this happens because the given device (iPhone 6) can connect to two streams of wifi at the same time and the routher has some problems with that.. Just a wild guess though.
+                """
             if cached_devicesdict[key]["status"] == old_cached_devicesdict[key]["status"] and not cached_devicesdict[key]["status"] == devicesdict[key]["status"]:
                 #This will be triggered if a device's status hasn't changed since the last scan, but doesn't match the global deviceslist. A device's status isn't changed immedeately to ignore short disconnects
-                devicesdict[key]["status"] = cached_devicesdict[key]["status"]
+                devicesdict[key] = cached_devicesdict[key]
                 updated += 1
                 if devicesdict[key]["status"] == "1":
                     core.process(key="device_online", params=[devicesdict[key]["name"], devicesdict[key]["mac"], devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
