@@ -10,15 +10,18 @@ has_toggle = 0
 has_set = 0
 
 if is_sam_plugin:
-    old_devicesdict = {}
+    devicesdict = {}
+    old_cached_devicesdict = {}
     fritzhosts = None
 
 def initialize():
     global fritzhosts
-    global old_devicesdict
+    global devicesdict
+    global old_cached_devicesdict
     fritzhosts = fritzconnection.FritzHosts(address="192.168.178.1", user="Samantha", password=core.private_variables.fritzbox_password)
     deviceslist = fritzhosts.get_hosts_info()
-    old_devicesdict = { i["mac"]: i for i in deviceslist }
+    devicesdict = { i["mac"]: i for i in deviceslist }
+    old_cached_devicesdict = devicesdict
     for device in deviceslist:  # I'm not comparing anything here, so it doesn't matter if i use the list or dict.
         if device["status"] == "1":
             core.process(key="device_online", params=[device["name"], device["mac"], device["ip"]], origin=name, target="all", type="trigger")
@@ -27,36 +30,35 @@ def initialize():
     return {"processed": True, "value": "Success. Initialized {} devices.".format(len(deviceslist)), "plugin": name}
 
 def update_devices():
-    """
-    ToDo (to ignore the DC's):
-    
-    have a list where the the statusses are saved (devicesdict) and the results of the last 2 polls cached (devicesdict_cache / devicesdict_cache_old)
-    
-    * poll the devices every 10 seconds
-    * for each device: if the 2 cached values match each other but not the saved value in devicesdict, update the value in devicesdict and trigger the event
-    
-    """
-    global old_devicesdict
+    global devicesdict
+    global old_cached_devicesdict
     global fritzhosts
     deviceslist = fritzhosts.get_hosts_info()
     ignored_macs = ["00:80:77:F2:71:23"]    # this list holds the mac-addresses of ignored devices. They won't be able to trigger events such as coming on/offline or registering. The 1st listed address is for example my printer which dis- and reconnects every few minutes and only spams my logs.
-    devicesdict = { i["mac"]: i for i in deviceslist if i["mac"] not in ignored_macs}
+    # trasnform the list into a dict to be able to compare the entries (via a device's mac-address as unique key)
+    cached_devicesdict = { i["mac"]: i for i in deviceslist if i["mac"] not in ignored_macs}
     updated = 0
     new = 0
-    for key in devicesdict:
-        if key in old_devicesdict:
-            if not devicesdict[key]["status"] == old_devicesdict[key]["status"]:
+    for key in cached_devicesdict:
+        if key in old_cached_devicesdict and key in devicesdict:
+            if cached_devicesdict[key]["status"] == old_cached_devicesdict[key]["status"] and not cached_devicesdict[key]["status"] == devicesdict[key]["status"]:
+                #This will be triggered if a device's status hasn't changed since the last scan, but doesn't match the global deviceslist. A device's status isn't changed immedeately to ignore short disconnects
+                devicesdict[key]["status"] = cached_devicesdict[key]["status"]
+                updated += 1
                 if devicesdict[key]["status"] == "1":
                     core.process(key="device_online", params=[devicesdict[key]["name"], devicesdict[key]["mac"], devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
-                    updated += 1
                 else:
                     core.process(key="device_offline", params=[devicesdict[key]["name"], devicesdict[key]["mac"], devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
-                    updated += 1
         else:
-            core.process(key="device_new", params=[devicesdict[key]["name"], devicesdict[key]["mac"], devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
+            devicesdict[key] = cached_devicesdict[key]
+            core.process(key="device_new", params=[cached_devicesdict[key]["name"], cached_devicesdict[key]["mac"], cached_devicesdict[key]["ip"]], origin=name, target="all", type="trigger")
             new += 1
-    old_devicesdict = devicesdict
-    if updated or new:
+    old_cached_devicesdict = cached_devicesdict
+    if updated and not new:
+        return {"processed": True, "value": "Updated {} devices.".format(updated, new), "plugin": name}
+    elif new and not updated:
+        return {"processed": True, "value": "Found {} new devices.".format(updated, new), "plugin": name}
+    elif updated and new:
         return {"processed": True, "value": "Updated {} devices. Found {} new devices.".format(updated, new), "plugin": name}
     else: 
         return {"processed": True, "value": "None", "plugin": name}
