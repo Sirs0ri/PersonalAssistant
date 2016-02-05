@@ -97,6 +97,7 @@ Interfaces should have functions to:
 
 - [ ] trigger should contain a source location and a destination
 - [ ] Download videos while I'm not sleeping: store a queue of links/filenames until then
+- http://lifehacker.com/5475649/set-up-a-fully-automated-media-center
 
 #### Presence
 
@@ -148,6 +149,13 @@ Interfaces should have functions to:
 - [ ] Send messages
 - [ ] Send files
 - [ ] Send Notifications
+
+#### Plex
+
+- [ ] Integrate with the downloader
+- [ ] suggest unseen episodes
+- https://github.com/rueckstiess/py-plex
+- https://github.com/mjs7231/python-plexapi
 
 ### Automation
 
