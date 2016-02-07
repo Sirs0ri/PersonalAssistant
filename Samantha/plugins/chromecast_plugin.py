@@ -8,7 +8,7 @@ This plugin demonstrates how a normal plugin is built.
 It can't do nothing fancy, and won't be loaded by default.
 """
 
-is_sam_plugin = 0
+is_sam_plugin = 1
 name = "Chromecast"
 keywords = ["schedule_10s"]
 has_toggle = 0
