@@ -15,7 +15,7 @@ has_toggle = 0
 has_set = 0
 
 if is_sam_plugin:
-    player_status = False
+    player_state = False
     cast = pychromecast.get_chromecast(friendly_name="Chromecast_Max")
     if cast:
         mc = cast.media_controller
@@ -25,13 +25,13 @@ if is_sam_plugin:
 
 def update_device():
     if mc:
-        if not mc.status.player_status == player_status:
-            player_status = mc.status.player_status
-            if player_status == "PLAYING":
+        if not mc.status.player_state == player_state:
+            player_state = mc.status.player_state
+            if player_state == "PLAYING":
                 core.process(key="light", params=["ambient"], origin=name, target="all", type="trigger")
             else:
                 core.process(key="light", params=["normal"], origin=name, target="all", type="trigger")
-            return {"processed": True, "value": "Status updated to: '{}'".format(player_status), "plugin": name}
+            return {"processed": True, "value": "Status updated to: '{}'".format(player_state), "plugin": name}
         else:
             return {"processed": True, "value": "None", "plugin": name}
     else:
