@@ -24,6 +24,7 @@ if is_sam_plugin:
         mc = None
 
 def update_device():
+    global player_state
     if mc:
         if not mc.status.player_state == player_state:
             player_state = mc.status.player_state
