@@ -28,7 +28,7 @@ def update_device():
     if mc:
         if not mc.status.player_state == player_state:
             player_state = mc.status.player_state
-            if player_state == "PLAYING":
+            if player_state == "PLAYING" and "audio" not in mc.status.content_type:
                 core.process(key="light", params=["ambient"], origin=name, target="all", type="trigger")
             else:
                 core.process(key="light", params=["normal"], origin=name, target="all", type="trigger")
