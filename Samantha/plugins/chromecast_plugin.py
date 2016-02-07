@@ -16,6 +16,7 @@ has_set = 0
 
 if is_sam_plugin:
     player_state = False
+    content_type = False
     cast = None
     mc = None
 
@@ -34,14 +35,16 @@ def initialize():
 
 def update_device():
     global player_state
+    global content_type
     if mc:
-        if not mc.status.player_state == player_state:
+        if not mc.status.player_state == player_state or not mc.status.content_type == content_type:
             player_state = mc.status.player_state
-            if player_state == "PLAYING" and "audio" not in mc.status.content_type:
+            content_type = mc.status.content_type
+            if player_state == "PLAYING" and "audio" not in content_type:
                 core.process(key="light", params=["ambient"], origin=name, target="all", type="trigger")
             else:
                 core.process(key="light", params=["normal"], origin=name, target="all", type="trigger")
-            return {"processed": True, "value": "Status updated to: '{}'".format(player_state), "plugin": name}
+            return {"processed": True, "value": "Status updated to: '{}' ({})".format(player_state, content_type), "plugin": name}
         else:
             return {"processed": True, "value": "None", "plugin": name}
     else:
