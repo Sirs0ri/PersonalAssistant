@@ -275,7 +275,7 @@ def process(key, params):
                     if key == "wallpaper":
                         return wallpaper
                     elif wallpaper["processed"]:
-                        result = core.process("ar_file", ["g2", "wallpaper.set", wallpaper["value"]])
+                        result = core.process("ar_file", ["g2", "wallpaper.set", wallpaper["value"]])[0]
                         return result
                     else:
                         return wallpaper
