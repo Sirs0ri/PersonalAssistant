@@ -121,7 +121,7 @@ Interfaces should have functions to:
 
 #### Chromecast
 
-- [ ] Dim Light while casting is active
+- [X] Dim Light while casting is active
 - [ ] Remote Controls?
 - https://github.com/balloob/pychromecast
 
