@@ -90,8 +90,13 @@ def process(key, params):
                 return {"processed": True, "value": "Success.", "plugin": name}
             elif "ambient" in params:
                 send("11111", "1", "1")
-                send("11111", "2", "0")
                 send("11111", "3", "1")
+                send("11111", "2", "0")
+                return {"processed": True, "value": "Success.", "plugin": name}
+            elif "normal" in params:
+                send("11111", "2", "1")
+                send("11111", "1", "0")
+                send("11111", "3", "0")
                 return {"processed": True, "value": "Success.", "plugin": name}
             else:
                 return {"processed": False, "value": "Parameter not in use. ({}, {})".format(key, params), "plugin": name}
