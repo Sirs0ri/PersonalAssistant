@@ -31,7 +31,7 @@ def initialize():
         else:
             return {"processed": False, "value": "Connection to Mediacontroller wasn't successfull", "plugin": name}
     else:
-        return: {"processed": False, "value": "Chromeast not found!", "plugin": name}
+        return {"processed": False, "value": "Chromeast not found!", "plugin": name}
 
 def update_device():
     global player_state
