@@ -10,18 +10,27 @@ It can't do nothing fancy, and won't be loaded by default.
 
 is_sam_plugin = 1
 name = "Chromecast"
-keywords = ["schedule_10s"]
+keywords = ["onstart", "schedule_10s"]
 has_toggle = 0
 has_set = 0
 
 if is_sam_plugin:
     player_state = False
+    cast = None
+    mc = None
+
+def initialize():
+    global cast
+    global mc
     cast = pychromecast.get_chromecast(friendly_name="Chromecast_Max")
     if cast:
         mc = cast.media_controller
+        if mc:
+            return {"processed": True, "value": "Initialization successfull.", "plugin": name}
+        else:
+            return {"processed": False, "value": "Connection to Mediacontroller wasn't successfull", "plugin": name}
     else:
-        core.log(name, ["Chromeast not found!"], "error")
-        mc = None
+        return: {"processed": False, "value": "Chromeast not found!", "plugin": name}
 
 def update_device():
     global player_state
@@ -40,7 +49,10 @@ def update_device():
 
 def process(key, params):
     try:
-        if key == "schedule_10s": 
+        if key == "onstart":
+            result = initialize()
+            return result
+        elif key == "schedule_10s": 
             result = update_device()
             return result
         else: 
