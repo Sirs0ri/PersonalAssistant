@@ -276,13 +276,16 @@ def process(key, params):
                         return wallpaper
                     elif wallpaper["processed"]:
                         result = core.process("ar_file", ["g2", "wallpaper.set", wallpaper["value"]])[0]
-                        return result
+                        if result["processed"]:
+                            return {"processed": True, "value": "Wallpaper generated successfully.", "plugin": name}
+                        else:
+                            return {"processed": False, "value": "Error in Plugin {}: {}".format(result["name"], result["value"]), "plugin": name}
                     else:
-                        return wallpaper
+                        return {"processed": False, "value": "Error in Plugin {}: {}".format(result["name"], result["value"]), "plugin": name}
                 else: 
-                    return identicon
+                    return {"processed": False, "value": "Error in Plugin {}: {}".format(result["name"], result["value"]), "plugin": name}
             else:
-                return wallpaper_bg
+                return {"processed": False, "value": "Error in Plugin {}: {}".format(result["name"], result["value"]), "plugin": name}
         else:
             return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, params), "plugin": name}
     except Exception as e:
