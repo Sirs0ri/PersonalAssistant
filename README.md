@@ -46,6 +46,14 @@ Interfaces should have functions to:
 
 ### Mainframe
 
+#### Reorganize the framework
+
+- [ ] plugins put data into an input-queue (core.trigger())
+- [ ] a central processor reads the queue and processes the data (plugin.process())
+- [ ] the processor puts data into an output-queue
+- [ ] The interface reads the output-queue and displays the content
+    - [ ] Update previous printouts when the progress changes -> only one line per processed command
+
 #### Auto-updater
 
 - [ ] trigger: schedule plugin, hourly
@@ -156,6 +164,15 @@ Interfaces should have functions to:
 - [ ] suggest unseen episodes
 - https://github.com/rueckstiess/py-plex
 - https://github.com/mjs7231/python-plexapi
+
+#### Mi Band
+
+- [ ] Use it as Bluetooth Beacon
+- [ ] read live sleep data
+    - [ ] turn off music when the user falls asleep
+    - [ ] run a "smart" alarm like the one integrated into the MiFit app, just with lights, music and everything
+    - [ ] communicate with the user - eg. vibrate when a command is received/being processed/processed completely
+- https://bitbucket.org/OscarAcena/mibanda
 
 ### Automation
 
