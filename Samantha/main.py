@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import logging
-from flask import Flask,request
-import core, sys, traceback
+from flask import Flask, request
+import sys
+import traceback
+import core
 
 """
 This is the main part, the "core" of Samantha.
-It starts a Flask-Server which is used to receive commands (via LAN or localhost) on port 5000 and initializes the plugins via 'core'.
+It starts a Flask-Server which is used to receive commands (via LAN or localhost)
+on port 5000 and initializes the plugins via 'core'.
 """
 
 name = "Mainframe"
@@ -29,12 +32,13 @@ def process():
     if not params:
         params = ""
     core.process(key=key, params=params.split("=:="), origin="Flask", target="all", type="trigger")
-    return "Processing\nKeyword {}\nParameter {}".format(key,", ".join(params))
+    return "Processing\nKeyword {}\nParameter {}".format(key, ", ".join(params))
 
 @app.route('/shutdown/')
-def shutdown():
+def shutdown_server():
     """
-    Shuts down first the Flask-Server, then every Thread started by the main module and all the plugins.
+    Shuts down first the Flask-Server,
+    then every Thread started by the main module and all the plugins.
     """
     core.log("Incoming", ["Received the request to shut down."], "warning")
     func = request.environ.get("werkzeug.server.shutdown")
@@ -45,15 +49,17 @@ def shutdown():
     return 'Server shutting down...'
 
 @app.route('/restart/')
-def restart():
+def restart_server():
     """
-    Restart the complete program. It'll shutdown Flask and set the Restart-Flag back to 1 so that main() will be executed again after it's completed (aka after Flask and the Plugins are shut down correctly.)
+    Restart the complete program. It'll shutdown Flask and set the Restart-Flag back to 1
+    so that main() will be executed again after it's completed
+    (aka after Flask and the Plugins are shut down correctly.)
     """
     global restart
     core.log(name, ["Received the request to restart."], "warning")
     restart = 1
     # this will cause main() to restart itself after the server's shut down.
-    shutdown()
+    shutdown_server()
     return 'Server restarting...'
 
 def main():
@@ -63,14 +69,21 @@ def main():
     """
     global app
     global restart
-    core.log(name, [""," ____    _    __  __    _    _   _ _____ _   _    _","/ ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \ ","\___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \ "," ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \ ","|____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                    hi~", "Starting up!"], "info")
+    core.log(name, ["",
+                    " ____    _    __  __    _    _   _ _____ _   _    _",
+                    "/ ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \ ",
+                    "\___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \ ",
+                    " ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \ ",
+                    "|____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ",
+                    "                                                    hi~",
+                    "Starting up!"], "info")
 
     restart = 0
     startup = core.startup()
-    '''
+
     if not startup:
-        #initialisation went wrong, abort
-    '''
+        print "Startup not successful!"
+
 
     #don't log "INFO"-messages from Flask/werkzeug
     log = logging.getLogger('werkzeug')
@@ -81,11 +94,11 @@ def main():
     try:
         app.run(host="0.0.0.0")
     except Exception as e:
-        print("-"*60)
-        print("Exception in user code:")
-        print("-"*60)
+        print "-"*60
+        print "Exception in user code:"
+        print "-"*60
         traceback.print_exc(file=sys.stdout)
-        print("-"*60)
+        print "-"*60
         core.log(name, ["{}".format(e)], "error")
 
     core.process(key="onexit", origin=name, target="all")
@@ -97,4 +110,10 @@ def main():
 if __name__ == "__main__":
     while restart:
         main()
-    core.log(name, ["See you next mission!"," ____    _    __  __    _    _   _ _____ _   _    _","/ ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \ ","\___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \ "," ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \ ","|____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ","                                                   bye~"], "info")
+    core.log(name, ["See you next mission!",
+                    " ____    _    __  __    _    _   _ _____ _   _    _",
+                    "/ ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \ ",
+                    "\___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \ ",
+                    " ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \ ",
+                    "|____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ",
+                    "                                                   bye~"], "info")
