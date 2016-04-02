@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import logging
-from flask import Flask, request
 import sys
 import traceback
+
 import core
+from flask import Flask, request
 
 """
 This is the main part, the "core" of Samantha.
@@ -18,13 +19,14 @@ app = Flask(__name__)
 
 restart = 1
 
+
 @app.route("/")
 def process():
     """
     Process the data received via Flask
     Accesses the parameters "Keyword", "Parameter" and "Command"
     """
-    #get parameters
+    # get parameters
     key = request.args.get('key')
     if not key:
         key = ""
@@ -33,6 +35,7 @@ def process():
         params = ""
     core.process(key=key, params=params.split("=:="), origin="Flask", target="all", type="trigger")
     return "Processing\nKeyword {}\nParameter {}".format(key, ", ".join(params))
+
 
 @app.route('/shutdown/')
 def shutdown_server():
@@ -48,6 +51,7 @@ def shutdown_server():
     core.log(name, ["  Flask stopped successfully. Waiting for plugins to stop."], "info")
     return 'Server shutting down...'
 
+
 @app.route('/restart/')
 def restart_server():
     """
@@ -62,6 +66,7 @@ def restart_server():
     shutdown_server()
     return 'Server restarting...'
 
+
 def main():
     """
     This is the main function.
@@ -70,12 +75,12 @@ def main():
     global app
     global restart
     core.log(name, ["",
-                    " ____    _    __  __    _    _   _ _____ _   _    _",
-                    "/ ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \ ",
-                    "\___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \ ",
-                    " ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \ ",
+                    " ____    _    __  __    _    _   _ _____ _   _    _     ",
+                    "/ ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    ",
+                    "\___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ",
+                    " ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  ",
                     "|____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ",
-                    "                                                    hi~",
+                    "                                                    hi~ ",
                     "Starting up!"], "info")
 
     restart = 0
@@ -84,12 +89,11 @@ def main():
     if not startup:
         print "Startup not successful!"
 
-
-    #don't log "INFO"-messages from Flask/werkzeug
+    # don't log "INFO"-messages from Flask/werkzeug
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.WARNING)
 
-    #app.debug = True
+    # app.debug = True
     core.log(name, ["Starting Flask..."], "info")
     try:
         app.run(host="0.0.0.0")
@@ -104,16 +108,16 @@ def main():
     core.process(key="onexit", origin=name, target="all")
     core.log(name, ["  Plugins stopped."], "logging")
 
-    #this'll be executed when Flask stops.
+    # this'll be executed when Flask stops.
     core.log(name, ["Shut down successfully."], "info")
 
 if __name__ == "__main__":
     while restart:
         main()
     core.log(name, ["See you next mission!",
-                    " ____    _    __  __    _    _   _ _____ _   _    _",
-                    "/ ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \ ",
-                    "\___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \ ",
-                    " ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \ ",
+                    " ____    _    __  __    _    _   _ _____ _   _    _     ",
+                    "/ ___|  / \  |  \/  |  / \  | \ | |_   _| | | |  / \    ",
+                    "\___ \ / _ \ | |\/| | / _ \ |  \| | | | | |_| | / _ \   ",
+                    " ___) / ___ \| |  | |/ ___ \| |\  | | | |  _  |/ ___ \  ",
                     "|____/_/   \_\_|  |_/_/   \_\_| \_| |_| |_| |_/_/   \_\ ",
-                    "                                                   bye~"], "info")
+                    "                                                   bye~ "], "info")
