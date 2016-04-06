@@ -1,6 +1,6 @@
 # PersonalAssistant
 
-**I'm currently working on Samantha's 2nd iteration. The master-branch represents the stable version of the 1st one, the branch [sam_1.0](https://github.com/Sirs0ri/PersonalAssistant/tree/sam_1.0) is a backup if that and all the magic happens in [sam_2.0](https://github.com/Sirs0ri/PersonalAssistant/tree/sam_2.0)**
+**I'm currently working on Samantha's 2nd iteration. The master-branch represents the stable version of the 1st one, the branch [sam_1.0](https://github.com/Sirs0ri/PersonalAssistant/tree/sam_1.0) is a backup if that and all the magic happens in [sam_2.0](https://github.com/Sirs0ri/PersonalAssistant/tree/sam_2.0).**
 
 The home for Sam, Glyph, Will and all the other assistants out there
 
