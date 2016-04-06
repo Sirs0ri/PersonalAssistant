@@ -1,4 +1,7 @@
 # PersonalAssistant
+
+**I'm currently working on Samantha's 2nd iteration. The master-branch represents the stable version of the 1st one, this branch is a backup of that and all the magic happens in [sam_2.0](https://github.com/Sirs0ri/PersonalAssistant/tree/sam_2.0).**
+
 The home for Sam, Glyph, Will and all the other assistants out there
 
 ## What is what?
