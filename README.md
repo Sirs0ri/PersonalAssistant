@@ -5,6 +5,8 @@
 
 ## Idea
 
+This is the second iteration of my Personal Assistant, Samantha. The program is supposed to run on a Raspberry Pi and manages both home automation, and "assisting duty" such as automatically creating a wallpaper every day, keeping track of the variant devices in my home network and notifying me about changes, etc.
+
 Compared to it's first iteration, SAM2 will feature a more complex design.
 
 The first version was split into the **core** and an interface for plugins. In addition to that, SAM2 will include a simple interface for **devices** and **services**. It'll also provide an easy exchangeable **user interface**. A completely new part will be the **context-module**. In combination with a set of rules, it should allow the program to learn and automate processes by itself. More information on that below.
