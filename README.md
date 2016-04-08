@@ -46,3 +46,7 @@ The core will be the "*central processing unit*" of the whole framework. It'll r
 User interfaces are a simple way for a user to pass commands to the core where they'll be processed. A UI can be a website, an app, or a service like AutoRemote or Slack, just to name a few.
 
 [first_sketch]: wiki/diagrams/first_sketch.png
+
+## Handler
+
+There will be some kind of handler, starting all the main components and searching for updates n the background. If an update is found, it'll be downloaded to a temporary location, tested and if all goes as it should, the currently running version of that component is stopped, moved to a backup location and replaced by the newer version.
