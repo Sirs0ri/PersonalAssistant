@@ -1,7 +1,10 @@
 # PersonalAssistant
 
 > This will be Samantha's second iteration.
-> For the first version, see https://github.com/Sirs0ri/PersonalAssistant/tree/sam_1.0
+
+> For the first version, see [here][sam_1.0].
+
+> For the Repository contining Interfaces, see [here][interfaces].
 
 ## Idea
 
@@ -43,12 +46,15 @@ Whenever a command is processed, the current context is stored. The core will th
 
 The core will be the "*central processing unit*" of the whole framework. It'll receive input from the user via an input queue, process it and forward the commands to the devices-/services-modules. Also, as mentioned above it'll analyze the stored context repeatedly to find rules, and match the stored set of rules against the current context to execute commands automatically.
 
-## User interface
-
-User interfaces are a simple way for a user to pass commands to the core where they'll be processed. A UI can be a website, an app, or a service like AutoRemote or Slack, just to name a few.
-
-[first_sketch]: wiki/diagrams/first_sketch.png
-
 ## Handler
 
 There will be some kind of handler, starting all the main components and searching for updates n the background. If an update is found, it'll be downloaded to a temporary location, tested and if all goes as it should, the currently running version of that component is stopped, moved to a backup location and replaced by the newer version.
+
+## User interface
+
+User interfaces are a simple way for a user to pass commands to the core where they'll be processed. A UI can be a website, an app, or a service like AutoRemote or Slack, just to name a few. Different UIs will be developed in [a different repository][interfaces].
+
+[first_sketch]: wiki/diagrams/first_sketch.png
+
+[sam_1.0]: https://github.com/Sirs0ri/PersonalAssistant/tree/sam_1.0
+[interfaces]: https://github.com/Sirs0ri/PersonalAssistant_Interfaces
