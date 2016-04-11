@@ -3,14 +3,9 @@
 ## Until 2.1 - Init
 
 * [x] implement logging
+* [ ] add an interface that allows reacting to messages sent over the web. Not flask this time - A simple listener on one port should be enough.
 * [ ] create the core-, devices-, and services-modules
-* [ ] create a CLI-interface (separate Repo?)
-    * [x] must be able to detect whether an instance of SAM is already running on a server
-    * [ ] connect to existing instance, if available
-    * [ ] start new instance if not
-    * [ ] insert elements into the core's input queue
-    * [ ] read and remove elements from the core's output queue
-    * [ ] Comments, Explanations for the user
+* [ ] create a CLI-interface (-> separate Repo!)
 * [ ] create the context module
 
 ## until 2.2 - Automation
