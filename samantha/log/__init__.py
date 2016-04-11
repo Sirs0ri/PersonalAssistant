@@ -3,6 +3,7 @@ different Handlers as necessary."""
 
 import logging
 import logging.handlers
+import os.path
 import time
 import handlers
 from handlers import variables_private
@@ -33,8 +34,10 @@ def configure_logging():
         time.strftime("%X"))
 
     # create and add a handler to store the log in a textfile.
-    file_handler = logging.handlers.TimedRotatingFileHandler("samantha.log",
-                                                             when="midnight")
+    this_dir, this_filename = os.path.split(__file__)
+    file_handler = logging.handlers.TimedRotatingFileHandler(
+        this_dir + "\\samantha.log",
+        when="midnight")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(full_formatter)
     root.addHandler(file_handler)
