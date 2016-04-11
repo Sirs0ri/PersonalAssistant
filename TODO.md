@@ -2,6 +2,7 @@
 
 ## Until 2.1 - Init
 
+* [x] implement logging
 * [ ] create the core-, devices-, and services-modules
 * [ ] create a CLI-interface (separate Repo?)
     * [x] must be able to detect whether an instance of SAM is already running on a server
