@@ -34,7 +34,7 @@ def configure_logging():
         time.strftime("%X"))
 
     # create and add a handler to store the log in a textfile.
-    this_dir, this_filename = os.path.split(__file__)
+    this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
     file_handler = logging.handlers.TimedRotatingFileHandler(
         this_dir + "\\samantha.log",
         when="midnight")
