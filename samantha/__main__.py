@@ -11,3 +11,8 @@ if __name__ == "__main__":
     LOGGER.debug("Starting Samantha")
     LOGGER.debug("-"*47)
     LOGGER.info("I'm the main hanlder.")
+    # TODO
+    # load the context
+    # Start the core
+    # Initialize devices and services
+    # Start updater as part of main
