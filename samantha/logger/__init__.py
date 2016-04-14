@@ -35,6 +35,15 @@ def configure_logging():
 
     # create and add a handler to store the log in a textfile.
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
+    if this_dir is "":
+        this_dir = "..\\..\\data\\logs"
+    else:
+        this_dir = this_dir.replace("logger", "data\\logs")
+    # TODO
+    # 1. check if the folder exists, create it if not
+    # 2. this creates a logfile like samantha.log.2016-04-11 or just (..).log
+    #    it should be samantha.2016-04-11.log though
+    #    time.strftime("%y-%m-%d") produces 2016-04-11
     file_handler = logging.handlers.TimedRotatingFileHandler(
         "{this_dir}\\samantha.log".format(this_dir=this_dir),
         when="midnight")
