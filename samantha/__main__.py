@@ -10,4 +10,4 @@ if __name__ == "__main__":
     LOGGER.debug("-"*47)
     LOGGER.debug("Starting Samantha")
     LOGGER.debug("-"*47)
-    LOGGER.info("I'm the main.")
+    LOGGER.info("I'm the main hanlder.")
