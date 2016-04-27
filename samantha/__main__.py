@@ -5,6 +5,12 @@ import logging
 import logger
 
 # TODO import only what's necessary
+import context
+import core
+import devices
+import services
+import tools
+
 LOGGER = logging.getLogger(__name__)
 
 if __name__ == "__main__":
