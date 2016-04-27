@@ -1,6 +1,7 @@
 """Samantha's main module. calling this via 'python samantha'
 should start everything else"""
 import logging
+
 import logger
 
 LOGGER = logging.getLogger(__name__)
