@@ -4,6 +4,7 @@ import logging
 
 import logger
 
+# TODO import only what's necessary
 LOGGER = logging.getLogger(__name__)
 
 if __name__ == "__main__":
