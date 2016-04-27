@@ -9,9 +9,11 @@ import handlers
 from handlers import variables_private
 
 LOGGER = logging.getLogger(__name__)
+INITIALIZED = False
 
+LOGGER.debug("I was imported.")
 
-def configure_logging():
+def init():
     """Configure Logging. Add a streamhandler, a TimedRotatingFileHandler and
     a custom AutoRemoteHandler. The latter one will be added only, if an API-
     Key is defined inside the file 'variables_private.py'."""
@@ -73,3 +75,7 @@ def configure_logging():
     console_handler.setFormatter(nice_formatter)
     root.addHandler(console_handler)
     LOGGER.info("All handlers were added successfully.")
+    return True
+
+if not INITIALIZED:
+    INITIALIZED = init()
