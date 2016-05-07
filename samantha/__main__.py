@@ -11,6 +11,7 @@ import devices
 import services
 import tools
 
+logger.initialize()
 LOGGER = logging.getLogger(__name__)
 
 if __name__ == "__main__":
