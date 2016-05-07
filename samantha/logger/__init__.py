@@ -1,6 +1,7 @@
 """This file contains the function to initialize logging. It'll initialize the
 different Handlers as necessary."""
 
+import datetime
 import logging
 import logging.handlers
 import os.path
@@ -27,7 +28,7 @@ def _init():
     # hh:mm:ss LEVEL___ MODNAME_____ MESSAGE
     nice_formatter = logging.Formatter(
         "%(asctime)s %(levelname)-8s %(name)-12s %(message)s",
-        time.strftime("%X"))
+        datetime.datetime.now().strftime("%X.%f")[:-3])
     # yyyy-mm-dd hh:mm:ss,xxx LEVEL___ MODNAME_____ MESSAGE
     full_formatter = logging.Formatter(
         "%(asctime)s %(levelname)-8s %(name)-12s %(message)s")
