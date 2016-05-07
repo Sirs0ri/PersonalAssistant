@@ -79,6 +79,12 @@ def _init():
     LOGGER.info("All handlers were added successfully.")
     return True
 
+
+def stop():
+    LOGGER.info("Exiting...")
+    return True
+
+
 def initialize():
     global INITIALIZED
     if not INITIALIZED:
