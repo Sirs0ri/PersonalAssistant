@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # load the context
     # Start the core
     # Initialize devices and services
-    # Start updater as part of main
+    # Start updater as part of tools
     factory = WebSocketServerFactory()
     factory.protocol = Server
 
