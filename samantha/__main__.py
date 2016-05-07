@@ -50,13 +50,28 @@ if __name__ == "__main__":
     LOGGER.debug("Starting Samantha")
     LOGGER.debug("-"*47)
     LOGGER.info("I'm the main handler.")
+
+    context.initialize()
+    core.initialize()
+    devices.initialize()
+    services.initialize()
+    tools.initialize()
+
     # TODO
     # load the context
     # Start the core
     # Initialize devices and services
     # Start updater as part of tools
+
     factory = WebSocketServerFactory()
     factory.protocol = Server
 
     port = reactor.listenTCP(9000, factory)
     reactor.run()
+
+    LOGGER.info("Exiting...")
+    context.stop()
+    devices.stop()
+    services.stop()
+    tools.stop()
+    core.stop()

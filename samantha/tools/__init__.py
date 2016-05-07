@@ -10,9 +10,18 @@ INITIALIZED = False
 LOGGER.debug("I was imported.")
 
 
-def init():
+def _init():
     LOGGER.info("Initializing...")
     return True
 
-if not INITIALIZED:
-    INITIALIZED = init()
+
+def stop():
+    LOGGER.info("Exiting...")
+    queues.stop()
+    return True
+
+
+def initialize():
+    global INITIALIZED
+    if not INITIALIZED:
+        INITIALIZED = _init()

@@ -35,7 +35,7 @@ class OutputQueue(Queue):
         super(OutputQueue, self).__init__("Output")
 
 
-def init():
+def _init():
     global INPUT
     global OUTPUT
     LOGGER.info("Initializing...")
@@ -43,5 +43,14 @@ def init():
     OUTPUT = OutputQueue()
     return True
 
-if not INITIALIZED:
-    INITIALIZED = init()
+
+def stop():
+    LOGGER.info("Exiting...")
+    # TODO Clear the queues, Alert the user if they're not empty.
+    return True
+
+
+def initialize():
+    global INITIALIZED
+    if not INITIALIZED:
+        INITIALIZED = _init()

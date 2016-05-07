@@ -6,14 +6,23 @@ INITIALIZED = False
 LOGGER.debug("I was imported.")
 
 
-def init():
+def _init():
     LOGGER.info("Initializing...")
     # TODO load services
     return True
+
+
+def stop():
+    LOGGER.info("Exiting...")
+    # TODO stop services
+    return True
+
 
 # TODO def load_services():
 
 # TODO def process(keyword, params={}):
 
-if not INITIALIZED:
-    INITIALIZED = init()
+def initialize():
+    global INITIALIZED
+    if not INITIALIZED:
+        INITIALIZED = _init()
