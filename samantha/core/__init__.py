@@ -10,8 +10,7 @@ LOGGER.debug("I was imported.")
 
 def init():
     LOGGER.info("Initializing...")
-    # TODO: Open websocket on port 19113
-    # TODO Start the "Analyzer" that checks the context for rules
+    # TODO Start reading the input queue
     return True
 
 if not INITIALIZED:
