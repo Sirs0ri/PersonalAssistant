@@ -70,7 +70,6 @@ if __name__ == "__main__":
 
     # TODO
     # load the context
-    # Start the core
     # Initialize devices and services
     # Start updater as part of tools
 
