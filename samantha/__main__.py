@@ -31,7 +31,7 @@ class Server(WebSocketServerProtocol):
 
     def onClose(self, wasClean, code, reason):
         LOGGER.info("WebSocket connection closed: %s", reason)
-        reactor.stop()
+        # reactor.stop()
 
     def onMessage(self, payload, isBinary):
         # echo back message verbatim
@@ -42,6 +42,7 @@ class Server(WebSocketServerProtocol):
             if payload.decode('utf8') == "exit_server":
                 LOGGER.fatal("Received the request to close the server")
                 self.sendClose()
+                reactor.stop()
             else:
                 INPUT.put({"self": self,
                            "payload": payload.decode('utf8'),
