@@ -2,6 +2,9 @@
 Handler that color-codes the Loglevels for better readability or an AutoRemote-
 Handler that sends log messages to my phone."""
 
+
+import requests
+
 import logging
 import logging.handlers
 
@@ -19,14 +22,23 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
+# Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
 
 class AutoRemoteHandler(logging.Handler):
-    """A Handler that sends logging messages to AutoRemote"""
+    """A Handler that sends logging messages to AutoRemote. AutoRemote is a
+    service that was initially built as a plugin for the Android App Tasker
+    (http://tasker.dinglisch.net) which allows simple communication between
+    two phones. Sending messages works easily via HTTP Postrequests to AR's
+    server at https://autoremotejoaomgcd.appspot.com/sendmessage (see below
+    for more info on how the URL is built). The messages are then processed
+    further on the phone, for example to be displayed in a notification, or
+    on the user's homescreen."""
 
     def emit(self, record):
-        import requests
+        """This function actually sends the message via a POST request
+        to AutoRemote's server."""
         logging.getLogger("requests").setLevel(logging.WARNING)
         message = self.format(record)
         payload = {'key': variables_private.ar_key,
@@ -36,7 +48,8 @@ class AutoRemoteHandler(logging.Handler):
 
 
 class ColorStreamHandler(logging.StreamHandler):
-    """A Handler that prints colored messages to the current console."""
+    """A Handler that prints colored messages to the current console. The
+    messages appear in various colors by using ANSI-escape-sequences."""
 
     def emit(self, record):
         """
@@ -61,8 +74,8 @@ class ColorStreamHandler(logging.StreamHandler):
         stream_handler.setLevel(self.level)
         stream_handler.setFormatter(self.formatter)
 
-        # check if the levelname is even part of the current Formatter
-        # if not, none of the transformations are necessary
+        # Check if the levelname is even part of the current Formatter
+        # If not, none of the transformations are necessary
         fmt = self.formatter._fmt
         if "levelname" in fmt:
             levelname = ""
@@ -72,15 +85,15 @@ class ColorStreamHandler(logging.StreamHandler):
                       "ERROR": "91",     # red
                       "CRITICAL": "95"}  # magenta
 
-            # find the actual part of the Formatter that formats the levelname
+            # Find the actual part of the Formatter that formats the levelname
             fmt_placeholders = fmt.split(" ")
             for placeholder in fmt_placeholders:
                 if "levelname" in placeholder:
-                    # set a local variable to what the Formatter would have
+                    # Set a local variable to what the Formatter would have
                     # done. This is so that any changes to the string's length
                     # (e.g. exactly 8 with "%(levelname)-8s") are preserved.
                     levelname = placeholder % {"levelname": record.levelname}
-            # replace the record's levelname with the modified version.
+            # Replace the record's levelname with the modified version.
             record.levelname = "\033[{attr}m{lvlname}\033[0m".format(
                 attr=colors[record.levelname],
                 lvlname=levelname)
