@@ -65,6 +65,8 @@ if __name__ == "__main__":
     services.initialize()
     tools.initialize()
 
+    LOGGER.info("Initialisation complete. Opening the Websocket")
+
     # TODO
     # load the context
     # Start the core
