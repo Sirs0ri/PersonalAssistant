@@ -15,8 +15,10 @@ def _init():
 
 
 def stop():
+    global INITIALIZED
     LOGGER.info("Exiting...")
     # TODO Stop reading the input queue
+    INITIALIZED = False
     return True
 
 
@@ -24,3 +26,5 @@ def initialize():
     global INITIALIZED
     if not INITIALIZED:
         INITIALIZED = _init()
+    else:
+        LOGGER.info("Already initialized!")

@@ -45,8 +45,10 @@ def _init():
 
 
 def stop():
+    global INITIALIZED
     LOGGER.info("Exiting...")
     # TODO Clear the queues, Alert the user if they're not empty.
+    INITIALIZED = False
     return True
 
 
@@ -54,3 +56,5 @@ def initialize():
     global INITIALIZED
     if not INITIALIZED:
         INITIALIZED = _init()
+    else:
+        LOGGER.info("Already initialized!")

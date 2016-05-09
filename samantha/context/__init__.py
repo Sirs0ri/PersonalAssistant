@@ -16,8 +16,10 @@ def _init():
 
 
 def stop():
+    global INITIALIZED
     LOGGER.info("Exiting...")
     # TODO Dump the context to data/context.DATE.json
+    INITIALIZED = False
     return True
 
 # TODO def import_from_file(path="data/context.json"):
@@ -37,3 +39,5 @@ def initialize():
     global INITIALIZED
     if not INITIALIZED:
         INITIALIZED = _init()
+    else:
+        LOGGER.info("Already initialized!")
