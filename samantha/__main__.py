@@ -4,6 +4,7 @@ import logging
 
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
                                        WebSocketServerFactory
+import Queue
 from twisted.internet import reactor
 
 import logger
@@ -41,7 +42,11 @@ class Server(WebSocketServerProtocol):
             if payload.decode('utf8') == "exit_server":
                 LOGGER.fatal("Received the request to close the server")
                 self.sendClose()
-        self.sendMessage(payload, isBinary)
+            else:
+                INPUT.put({"self": self,
+                           "payload": payload.decode('utf8'),
+                           "isBinary": isBinary})
+        # self.sendMessage(payload, isBinary)
 
 
 if __name__ == "__main__":
@@ -51,8 +56,11 @@ if __name__ == "__main__":
     LOGGER.debug("-"*47)
     LOGGER.info("I'm the main handler.")
 
+    INPUT = Queue.PriorityQueue()
+    OUTPUT = Queue.PriorityQueue()
+
     context.initialize()
-    core.initialize()
+    core.initialize(INPUT, OUTPUT)
     devices.initialize()
     services.initialize()
     tools.initialize()

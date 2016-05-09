@@ -1,7 +1,5 @@
 import logging
 
-import queues
-
 # TODO: Add Updater
 
 LOGGER = logging.getLogger(__name__)
@@ -12,14 +10,12 @@ LOGGER.debug("I was imported.")
 
 def _init():
     LOGGER.info("Initializing...")
-    queues.initialize()
     return True
 
 
 def stop():
     global INITIALIZED
     LOGGER.info("Exiting...")
-    queues.stop()
     INITIALIZED = False
     return True
 
