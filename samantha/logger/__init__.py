@@ -63,12 +63,12 @@ def _init():
     # Get the path that leads to the logs-folder
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
     if this_dir is "":
-        path = "..\\..\\data\\logs"
+        path = "../../data/logs"
     else:
-        path = this_dir.replace("logger", "data\\logs")
+        path = this_dir.replace("logger", "data/logs")
 
     file_handler = logging.handlers.TimedRotatingFileHandler(
-        "{path}\\samantha.log".format(path=path),
+        "{path}/samantha.log".format(path=path),
         when="midnight")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(full_formatter)
