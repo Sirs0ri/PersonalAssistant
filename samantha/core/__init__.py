@@ -10,7 +10,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] Retrieve NUM_WORKER/SENDER_THREADS from a config file
+# TODO: [X] Retrieve NUM_WORKER/SENDER_THREADS from a config file
 # TODO: [ ] worker()
 # TODO: [ ]     remove "wait"-debugging
 # TODO: [ ]     parse the message
@@ -25,7 +25,9 @@
 ###############################################################################
 
 
+import ConfigParser
 import logging
+import os
 import threading
 import time
 
@@ -38,8 +40,8 @@ LOGGER = logging.getLogger(__name__)
 # Set constants
 INITIALIZED = False
 
-NUM_WORKER_THREADS = 2
-NUM_SENDER_THREADS = 2
+NUM_WORKER_THREADS = 1
+NUM_SENDER_THREADS = 1
 
 INPUT = None
 OUTPUT = None
@@ -109,10 +111,24 @@ def sender():
 
 def _init(InputQueue, OutputQueue):
     """Initializes the module."""
-    global INPUT, OUTPUT
+    global INPUT, OUTPUT, NUM_WORKER_THREADS, NUM_SENDER_THREADS
+
     LOGGER.info("Initializing...")
     INPUT = InputQueue
     OUTPUT = OutputQueue
+
+    LOGGER.debug("Reading the config file...")
+    this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
+    if this_dir is "":
+        path = "../../data"
+    else:
+        path = this_dir.replace("core", "data")
+
+    config = ConfigParser.RawConfigParser()
+    config.read("{path}/samantha.cfg".format(path=path))
+
+    NUM_WORKER_THREADS = config.getint(__name__, "NUM_WORKER_THREADS")
+    NUM_SENDER_THREADS = config.getint(__name__, "NUM_SENDER_THREADS")
 
     # Start the worker threads to process commands
     LOGGER.debug("Starting Worker")
