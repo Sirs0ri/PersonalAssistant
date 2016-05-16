@@ -3,10 +3,9 @@ Handler that color-codes the Loglevels for better readability or an AutoRemote-
 Handler that sends log messages to my phone."""
 
 
-import requests
-
 import logging
 import logging.handlers
+import requests
 
 # Try importing variables_private.py for the AutoRemoteHandler. If it fails,
 # the handler will be ignored later.
