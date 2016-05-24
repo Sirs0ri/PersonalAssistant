@@ -18,6 +18,7 @@
 
 import logging
 
+import eventbuilder
 import server
 
 
@@ -42,6 +43,7 @@ def _init(InputQueue, OutputQueue):
     OUTPUT = OutputQueue
 
     # initialize all tools
+    eventbuilder.initialize(InputQueue, OutputQueue)
     server.initialize(InputQueue, OutputQueue)
 
     LOGGER.info("Initialisation complete.")
@@ -56,6 +58,7 @@ def stop():
     INITIALIZED = False
 
     # Stop all tools
+    eventbuilder.stop()
     server.stop()
 
     LOGGER.info("Exited.")

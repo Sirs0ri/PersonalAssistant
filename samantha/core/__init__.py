@@ -26,11 +26,14 @@
 
 
 import ConfigParser
+import json
 import logging
 import os
 import threading
 import time
 
+import devices
+import services
 import tools
 
 
@@ -62,20 +65,28 @@ def worker():
         logger.debug("Waiting for an item.")
         message = INPUT.get()
 
-        logger.debug("[C_UID: %d] Got the Item '%s'",
-                     message["self"].C_UID,
-                     message["payload"])
+        # open the message (JSON-String to a dict)
+        message = json.loads(message)
+
+        logger.debug("[UID: %s] Got the Item '%s'",
+                     message["sender_id"],
+                     message["keyword"])
 
         # just for debugging purposes, to simulate long processing
-        if message["payload"] == "wait":
+        if message["keyword"] == "wait":
             time.sleep(5)
 
-        # Put the result back into the OUTPUT queue, the incoming commfor now
-        OUTPUT.put(message)
+        message["result"] = "Processed! Woohoo!"
 
-        logger.info("[C_UID: %d] Processing of '%s' successful.",
-                    message["self"].C_UID,
-                    message["payload"])
+        logger.info("[UID: %s] Processing of '%s' successful.",
+                    message["sender_id"],
+                    message["keyword"])
+
+        # Close the message again (Dict to JSON)
+        message = json.dumps(message)
+
+        # Put the result back into the OUTPUT queue, the incoming comm for now
+        OUTPUT.put(message)
 
         # Let the queue know that processing is complete
         INPUT.task_done()
@@ -94,16 +105,30 @@ def sender():
         logger.debug("Waiting for an item.")
         message = OUTPUT.get()
 
-        logger.debug("[C_UID: %d] Got the Item '%s'",
-                     message["self"].C_UID,
-                     message["payload"])
+        # open the message (JSON-String to a dict)
+        message = json.loads(message)
+
+        logger.debug("[UID: %s] Got the Item '%s'",
+                     message["sender_id"],
+                     message["keyword"])
 
         # Send the result back to the client it came from
-        # message["self"].sendMessage(message["result"].encode('utf8'), False)
+        if message["event_type"] == "request":
+            if message["sender_id"][0] == "c":
+                LOGGER.debug("Sending the result '%s' back to client %s",
+                             message["result"], message["sender_id"])
+                tools.server.INDEX[message["sender_id"]].sendMessage(
+                    message["result"].encode('utf8'), False)
+            elif message["sender_id"][0] == "d":
+                LOGGER.debug("Sending results to devices isn't possible yet.")
+            elif message["sender_id"][0] == "s":
+                LOGGER.debug("Sending results to services isn't possible yet.")
+            else:
+                LOGGER.warn("Invalid UID: %s", message["sender_id"])
 
-        logger.info("[C_UID: %d] Processing of '%s' completed.",
-                    message["self"].C_UID,
-                    message["payload"])
+        logger.info("[UID: %s] Processing of '%s' completed.",
+                    message["sender_id"],
+                    message["keyword"])
 
         # Let the queue know that processing is complete
         OUTPUT.task_done()
