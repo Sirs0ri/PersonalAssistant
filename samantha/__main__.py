@@ -39,7 +39,12 @@ if __name__ == "__main__":
     # Start updater as part of tools
 
     LOGGER.info("Initialisation complete. Opening the Websocket")
+    tools.eventbuilder.Event(sender_id="i_main",
+                             keyword="onstart").trigger()
     tools.server.run()
+
+    tools.eventbuilder.Event(sender_id="i_main",
+                             keyword="onexit").trigger()
 
     LOGGER.info("Exiting...")
     context.stop()
