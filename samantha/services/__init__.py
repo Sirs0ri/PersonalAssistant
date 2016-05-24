@@ -28,7 +28,18 @@ INITIALIZED = False
 INPUT = None
 OUTPUT = None
 
+INDEX = {}
+
+UID = 0
+
 LOGGER.debug("I was imported.")
+
+
+def get_uid():
+    global UID
+    uid = "s_{0:04d}".format(UID)
+    UID += 1
+    return uid
 
 
 def _init(InputQueue, OutputQueue):
