@@ -26,9 +26,11 @@ LOGGER.debug("I was imported.")
 
 
 class Event(object):
-    """An event for Samantha"""
+    """An event for Samantha. Each event stores information about who
+    triggered it, what type it is and of course a keyword + optional data."""
 
     def __init__(self, sender_id, keyword, event_type="trigger", data=None):
+        """initialize a new event"""
         global EVENT_ID
 
         LOGGER.debug("Building new event (#%d): %s (%s) from %s",
@@ -48,12 +50,12 @@ class Event(object):
         self.result = None
 
     def trigger(self):
+        """puts the current event into the input queue as JSON-String"""
         s = json.dumps({"sender_id":  self.sender_id,
                         "keyword":    self.keyword,
                         "event_type": self.event_type,
                         "data":       self.data})
         INPUT.put(s)
-
 
 
 def _init(InputQueue, OutputQueue):
