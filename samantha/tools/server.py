@@ -37,6 +37,8 @@ LOGGER.debug("I was imported.")
 
 
 def get_uid():
+    """provides a unique uid which is used as identifier for the different
+    server-client-connenctions"""
     global UID
     uid = "c{}".format(UID)
     UID += 1
@@ -44,6 +46,7 @@ def get_uid():
 
 
 class Server(WebSocketServerProtocol):
+    """a websocket-server class"""
 
     def onConnect(self, request):
         self.UID = get_uid()
@@ -79,9 +82,6 @@ class Server(WebSocketServerProtocol):
                 e = tools.eventbuilder.Event(sender_id=self.UID,
                                              keyword=payload.decode('utf8'))
                 e.trigger()
-                # INPUT.put({"self": self,
-                #            "payload": payload.decode('utf8'),
-                #            "isBinary": isBinary})
 
 
 def _init(InputQueue, OutputQueue):
@@ -102,6 +102,8 @@ def _init(InputQueue, OutputQueue):
 
 
 def run():
+    """open the Websocket"""
+    LOGGER.info("Opening the Websocket.")
     reactor.run()
 
 
