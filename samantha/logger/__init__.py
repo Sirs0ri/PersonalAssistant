@@ -45,15 +45,13 @@ def _init():
     # Create the formatters. They'll be used throughout the application.
     # "hh:mm:ss,xxx LEVEL___ MODNAME_____ MESSAGE"
     nice_formatter = logging.Formatter(
-        "%(asctime)s %(levelname)-8s %(name)-12s %(message)s",
-        datetime.datetime.now().strftime("%X,%f")[:-3])
+        "%(asctime)s,%(msecs)d %(levelname)-8s %(name)-12s %(message)s", "%X")
     # "yyyy-mm-dd hh:mm:ss,xxx LEVEL___ MODNAME_____ MESSAGE"
     full_formatter = logging.Formatter(
         "%(asctime)s %(levelname)-8s %(name)-12s %(message)s")
     # "hh:mm:ss LEVEL MODNAME MESSAGE"
     practical_formatter = logging.Formatter(
-        "%(asctime)s %(levelname)s %(name)s %(message)s",
-        time.strftime("%X"))
+        "%(asctime)s %(levelname)s %(name)s %(message)s", "%X")
 
     # Create and add a handler to store the log in a textfile.
     # Level = DEBUG
