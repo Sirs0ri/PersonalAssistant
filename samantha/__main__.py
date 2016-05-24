@@ -47,8 +47,8 @@ if __name__ == "__main__":
                              keyword="onexit").trigger()
 
     LOGGER.info("Exiting...")
+    core.stop()
     context.stop()
     devices.stop()
     services.stop()
     tools.stop()
-    core.stop()
