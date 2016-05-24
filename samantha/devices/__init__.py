@@ -7,7 +7,7 @@
 ###############################################################################
 #
 # TODO: [ ] _init()
-# TODO: [ ]     load devices
+# TODO: [ ]     load devices & add them to INDEX
 # TODO: [ ] stop()
 # TODO: [ ]     stop devices if necessary
 # TODO: [ ] def process(keyword, params={}):

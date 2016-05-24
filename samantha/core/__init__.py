@@ -16,11 +16,11 @@
 # TODO: [ ]     parse the message
 # TODO: [ ]     forward it to services and/or devices
 # TODO: [ ] sender()
-# TODO: [ ]     check where the message came from an external source, send the
+# TODO: [X]     check where the message came from and if necessary, send the
 #               result to the correct server/device/service
-# TODO: [ ] move Server into a standalone module
-# TODO: [ ] _init()
-# TODO: [ ]     move sender to a new server-module
+# TODO: [X] move Server into a standalone module
+# TODO: [X] _init()
+# TODO: [X]     move sender to a new server-module
 #
 ###############################################################################
 

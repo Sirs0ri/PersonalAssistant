@@ -7,7 +7,7 @@
 ###############################################################################
 #
 # TODO: [ ] _init()
-# TODO: [ ]     load services
+# TODO: [ ]     load services & add them to INDEX
 # TODO: [ ] stop()
 # TODO: [ ]     stop services if necessary
 # TODO: [ ] def process(keyword, params={}):

@@ -2,7 +2,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] class Event
+# TODO: [X] class Event
 #
 ###############################################################################
 
@@ -64,8 +64,6 @@ def _init(InputQueue, OutputQueue):
     INPUT = InputQueue
     OUTPUT = OutputQueue
 
-    # onstart event?
-
     LOGGER.info("Initialisation complete.")
     return True
 
@@ -76,8 +74,6 @@ def stop():
 
     LOGGER.info("Exiting...")
     INITIALIZED = False
-
-    # onexit event?
 
     LOGGER.info("Exited.")
     return True
