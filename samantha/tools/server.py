@@ -40,7 +40,7 @@ def get_uid():
     """provides a unique uid which is used as identifier for the different
     server-client-connenctions"""
     global UID
-    uid = "c{}".format(UID)
+    uid = "c_{0:04d}".format(UID)
     UID += 1
     return uid
 
