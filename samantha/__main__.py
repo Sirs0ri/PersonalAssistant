@@ -12,6 +12,7 @@ import services
 import tools
 
 
+# Initialize the logger
 logger.initialize()
 LOGGER = logging.getLogger(__name__)
 
