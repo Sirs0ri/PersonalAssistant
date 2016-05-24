@@ -79,11 +79,11 @@ if __name__ == "__main__":
     INPUT = Queue.PriorityQueue()
     OUTPUT = Queue.PriorityQueue()
 
-    context.initialize()
+    context.initialize(INPUT, OUTPUT)
     core.initialize(INPUT, OUTPUT)
-    devices.initialize()
-    services.initialize()
-    tools.initialize()
+    devices.initialize(INPUT, OUTPUT)
+    services.initialize(INPUT, OUTPUT)
+    tools.initialize(INPUT, OUTPUT)
 
     LOGGER.info("Initialisation complete. Opening the Websocket")
 

@@ -25,12 +25,19 @@ LOGGER = logging.getLogger(__name__)
 # Set constants
 INITIALIZED = False
 
+INPUT = None
+OUTPUT = None
+
 LOGGER.debug("I was imported.")
 
 
-def _init():
+def _init(InputQueue, OutputQueue):
     """Initializes the module."""
+    global INPUT, OUTPUT
+
     LOGGER.info("Initializing...")
+    INPUT = InputQueue
+    OUTPUT = OutputQueue
 
     # initialize all devices
     LOGGER.info("Initialisation complete.")
@@ -49,10 +56,10 @@ def stop():
     return True
 
 
-def initialize():
+def initialize(InputQueue, OutputQueue):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init()
+        INITIALIZED = _init(InputQueue, OutputQueue)
     else:
         LOGGER.info("Already initialized!")
