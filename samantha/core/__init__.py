@@ -114,8 +114,9 @@ def sender():
                      message["sender_id"],
                      message["keyword"])
 
-        # Send the result back to the client it came from
+        # If the message was a request...
         if message["event_type"] == "request":
+            # ...send it's result back to where it came from
             if message["sender_id"][0] == "c":
                 LOGGER.debug("Sending the result '%s' back to client %s",
                              message["result"], message["sender_id"])
@@ -144,7 +145,10 @@ def _init(InputQueue, OutputQueue):
     INPUT = InputQueue
     OUTPUT = OutputQueue
 
+    # Read the number of threads to start from Samantha's config file
+    # (/samantha/data/samantha.cfg)
     LOGGER.debug("Reading the config file...")
+    # get the config file's path in realtion to the path of this file
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
     if this_dir is "":
         path = "../../data"
