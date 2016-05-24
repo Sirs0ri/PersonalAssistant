@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # Initialize devices and services
     # Start updater as part of tools
 
-    LOGGER.info("Initialisation complete. Opening the Websocket")
+    LOGGER.info("Initialisation complete.")
     tools.eventbuilder.Event(sender_id="i_main",
                              keyword="onstart").trigger()
     tools.server.run()
