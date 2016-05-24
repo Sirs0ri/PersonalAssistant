@@ -117,6 +117,8 @@ def sender():
         # If the message was a request...
         if message["event_type"] == "request":
             # ...send it's result back to where it came from
+            LOGGER.info("[UID: %s] Sending the result back",
+                        message["sender_id"])
             if message["sender_id"][0] == "c":
                 LOGGER.debug("Sending the result '%s' back to client %s",
                              message["result"], message["sender_id"])
@@ -128,6 +130,9 @@ def sender():
                 LOGGER.debug("Sending results to services isn't possible yet.")
             else:
                 LOGGER.warn("Invalid UID: %s", message["sender_id"])
+        else:
+            LOGGER.info("[UID: %s] Not sending the result back since the "
+                        "event was a trigger.", message["sender_id"])
 
         logger.info("[UID: %s] Processing of '%s' completed.",
                     message["sender_id"],
