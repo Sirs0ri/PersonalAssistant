@@ -49,6 +49,8 @@ NUM_SENDER_THREADS = 1
 INPUT = None
 OUTPUT = None
 
+THREADS = []
+
 LOGGER.debug("I was imported.")
 
 
@@ -136,7 +138,7 @@ def sender():
 
 def _init(InputQueue, OutputQueue):
     """Initializes the module."""
-    global INPUT, OUTPUT, NUM_WORKER_THREADS, NUM_SENDER_THREADS
+    global INPUT, OUTPUT, NUM_WORKER_THREADS, NUM_SENDER_THREADS, THREADS
 
     LOGGER.info("Initializing...")
     INPUT = InputQueue
@@ -161,6 +163,7 @@ def _init(InputQueue, OutputQueue):
         t = threading.Thread(target=worker, name="worker%d" % i)
         t.daemon = True
         t.start()
+        THREADS.append(t)
 
     # Start the sender threads to process results
     LOGGER.debug("Starting Sender")
@@ -168,6 +171,7 @@ def _init(InputQueue, OutputQueue):
         t = threading.Thread(target=sender, name="sender%d" % i)
         t.daemon = True
         t.start()
+        THREADS.append(t)
 
     LOGGER.info("Initialisation complete.")
     return True
@@ -177,7 +181,13 @@ def stop():
     """Stops the module."""
     global INITIALIZED
 
-    LOGGER.info("Exiting...")
+    LOGGER.info("Exiting... This takes a few seconds, since all threads are "
+                "stopped with a 2sec timeout.")
+
+    for t in THREADS:
+        LOGGER.debug("Waiting for thread '%s' to stop.", t.name)
+        t.join(2)
+
     INITIALIZED = False
     LOGGER.info("Exited.")
     return True
