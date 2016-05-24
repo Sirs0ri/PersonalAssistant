@@ -69,13 +69,9 @@ class ColorStreamHandler(logging.StreamHandler):
         After transforming the string inside the given record, the printing is
         handled via the original StreamHandler."""
 
-        stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(self.level)
-        stream_handler.setFormatter(self.formatter)
-
+        fmt = self.formatter._fmt
         # Check if the levelname is even part of the current Formatter
         # If not, none of the transformations are necessary
-        fmt = self.formatter._fmt
         if "levelname" in fmt:
             levelname = ""
             colors = {"DEBUG": "96",     # light cyan
@@ -96,4 +92,4 @@ class ColorStreamHandler(logging.StreamHandler):
             record.levelname = "\033[{attr}m{lvlname}\033[0m".format(
                 attr=colors[record.levelname],
                 lvlname=levelname)
-        logging.StreamHandler.emit(stream_handler, record)
+        super(ColorStreamHandler, self).emit(record)
