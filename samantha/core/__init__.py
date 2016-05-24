@@ -99,7 +99,7 @@ def sender():
                      message["payload"])
 
         # Send the result back to the client it came from
-        message["self"].sendMessage(message["payload"].encode('utf8'), False)
+        # message["self"].sendMessage(message["result"].encode('utf8'), False)
 
         logger.info("[C_UID: %d] Processing of '%s' completed.",
                     message["self"].C_UID,

@@ -18,6 +18,8 @@
 
 import logging
 
+import server
+
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -40,6 +42,7 @@ def _init(InputQueue, OutputQueue):
     OUTPUT = OutputQueue
 
     # initialize all tools
+    server.initialize(InputQueue, OutputQueue)
 
     LOGGER.info("Initialisation complete.")
     return True
@@ -53,6 +56,7 @@ def stop():
     INITIALIZED = False
 
     # Stop all tools
+    server.stop()
 
     LOGGER.info("Exited.")
     return True
