@@ -122,8 +122,7 @@ def sender():
             if message["sender_id"][0] == "c":
                 LOGGER.debug("Sending the result '%s' back to client %s",
                              message["result"], message["sender_id"])
-                tools.server.INDEX[message["sender_id"]].sendMessage(
-                    message["result"].encode('utf8'), False)
+                tools.server.send_message(message)
             elif message["sender_id"][0] == "d":
                 LOGGER.debug("Sending results to devices isn't possible yet.")
             elif message["sender_id"][0] == "s":

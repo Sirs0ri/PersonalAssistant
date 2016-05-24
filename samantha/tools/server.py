@@ -105,6 +105,15 @@ def run():
     reactor.run()
 
 
+def send_message(message):
+    """send a message to one of the connected devices"""
+    if message["sender_id"] in INDEX:
+        INDEX[message["sender_id"]].sendMessage(
+            message["result"].encode('utf8'), False)
+    else:
+        LOGGER.warn("There is no client with the ID %s!", message["sender_id"])
+
+
 def stop():
     """Stops the module."""
     global INITIALIZED
