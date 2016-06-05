@@ -51,7 +51,23 @@ OUTPUT = None
 
 THREADS = []
 
+KEYWORDS = {}
+
 LOGGER.debug("I was imported.")
+
+
+def add_keywords(keywords):
+    """Adds a set of keywords to the core's list. Based on these keywords it
+    will direct commands to services and/or devices."""
+    global KEYWORDS
+    for key in keywords:
+        if key in KEYWORDS:
+            KEYWORDS[key] += keywords[key]
+        else:
+            KEYWORDS[key] = keywords[key]
+    LOGGER.info("%d new keywords added to the index. It now has %d entries.",
+                len(keywords), len(KEYWORDS))
+    LOGGER.debug("%s", KEYWORDS.keys())
 
 
 def worker():
