@@ -2,6 +2,7 @@
 should start everything else"""
 import logging
 import Queue
+import sys
 
 # TODO import only what's necessary
 import context
@@ -11,18 +12,21 @@ import logger
 import services
 import tools
 
+if "--nodebug" in sys.argv:
+    DEBUG = False
+else:
+    DEBUG = True
+
 
 # Initialize the logger
-logger.initialize()
+logger.initialize(DEBUG)
 LOGGER = logging.getLogger(__name__)
-
 
 if __name__ == "__main__":
     LOGGER.info("Initializing...")
     LOGGER.debug("-"*47)
     LOGGER.debug("Starting Samantha")
     LOGGER.debug("-"*47)
-    LOGGER.info("I'm the main handler.")
 
     INPUT = Queue.PriorityQueue()
     OUTPUT = Queue.PriorityQueue()

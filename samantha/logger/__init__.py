@@ -33,7 +33,7 @@ INITIALIZED = False
 LOGGER.debug("I was imported.")
 
 
-def _init():
+def _init(DEBUG):
     """Configure Logging. Add a streamhandler, a TimedRotatingFileHandler and
     a custom AutoRemoteHandler. The latter one will be added only, if an API-
     Key is defined inside the file 'variables_private.py'."""
@@ -98,7 +98,10 @@ def _init():
     # Displays the error levels nicely and colorful :3
 
     console_handler = handlers.ColorStreamHandler()
-    console_handler.setLevel(logging.DEBUG)
+    if DEBUG:
+        console_handler.setLevel(logging.DEBUG)
+    else:
+        console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(nice_formatter)
     root.addHandler(console_handler)
 
@@ -116,10 +119,10 @@ def stop():
     return True
 
 
-def initialize():
+def initialize(DEBUG):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init()
+        INITIALIZED = _init(DEBUG)
     else:
         LOGGER.info("Already initialized!")
