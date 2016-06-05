@@ -48,8 +48,11 @@ def get_uid():
 class Server(WebSocketServerProtocol):
     """a websocket-server class"""
 
-    def onConnect(self, request):
+    def __init__(self):
         self.UID = get_uid()
+        super(Server, self).__init__()
+
+    def onConnect(self, request):
         LOGGER.info("[UID: %s] Client connecting: '%s'",
                     self.UID, request.peer)
 
@@ -63,7 +66,8 @@ class Server(WebSocketServerProtocol):
         LOGGER.info("[UID: %s] WebSocket connection closed: '%s'",
                     self.UID, reason)
         # remove this server-client-connenction from the index
-        del INDEX[self.UID]
+        if self.UID in INDEX:
+            del INDEX[self.UID]
 
     def onMessage(self, payload, isBinary):
         if isBinary:
