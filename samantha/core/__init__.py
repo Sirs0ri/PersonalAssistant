@@ -10,17 +10,11 @@
 
 ###############################################################################
 #
-# TODO: [X] Retrieve NUM_WORKER/SENDER_THREADS from a config file
 # TODO: [ ] worker()
 # TODO: [ ]     remove "wait"-debugging
 # TODO: [ ]     parse the message
 # TODO: [ ]     forward it to services and/or devices
-# TODO: [ ] sender()
-# TODO: [X]     check where the message came from and if necessary, send the
-#               result to the correct server/device/service
-# TODO: [X] move Server into a standalone module
-# TODO: [X] _init()
-# TODO: [X]     move sender to a new server-module
+# TODO: [ ]     put the original Message into OUTPUT, not as JSON
 #
 ###############################################################################
 
