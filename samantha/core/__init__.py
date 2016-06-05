@@ -136,12 +136,15 @@ def sender():
             LOGGER.debug("[UID: %s] Sending the result back",
                          message["sender_id"])
             if message["sender_id"][0] == "c":
+                # Original message came from a client via the server
                 LOGGER.debug("Sending the result '%s' back to client %s",
                              message["result"], message["sender_id"])
                 tools.server.send_message(message)
             elif message["sender_id"][0] == "d":
+                # Original message came from a device
                 LOGGER.debug("Sending results to devices isn't possible yet.")
             elif message["sender_id"][0] == "s":
+                # Original message came from a service
                 LOGGER.debug("Sending results to services isn't possible yet.")
             else:
                 LOGGER.warn("Invalid UID: %s", message["sender_id"])
