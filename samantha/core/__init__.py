@@ -70,7 +70,7 @@ def worker():
         # open the message (JSON-String to a dict)
         message = json.loads(message)
 
-        logger.debug("[UID: %s] Got the Item '%s'",
+        logger.debug("[UID: %s] Now processing '%s'",
                      message["sender_id"],
                      message["keyword"])
 
@@ -80,9 +80,9 @@ def worker():
 
         message["result"] = "Processed! Woohoo!"
 
-        logger.info("[UID: %s] Processing of '%s' successful.",
-                    message["sender_id"],
-                    message["keyword"])
+        logger.debug("[UID: %s] Processing of '%s' successful.",
+                     message["sender_id"],
+                     message["keyword"])
 
         # Close the message again (Dict to JSON)
         message = json.dumps(message)
@@ -117,8 +117,8 @@ def sender():
         # If the message was a request...
         if message["event_type"] == "request":
             # ...send it's result back to where it came from
-            LOGGER.info("[UID: %s] Sending the result back",
-                        message["sender_id"])
+            LOGGER.debug("[UID: %s] Sending the result back",
+                         message["sender_id"])
             if message["sender_id"][0] == "c":
                 LOGGER.debug("Sending the result '%s' back to client %s",
                              message["result"], message["sender_id"])
@@ -130,8 +130,8 @@ def sender():
             else:
                 LOGGER.warn("Invalid UID: %s", message["sender_id"])
         else:
-            LOGGER.info("[UID: %s] Not sending the result back since the "
-                        "event was a trigger.", message["sender_id"])
+            LOGGER.debug("[UID: %s] Not sending the result back since the "
+                         "event was a trigger.", message["sender_id"])
 
         logger.info("[UID: %s] Processing of '%s' completed.",
                     message["sender_id"],
