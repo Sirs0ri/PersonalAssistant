@@ -51,6 +51,8 @@ if __name__ == "__main__":
                              keyword="onexit").trigger()
 
     LOGGER.info("Exiting...")
+    INPUT.join()
+    OUTPUT.join()
     core.stop()
     context.stop()
     devices.stop()

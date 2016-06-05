@@ -189,12 +189,7 @@ def stop():
     """Stops the module."""
     global INITIALIZED
 
-    LOGGER.info("Exiting... This takes a few seconds, since all threads are "
-                "stopped with a 2sec timeout.")
-
-    for t in THREADS:
-        LOGGER.debug("Waiting for thread '%s' to stop.", t.name)
-        t.join(2)
+    LOGGER.info("Exiting...")
 
     INITIALIZED = False
     LOGGER.info("Exited.")
