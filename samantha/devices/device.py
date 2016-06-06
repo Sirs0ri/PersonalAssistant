@@ -16,11 +16,13 @@ LOGGER = logging.getLogger(__name__)
 
 class BaseClass(object):
 
-    def __init__(self, name="Device", uid="", keywords=[],
-                 active=True, logger=None, file_path=None):
-        self.name = name
-        self.UID = uid
-        self.KEYWORDS = keywords
+    def __init__(self, active=True, logger=None, file_path=None):
+        if not hasattr(self, "name"):
+            self.name = "Dervice"
+        if not hasattr(self, "uid"):
+            self.uid = "NO_UID"
+        if not hasattr(self, "keywords"):
+            self.KEYWORDS = []
         self.is_active = active
         if logger:
             self.LOGGER = logger
@@ -33,15 +35,15 @@ class BaseClass(object):
         self.LOGGER.debug("Initialisation complete")
 
     def __str__(self):
-        return "Device '{}', UID {}".format(self.name, self.UID)
+        return "Device '{}', UID {}".format(self.name, self.uid)
 
     def __repr__(self):
         return "Device '{}', UID {} from {}. Keywords: {}".format(
-            self.name, self.UID, self.path, self.KEYWORDS)
+            self.name, self.uid, self.path, self.keywords)
 
     def stop(self):
         self.LOGGER.debug("Stopped successfully.")
 
-    def process(self, key):
+    def process(self, key, data=None):
         self.LOGGER.warn("My process() function isn't implemented yet! "
                          "'%s' won't be processed.")

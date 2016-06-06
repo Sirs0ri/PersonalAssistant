@@ -53,8 +53,8 @@ def get_uid():
 def add_to_index(service):
     """Adds a device to the indexes."""
     global INDEX, KEYWORDS
-    INDEX[service.UID] = service
-    for key in service.KEYWORDS:
+    INDEX[service.uid] = service
+    for key in service.keywords:
         if key in KEYWORDS:
             KEYWORDS[key].append(service)
         else:
@@ -88,7 +88,7 @@ def _init(InputQueue, OutputQueue):
             if hasattr(service_source, "Service"):
                 UID = get_uid()
                 new_service = service_source.Service(UID)
-                if new_service.ACTIVE:
+                if new_service.is_active:
                     add_to_index(new_service)
                     LOGGER.debug("%s is a valid Service.", files[i])
             else:

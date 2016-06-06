@@ -53,8 +53,8 @@ def get_uid():
 def add_to_index(device):
     """Adds a device to the indexes."""
     global INDEX, KEYWORDS
-    INDEX[device.UID] = device
-    for key in device.KEYWORDS:
+    INDEX[device.uid] = device
+    for key in device.keywords:
         if key in KEYWORDS:
             KEYWORDS[key].append(device)
         else:
