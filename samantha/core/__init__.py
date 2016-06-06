@@ -88,6 +88,10 @@ def worker():
         if message["keyword"] == "wait":
             time.sleep(5)
 
+        if message["keyword"] in KEYWORDS:
+            for item in KEYWORDS[message["keyword"]]:
+                item.process(key=message["keyword"], data=message["data"])
+
         message["result"] = "Processed! Woohoo!"
 
         logger.debug("[UID: %s] Processing of '%s' successful.",
