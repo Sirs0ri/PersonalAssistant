@@ -54,7 +54,8 @@ class Event(object):
         s = json.dumps({"sender_id":  self.sender_id,
                         "keyword":    self.keyword,
                         "event_type": self.event_type,
-                        "data":       self.data})
+                        "data":       self.data,
+                        "result":     self.result})
         INPUT.put(s)
 
 
