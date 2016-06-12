@@ -22,7 +22,7 @@ class BaseClass(object):
         if not hasattr(self, "uid"):
             self.uid = "NO_UID"
         if not hasattr(self, "keywords"):
-            self.KEYWORDS = []
+            self.keywords = []
         self.is_active = active
         if logger:
             self.LOGGER = logger
