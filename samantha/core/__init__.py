@@ -25,6 +25,7 @@ import logging
 import os
 import threading
 import time
+import traceback
 
 import devices
 import services
@@ -88,18 +89,34 @@ def worker():
         if message["keyword"] == "wait":
             time.sleep(5)
 
+        results = [False]
         if message["keyword"] in KEYWORDS:
             for item in KEYWORDS[message["keyword"]]:
-                item.process(key=message["keyword"], data=message["data"])
+                try:
+                    r = item.process(key=message["keyword"],
+                                     data=message["data"])
+                    results.append(r)
+                except Exception as e:
+                    LOGGER.error("Exception in user code:\n%s",
+                                 traceback.format_exc())
+        results = [x for x in results if x]
 
-        message["result"] = "Processed! Woohoo!"
-
-        logger.debug("[UID: %s] Processing of '%s' successful.",
-                     message["sender_id"],
-                     message["keyword"])
-
-        # Close the message again (Dict to JSON)
-        message = json.dumps(message)
+        if results:
+            message["result"] = results
+            s = ""
+            logger.info("[UID: %s] Processing of '%s' successful. %d result%s.",
+                        message["sender_id"],
+                        message["keyword"],
+                        len(results),
+                        ("s" if len(results) > 1 else ""))
+            logger.debug("Keyword: %s Result: %s",
+                         message["keyword"],
+                         results)
+        else:
+            message["result"] = "No matching plugin/device found"
+            logger.debug("[UID: %s] Processing of '%s' unsuccessful.",
+                         message["sender_id"],
+                         message["keyword"])
 
         # Put the result back into the OUTPUT queue, the incoming comm for now
         if message["event_type"] == "request":
