@@ -42,7 +42,7 @@ class PluginThread(threading.Thread):
         self.running = 1
 
     def run(self):
-        LOGGER.debug("Started.")
+        self.LOGGER.debug("Started.")
         # initialisation
         while self.running == 1:
             timetuple = datetime.datetime.now().timetuple()
@@ -94,17 +94,17 @@ class PluginThread(threading.Thread):
                                         data=timelist).trigger()
             # sleep to take work from the CPU
             time.sleep(1)
-        LOGGER.debug("Not running anymore.")
+        self.LOGGER.debug("Not running anymore.")
 
     def stop(self):
         self.running = 0
-        LOGGER.debug("Exited.")
+        self.LOGGER.debug("Exited.")
 
 
 class Service(BaseClass):
 
     def __init__(self, uid):
-        LOGGER.debug("Initializing...")
+        LOGGER.info("Initializing...")
         self.name = "Schedule"
         self.uid = uid
         self.keywords = ["onstart", "onexit"]
@@ -112,7 +112,7 @@ class Service(BaseClass):
         super(Service, self).__init__(logger=LOGGER, file_path=__file__)
 
     def stop(self):
-        LOGGER.debug("I'm not doing shit anymore.")
+        LOGGER.info("Exiting...")
         super(Service, self).stop()
 
     def process(self, key, data=None):

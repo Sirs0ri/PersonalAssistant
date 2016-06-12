@@ -32,7 +32,7 @@ class BaseClass(object):
             self.path = file_path
         else:
             self.path = __file__
-        self.LOGGER.debug("Initialisation complete")
+        self.LOGGER.info("Initialisation complete")
 
     def __str__(self):
         return "Service '{}', UID {}".format(self.name, self.uid)
@@ -42,8 +42,8 @@ class BaseClass(object):
             self.name, self.uid, self.path, self.keywords)
 
     def stop(self):
-        self.LOGGER.debug("Stopped successfully.")
+        self.LOGGER.info("Exited.")
 
     def process(self, key, data=None):
         self.LOGGER.warn("My process() function isn't implemented yet! "
-                         "'%s' won't be processed.")
+                         "'%s' won't be processed.", key)
