@@ -99,14 +99,10 @@ class Service(BaseClass):
         super(Service, self).__init__(logger=LOGGER, file_path=__file__)
 
     def process(self, key, data=None):
-        try:
-            if key == "onstart":
-                LOGGER.debug("Starting thread...")
-                self.t.start()
-                return {"processed": True, "value": "Success.", "plugin": self.name}
-            else:
-                return {"processed": False, "value": "Keyword not in use. ({}, {})".format(key, data), "plugin": self.name}
-        except Exception as e:
-            LOGGER.error("Exception in user code:\n%s", traceback.format_exc())
-
-            return {"processed": False, "value": e, "plugin": self.name}
+        if key == "onstart":
+            LOGGER.debug("Starting thread...")
+            self.t.start()
+            return True
+        else:
+            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
+        return False
