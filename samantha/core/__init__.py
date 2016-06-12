@@ -102,7 +102,8 @@ def worker():
         message = json.dumps(message)
 
         # Put the result back into the OUTPUT queue, the incoming comm for now
-        OUTPUT.put(message)
+        if message["event_type"] == "request":
+            OUTPUT.put(json.dumps(message))
 
         # Let the queue know that processing is complete
         INPUT.task_done()
