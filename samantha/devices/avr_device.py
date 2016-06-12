@@ -106,6 +106,8 @@ class Device(BaseClass):
                     LOGGER.exception("AVR refused the connection. Is another "
                                      "device using the Telnet connection "
                                      "already?\n%s", traceback.format_exc())
+            if self.sleeper is not None:
+                return True
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
         return False
