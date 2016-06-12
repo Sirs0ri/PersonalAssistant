@@ -81,6 +81,8 @@ def add_keywords(keywords):
             KEYWORDS[key] += keywords[key]
         else:
             KEYWORDS[key] = keywords[key]
+
+    tools.eventbuilder.update_keywords(KEYWORDS)
     LOGGER.info("%d new keywords added to the index. It now has %d entries.",
                 len(keywords), len(KEYWORDS))
     LOGGER.debug("%s", KEYWORDS.keys())

@@ -20,6 +20,8 @@ INITIALIZED = False
 INPUT = None
 OUTPUT = None
 
+KEYWORDS = {}
+
 EVENT_ID = 0
 
 LOGGER.debug("I was imported.")
@@ -56,7 +58,11 @@ class Event(object):
                         "event_type": self.event_type,
                         "data":       self.data,
                         "result":     self.result})
-        INPUT.put(s)
+        if self.keyword in KEYWORDS:
+            INPUT.put(s)
+        else:
+            LOGGER.debug("Skipping event '%s' from %s because the keyword is "
+                         "not in use.", self.keyword, self.sender_id)
 
 
 def _init(InputQueue, OutputQueue):
@@ -69,6 +75,11 @@ def _init(InputQueue, OutputQueue):
 
     LOGGER.info("Initialisation complete.")
     return True
+
+
+def update_keywords(keywords):
+    global KEYWORDS
+    KEYWORDS = keywords
 
 
 def stop():
