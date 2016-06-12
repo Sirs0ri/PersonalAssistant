@@ -66,7 +66,7 @@ class Device(BaseClass):
             commands = []
 
             # Check if the Chromecast is connected to an app
-            if data["session_id"] is None:  # not connected
+            if data["media_session_id"] is None:  # not connected
                 if self.sleeper is not None:
                     # Stop the sleeper if it's already running
                     LOGGER.debug("Stopping the sleeper-thread.")
