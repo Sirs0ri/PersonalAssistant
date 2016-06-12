@@ -69,6 +69,7 @@ class Device(BaseClass):
             if data["session_id"] is None:  # not connected
                 if self.sleeper is not None:
                     # Stop the sleeper if it's already running
+                    LOGGER.debug("Stopping the sleeper-thread.")
                     self.sleeper.join(0)
                     self.sleeper = None
                 # Run the sleeper that turns off the AVR after 3 minutes
@@ -78,6 +79,7 @@ class Device(BaseClass):
             else:  # An app is connected to the Chromecast
                 if self.sleeper is not None:
                     # Kill the sleeper if it's currently running
+                    LOGGER.debug("Stopping the sleeper-thread.")
                     self.sleeper.join(0)
                     self.sleeper = None
                 commands.append("SIMPLAY")
