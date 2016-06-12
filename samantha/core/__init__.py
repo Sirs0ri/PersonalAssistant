@@ -116,7 +116,7 @@ def worker():
                                      data=message["data"])
                     results.append(r)
                 except Exception as e:
-                    LOGGER.error("Exception in user code:\n%s",
+                    LOGGER.exception("Exception in user code:\n%s",
                                  traceback.format_exc())
         results = [x for x in results if x]
 

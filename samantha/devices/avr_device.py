@@ -41,9 +41,9 @@ def turn_off_with_delay(self, delay=120):
         tn.write("{}\r".format(command))
         tn.close()
     except socket.error:
-        logger.error("AVR refused the connection. Is another "
-                     "device using the Telnet connection already?"
-                     "\n%s", traceback.format_exc())
+        logger.exception("AVR refused the connection. Is another "
+                         "device using the Telnet connection already?"
+                         "\n%s", traceback.format_exc())
 
 
 class Device(BaseClass):
@@ -103,9 +103,9 @@ class Device(BaseClass):
                     tn.close()
                     return True
                 except socket.error:
-                    LOGGER.error("AVR refused the connection. Is another "
-                                 "device using the Telnet connection already?"
-                                 "\n%s", traceback.format_exc())
+                    LOGGER.exception("AVR refused the connection. Is another "
+                                     "device using the Telnet connection "
+                                     "already?\n%s", traceback.format_exc())
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
         return False

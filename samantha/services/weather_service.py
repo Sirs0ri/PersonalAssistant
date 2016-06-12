@@ -38,7 +38,7 @@ class Service(BaseClass):
             self.location = variables_private.owm_location
             active = True
         except Exception as e:
-            LOGGER.error("Couldn't access the API-Key and/or location.")
+            LOGGER.exception("Couldn't access the API-Key and/or location.")
             self.api_key = ""
             self.location = ""
             active = False
