@@ -29,17 +29,19 @@ def turn_off_with_delay(self, delay=120):
     """Turns the AVR off after a delay of 120 seconds (default, can be changed
     via a parameter)"""
 
+    logger = logging.getLogger(__name__  + "_Sleeper")
+    logger.debug("Started the sleeper-thread.")
     # Wait for a while, since this function is called as new Thread, it can
     # still be cancelled during this period.
     time.sleep(delay)
     try:
         tn = telnetlib.Telnet(self.ip)
         command = "ZMOFF"  # Turn the main zone off
-        LOGGER.debug("Sending command '%s'", command)
+        logger.debug("Sending command '%s'", command)
         tn.write("{}\r".format(command))
         tn.close()
     except socket.error:
-        LOGGER.error("AVR refused the connection. Is another "
+        logger.error("AVR refused the connection. Is another "
                      "device using the Telnet connection already?"
                      "\n%s", traceback.format_exc())
 
