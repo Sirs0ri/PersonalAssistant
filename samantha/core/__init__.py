@@ -51,6 +51,27 @@ KEYWORDS = {}
 LOGGER.debug("I was imported.")
 
 
+class Processor(object):
+
+    def process(self, key, data=None):
+
+        # just for debugging purposes, to simulate long processing
+        if key == "wait":
+            time.sleep(5)
+            return True
+        elif key == "logger":
+            root = logging.getLogger()
+            if root.handlers[2].level == 10:
+                root.handlers[2].setLevel(logging.INFO)
+                LOGGER.warn("Logging-Level set to INFO")
+                return True
+            else:
+                root.handlers[2].setLevel(logging.DEBUG)
+                LOGGER.warn("Logging-Level set to DEBUG")
+                return True
+        return False
+
+
 def add_keywords(keywords):
     """Adds a set of keywords to the core's list. Based on these keywords it
     will direct commands to services and/or devices."""
@@ -84,10 +105,6 @@ def worker():
         logger.debug("[UID: %s] Now processing '%s'",
                      message["sender_id"],
                      message["keyword"])
-
-        # just for debugging purposes, to simulate long processing
-        if message["keyword"] == "wait":
-            time.sleep(5)
 
         results = [False]
         if message["keyword"] in KEYWORDS:
@@ -215,6 +232,9 @@ def _init(InputQueue, OutputQueue):
         t.daemon = True
         t.start()
         THREADS.append(t)
+
+    # Add the Processor-class htat handles a few commands to the keyword-index
+    add_keywords({"wait": [Processor()], "logger": [Processor()]})
 
     LOGGER.info("Initialisation complete.")
     return True
