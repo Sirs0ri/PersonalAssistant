@@ -27,6 +27,7 @@ class Listener(object):
         self.content_type = None
 
     def new_media_status(self, status):
+        updated = 0
         if not status.player_state == self.player_state:
             self.player_state = status.player_state
             LOGGER.debug("New state: %s", self.player_state)
