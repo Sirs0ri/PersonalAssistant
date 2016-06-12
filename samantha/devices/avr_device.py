@@ -25,8 +25,8 @@ from devices.device import BaseClass
 LOGGER = logging.getLogger(__name__)
 
 
-def turn_off_with_delay(self, delay=180):
-    """Turns the AVR off after a delay of 180 seconds (default, can be changed
+def turn_off_with_delay(self, delay=120):
+    """Turns the AVR off after a delay of 120 seconds (default, can be changed
     via a parameter)"""
 
     # Wait for a while, since this function is called as new Thread, it can
