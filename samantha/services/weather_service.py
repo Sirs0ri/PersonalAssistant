@@ -53,10 +53,11 @@ class Service(BaseClass):
                 baseurl="http://api.openweathermap.org/data/2.5/weather",
                 location=self.location,
                 key=self.api_key))
-            tools.eventbuilder.Event(sender_id=self.name,
-                                     keyword="weather",
-                                     data=req.json()).trigger()
-            return True
+            if req.status_code == 200:
+                tools.eventbuilder.Event(sender_id=self.name,
+                                         keyword="weather",
+                                         data=req.json()).trigger()
+                return True
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
         return False
