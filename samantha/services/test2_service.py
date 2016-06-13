@@ -23,7 +23,8 @@ class Service(BaseClass):
         self.uid = uid
         self.keywords = ["test2", "service_test"]
         LOGGER.debug("I'm now doing something productive!")
-        super(Service, self).__init__(logger=LOGGER, file_path=__file__)
+        super(Service, self).__init__(
+            logger=LOGGER, file_path=__file__, active=False)
 
     def stop(self):
         LOGGER.info("Exiting...")
