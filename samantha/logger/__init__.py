@@ -45,7 +45,7 @@ def _init(DEBUG):
     # Create the formatters. They'll be used throughout the application.
     # "hh:mm:ss,xxx LEVEL___ MODNAME_____ MESSAGE"
     nice_formatter = logging.Formatter(
-        "%(asctime)-8s,%(msecs)-3d %(levelname)-8s %(name)-12s %(message)s",
+        "%(asctime)-8s,%(msecs)-3d %(levelname)-8s %(name)-12s\t%(message)s",
         "%X")
     # "yyyy-mm-dd hh:mm:ss,xxx LEVEL___ MODNAME_____ MESSAGE"
     full_formatter = logging.Formatter(
