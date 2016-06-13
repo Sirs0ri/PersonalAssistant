@@ -11,12 +11,11 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf"""
 #
 ###############################################################################
 
-
-import time
 import logging
 import socket
 import telnetlib
 import threading
+import time
 import traceback
 
 from devices.device import BaseClass
@@ -30,7 +29,7 @@ def turn_off_with_delay(self, delay=120):
     """Turns the AVR off after a delay of 120 seconds (default, can be changed
     via a parameter)"""
 
-    logger = logging.getLogger(__name__  + "_Sleeper")
+    logger = logging.getLogger(__name__ + ".sleeper")
     logger.debug("Started the sleeper-thread.")
     # Wait for a while, since this function is called as new Thread, it can
     # still be cancelled during this period.
@@ -73,17 +72,20 @@ class Device(BaseClass):
                     LOGGER.debug("Stopping the sleeper-thread.")
                     self.sleeper.join(0)
                     self.sleeper = None
+
                 # Run the sleeper that turns off the AVR after 3 minutes
                 self.sleeper = threading.Thread(
                     target=turn_off_with_delay, args=(self,))
                 self.sleeper.start()
             else:  # An app is connected to the Chromecast
+
                 if self.sleeper is not None:
                     # Kill the sleeper if it's currently running
                     LOGGER.debug("Stopping the sleeper-thread.")
                     self.sleeper.join(0)
                     self.sleeper = None
                 commands.append("SIMPLAY")
+
 
             # Set the audio mode depending on what kind of content is playing
             if data["content_type"] is not None:
