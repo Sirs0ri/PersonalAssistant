@@ -7,11 +7,11 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf"""
 #
 # TODO: [ ] comments
 # TODO: [ ] get IP from config/router
-import Queue
 #
 ###############################################################################
 
 import logging
+import Queue
 import socket
 import telnetlib
 import threading
@@ -99,22 +99,16 @@ class Device(BaseClass):
 
             # Check if the Chromecast is connected to an app
             if data["display_name"] in [None, "Backdrop"]:  # not connected
-
-                if self.sleeper is not None:
-                    # Stop the sleeper if it's already running
-                    LOGGER.debug("Stopping the sleeper-thread.")
-                    self.sleeper.join(0)
-                    self.sleeper = None
-
                 # Run the sleeper that turns off the AVR after 3 minutes
-                self.sleeper = threading.Thread(
-                    target=turn_off_with_delay, args=(self,))
-                self.sleeper.start()
+                if self.sleeper is not None:
+                    # Only start the sleeper if it's not already running
+                    self.sleeper = threading.Thread(
+                        target=turn_off_with_delay, args=(self,))
+                    self.sleeper.start()
                 return True
             else:  # An app is connected to the Chromecast
-
                 if self.sleeper is not None:
-                    # Kill the sleeper if it's currently running
+                    # Stop the sleeper if it's already running
                     LOGGER.debug("Stopping the sleeper-thread.")
                     self.sleeper.join(0)
                     self.sleeper = None
