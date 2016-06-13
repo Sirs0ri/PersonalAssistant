@@ -7,6 +7,7 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf"""
 #
 # TODO: [ ] comments
 # TODO: [ ] get IP from config/router
+# TODO: [ ] use a Queue to make sure all commands are sent after each other
 #
 ###############################################################################
 
