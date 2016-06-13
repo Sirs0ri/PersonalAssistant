@@ -20,6 +20,7 @@ import tools
 LOGGER = logging.getLogger(__name__)
 logging.getLogger("pychromecast").setLevel(logging.INFO)
 
+
 class Listener(object):
 
     def __init__(self, name):
