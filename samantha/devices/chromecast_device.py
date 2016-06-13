@@ -25,6 +25,7 @@ class Listener(object):
         self.name = "{}_Listener".format(name)
         self.player_state = None
         self.content_type = None
+        self.display_name = None
 
     def new_media_status(self, status):
         updated = 0
@@ -41,6 +42,17 @@ class Listener(object):
                                      keyword="chromecast_playstate_change",
                                      data=status.__dict__).trigger()
 
+    def new_cast_status(self, status):
+        updated = 0
+        if not status.display_name == self.display_name:
+            self.display_name = status.display_name
+            LOGGER.debug("New app connected: %s", self.display_name)
+            updated = 1
+        if updated:
+            tools.eventbuilder.Event(sender_id=self.name,
+                                     keyword="chromecast_connection_change",
+                                     data=status.__dict__).trigger()
+
 
 class Device(BaseClass):
 
@@ -55,6 +67,7 @@ class Device(BaseClass):
         self.mc = self.cast.media_controller
         self.listener = Listener(self.name)
         self.mc.register_status_listener(self.listener)
+        self.cast.register_status_listener(self.listener)
         super(Device, self).__init__(logger=LOGGER, file_path=__file__)
 
     def process(self, key, data=None):

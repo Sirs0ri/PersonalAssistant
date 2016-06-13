@@ -53,7 +53,8 @@ class Device(BaseClass):
         LOGGER.info("Initializing...")
         self.name = "AVR"
         self.uid = uid
-        self.keywords = ["chromecast_playstate_change"]
+        self.keywords = ["chromecast_playstate_change",
+                         "chromecast_connection_change"]
         self.ip = "192.168.178.48"
         self.sleeper = None
         super(Device, self).__init__(logger=LOGGER, file_path=__file__)
@@ -62,11 +63,12 @@ class Device(BaseClass):
         """The main processing function. Ths will be called if an event's
         keyword matches one of the device's keywords (specified in __init__)"""
 
-        if key == "chromecast_playstate_change":
+        if key == "chromecast_connection_change":
             commands = []
 
             # Check if the Chromecast is connected to an app
-            if data["media_session_id"] is None:  # not connected
+            if data["display_name"] in [None, "Backdrop"]:  # not connected
+
                 if self.sleeper is not None:
                     # Stop the sleeper if it's already running
                     LOGGER.debug("Stopping the sleeper-thread.")
@@ -77,6 +79,7 @@ class Device(BaseClass):
                 self.sleeper = threading.Thread(
                     target=turn_off_with_delay, args=(self,))
                 self.sleeper.start()
+                return True
             else:  # An app is connected to the Chromecast
 
                 if self.sleeper is not None:
@@ -84,25 +87,30 @@ class Device(BaseClass):
                     LOGGER.debug("Stopping the sleeper-thread.")
                     self.sleeper.join(0)
                     self.sleeper = None
-                commands.append("SIMPLAY")
 
+                try:
+                    tn = telnetlib.Telnet(self.ip)
+                    command = "SIMPLAY"  # Turn the main zone off
+                    LOGGER.debug("Sending command '%s'", command)
+                    tn.write("{}\r".format(command))
+                    tn.close()
+                    return True
+                except socket.error:
+                    LOGGER.exception("AVR refused the connection. Is another "
+                                     "device using the Telnet connection "
+                                     "already?\n%s", traceback.format_exc())
+
+        elif key == "chromecast_playstate_change":
 
             # Set the audio mode depending on what kind of content is playing
             if data["content_type"] is not None:
-                if "audio" in data["content_type"]:
-                    # For audio, stereo sound is preferred
-                    commands.append("MSSTEREO")
-                else:
-                    # This is the case for video (where surround sound is
-                    # preferred) or pictures (where the sound doesn't matter)
-                    commands.append("MSDOLBY DIGITAL")
-
-            if commands:  # if any commands should be sent to the AVR
+                command = ("MSSTEREO" if "audio" in data["content_type"] else
+                           "MSDOLBY DIGITAL")
+                # Prefer stereo audio for music, surround for everything else
                 try:
                     tn = telnetlib.Telnet(self.ip)
-                    for command in commands:
-                        LOGGER.debug("Sending command '%s'", command)
-                        tn.write("{}\r".format(command))
+                    LOGGER.debug("Sending command '%s'", command)
+                    tn.write("{}\r".format(command))
                     tn.close()
                     return True
                 except socket.error:
