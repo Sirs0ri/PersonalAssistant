@@ -18,6 +18,7 @@ import tools
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
+logging.getLogger("pychromecast").setLevel(logging.INFO)
 
 class Listener(object):
 
