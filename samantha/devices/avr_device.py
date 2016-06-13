@@ -7,7 +7,7 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf"""
 #
 # TODO: [ ] comments
 # TODO: [ ] get IP from config/router
-# TODO: [ ] use a Queue to make sure all commands are sent after each other
+import Queue
 #
 ###############################################################################
 
@@ -24,6 +24,42 @@ from devices.device import BaseClass
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
+COMM_QUEUE = Queue.PriorityQueue()
+
+
+def send(command, ip, logger, retries=3):
+    if retries > 0:
+        try:
+            tn = telnetlib.Telnet(ip)
+            logger.debug("Sending command '%s'", command)
+            tn.write("{}\r".format(command))
+            tn.close()
+        except socket.error:
+            logger.exception("AVR refused the connection. Is another "
+                             "device using the Telnet connection already?"
+                             "\n%s", traceback.format_exc())
+            time.sleep(2)
+            send(command, ip, logger, retries-1)
+    else:
+        logger.error("Maximium count of retries reached. The command %s "
+                     "couldn't be sent.", command)
+
+
+def worker(ip):
+    """Reads and processes commands from the COMM_QUEUE queue. Puts results
+    back into OUTPUT"""
+    # Get a new logger for each thread.
+    # Used instead of the global LOGGER on purpose inside this function.
+    logger = logging.getLogger(
+        __name__ + "." + threading.current_thread().name)
+
+    while True:
+        # Wait until an item becomes available in INPUT
+        logger.debug("Waiting for a command.")
+        command = COMM_QUEUE.get()
+        send(command, ip, logger)
+        COMM_QUEUE.task_done()
+
 
 def turn_off_with_delay(self, delay=120):
     """Turns the AVR off after a delay of 120 seconds (default, can be changed
@@ -34,16 +70,7 @@ def turn_off_with_delay(self, delay=120):
     # Wait for a while, since this function is called as new Thread, it can
     # still be cancelled during this period.
     time.sleep(delay)
-    try:
-        tn = telnetlib.Telnet(self.ip)
-        command = "ZMOFF"  # Turn the main zone off
-        logger.debug("Sending command '%s'", command)
-        tn.write("{}\r".format(command))
-        tn.close()
-    except socket.error:
-        logger.exception("AVR refused the connection. Is another "
-                         "device using the Telnet connection already?"
-                         "\n%s", traceback.format_exc())
+    COMM_QUEUE.put("ZMOFF")
 
 
 class Device(BaseClass):
@@ -56,6 +83,10 @@ class Device(BaseClass):
         self.keywords = ["chromecast_playstate_change",
                          "chromecast_connection_change"]
         self.ip = "192.168.178.48"
+        self.worker = threading.Thread(target=worker,
+                                       args=(self.ip,),
+                                       name="worker")
+        self.worker.start()
         self.sleeper = None
         super(Device, self).__init__(logger=LOGGER, file_path=__file__)
 
@@ -87,18 +118,8 @@ class Device(BaseClass):
                     LOGGER.debug("Stopping the sleeper-thread.")
                     self.sleeper.join(0)
                     self.sleeper = None
-
-                try:
-                    tn = telnetlib.Telnet(self.ip)
-                    command = "SIMPLAY"  # Turn the main zone off
-                    LOGGER.debug("Sending command '%s'", command)
-                    tn.write("{}\r".format(command))
-                    tn.close()
-                    return True
-                except socket.error:
-                    LOGGER.exception("AVR refused the connection. Is another "
-                                     "device using the Telnet connection "
-                                     "already?\n%s", traceback.format_exc())
+                COMM_QUEUE.put("SIMPLAY")
+                return True
 
         elif key == "chromecast_playstate_change":
 
@@ -107,17 +128,7 @@ class Device(BaseClass):
                 command = ("MSSTEREO" if "audio" in data["content_type"] else
                            "MSDOLBY DIGITAL")
                 # Prefer stereo audio for music, surround for everything else
-                try:
-                    tn = telnetlib.Telnet(self.ip)
-                    LOGGER.debug("Sending command '%s'", command)
-                    tn.write("{}\r".format(command))
-                    tn.close()
-                    return True
-                except socket.error:
-                    LOGGER.exception("AVR refused the connection. Is another "
-                                     "device using the Telnet connection "
-                                     "already?\n%s", traceback.format_exc())
-            if self.sleeper is not None:
+                COMM_QUEUE.put(command)
                 return True
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
