@@ -11,7 +11,7 @@ import logging
 import json
 
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 
 # Initialize the logger
@@ -56,13 +56,8 @@ class Event(object):
 
     def trigger(self):
         """puts the current event into the input queue as JSON-String"""
-        s = json.dumps({"sender_id":  self.sender_id,
-                        "keyword":    self.keyword,
-                        "event_type": self.event_type,
-                        "data":       self.data,
-                        "result":     self.result})
         if self.keyword in KEYWORDS:
-            INPUT.put(s)
+            INPUT.put(self)
         else:
             LOGGER.debug("Skipping event '%s' from %s because the keyword is "
                          "not in use.", self.keyword, self.sender_id)

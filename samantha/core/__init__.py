@@ -30,7 +30,7 @@ import services
 import tools
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -101,44 +101,41 @@ def worker():
         logger.debug("Waiting for an item.")
         message = INPUT.get()
 
-        # open the message (JSON-String to a dict)
-        message = json.loads(message)
-
         logger.debug("[UID: %s] Now processing '%s'",
-                     message["sender_id"],
-                     message["keyword"])
+                     message.sender_id,
+                     message.keyword)
 
         results = [False]
-        if message["keyword"] in KEYWORDS:
-            for item in KEYWORDS[message["keyword"]]:
+        if message.keyword in KEYWORDS:
+            for item in KEYWORDS[message.keyword]:
                 try:
-                    r = item.process(key=message["keyword"],
-                                     data=message["data"])
+                    r = item.process(key=message.keyword,
+                                     data=message.data)
                     results.append(r)
                 except Exception as e:
                     LOGGER.exception("Exception in user code:\n%s",
-                                 traceback.format_exc())
+                                     traceback.format_exc())
         results = [x for x in results if x]
 
         if results:
-            message["result"] = results
+            message.result = results
             s = ""
             logger.info("[UID: %s] Processing of '%s' successful. %d result%s.",
-                        message["sender_id"],
-                        message["keyword"],
+                        message.sender_id,
+                        message.keyword,
                         len(results),
                         ("s" if len(results) > 1 else ""))
             logger.debug("Keyword: %s Result: %s",
-                         message["keyword"],
+                         message.keyword,
                          results)
         else:
-            message["result"] = "No matching plugin/device found"
+            message.result = "No matching plugin/device found"
             logger.debug("[UID: %s] Processing of '%s' unsuccessful.",
-                         message["sender_id"],
-                         message["keyword"])
+                         message.sender_id,
+                         message.keyword)
 
         # Put the result back into the OUTPUT queue, the incoming comm for now
-        if message["event_type"] == "request":
+        if message.event_type == "request":
             OUTPUT.put(json.dumps(message))
 
         # Let the queue know that processing is complete
