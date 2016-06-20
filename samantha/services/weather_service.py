@@ -12,6 +12,7 @@ as well as dates for sunrise/sunset.
 
 
 import requests
+import traceback
 
 import logging
 from services.service import BaseClass
@@ -22,7 +23,7 @@ except ImportError:
     variables_private = None
 
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 
 # Initialize the logger
@@ -52,15 +53,21 @@ class Service(BaseClass):
     def process(self, key, data=None):
         if key in ["onstart", "schedule_hour"]:
             LOGGER.debug("Checking the Weather..")
-            req = requests.get("{baseurl}?id={location}&appid={key}".format(
-                baseurl="http://api.openweathermap.org/data/2.5/weather",
-                location=self.location,
-                key=self.api_key))
-            if req.status_code == 200:
-                tools.eventbuilder.Event(sender_id=self.name,
-                                         keyword="weather",
-                                         data=req.json()).trigger()
-                return True
+            try:
+                req = requests.get("{baseurl}?id={location}&appid={key}".format(
+                    baseurl="http://api.openweathermap.org/data/2.5/weather",
+                    location=self.location,
+                    key=self.api_key),
+                    timeout=3)
+                if req.status_code == 200:
+                    tools.eventbuilder.Event(sender_id=self.name,
+                                             keyword="weather",
+                                             data=req.json()).trigger()
+                    return True
+            except Exception:
+                LOGGER.exception("Exception while connecting to OWM:\n%s",
+                                 traceback.format_exc())
+                return False
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
         return False
