@@ -13,7 +13,7 @@ import services
 import tools
 
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 
 if "--nodebug" in sys.argv:
@@ -62,3 +62,4 @@ if __name__ == "__main__":
     devices.stop()
     services.stop()
     tools.stop()
+    LOGGER.info("Shutdown complete.")
