@@ -6,6 +6,7 @@ Handler that sends log messages to my phone."""
 import logging
 import logging.handlers
 import requests
+import traceback
 
 # Try importing variables_private.py for the AutoRemoteHandler. If it fails,
 # the handler will be ignored later.
@@ -21,7 +22,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.1.2"
+__version__ = "1.2.0"
 
 
 # Initialize the logger
@@ -43,10 +44,21 @@ class AutoRemoteHandler(logging.Handler):
         to AutoRemote's server."""
         logging.getLogger("requests").setLevel(logging.WARNING)
         message = self.format(record)
+        url = "https://autoremotejoaomgcd.appspot.com/sendmessage"
         payload = {'key': variables_private.ar_key,
                    'message': "logging=:=Samantha=:=" + message}
-        requests.post("https://autoremotejoaomgcd.appspot.com/sendmessage",
-                      payload)
+        try:
+            if not record.name == "logger.handlers":
+                LOGGER.debug("Sending '%s(...)' via AutoRemote",
+                             message.split("\n")[0])
+                # skip messages that were caused by this very function.
+                requests.post(url, payload, timeout=3)
+            else:
+                LOGGER.info("This error was cause by this class, won't be sent"
+                            " via AutoRemote.")
+        except Exception:
+            LOGGER.exception("Exception while connecting to AutoRemote:\n%s",
+                             traceback.format_exc())
 
 
 class ColorStreamHandler(logging.StreamHandler):
