@@ -11,9 +11,7 @@
 ###############################################################################
 #
 # TODO: [ ] worker()
-# TODO: [ ]     remove "wait"-debugging
 # TODO: [ ]     parse the message
-# TODO: [ ]     forward it to services and/or devices
 # TODO: [ ]     put the original Message into OUTPUT, not as JSON
 #
 ###############################################################################
