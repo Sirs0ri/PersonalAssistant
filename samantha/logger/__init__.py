@@ -25,7 +25,7 @@ import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 
 # Initialize the logger
@@ -87,7 +87,7 @@ def _init(DEBUG):
     if variables_private and hasattr(variables_private, "ar_key"):
         autoremote_handler = handlers.AutoRemoteHandler()
         # Set Handler to forward only important messages - WARN or higher
-        autoremote_handler.setLevel(logging.WARN)
+        autoremote_handler.setLevel(logging.ERROR)
         autoremote_handler.setFormatter(practical_formatter)
         root.addHandler(autoremote_handler)
     else:
