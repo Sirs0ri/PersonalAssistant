@@ -19,9 +19,10 @@ import time
 import traceback
 
 from devices.device import BaseClass
+from tools import Sleeper_Thread
 
 
-__version__ = "1.2.1"
+__version__ = "1.3.1"
 
 
 # Initialize the logger
@@ -64,15 +65,8 @@ def worker(ip):
         COMM_QUEUE.task_done()
 
 
-def turn_off_with_delay(self, delay=120):
-    """Turns the AVR off after a delay of 120 seconds (default, can be changed
-    via a parameter)"""
-
-    logger = logging.getLogger(__name__ + ".sleeper")
-    logger.debug("Started the sleeper-thread.")
-    # Wait for a while, since this function is called as new Thread, it can
-    # still be cancelled during this period.
-    time.sleep(delay)
+def turn_off_with_delay():
+    """Turns the AVR off"""
     COMM_QUEUE.put("ZMOFF")
 
 
@@ -89,6 +83,7 @@ class Device(BaseClass):
         self.worker = threading.Thread(target=worker,
                                        args=(self.ip,),
                                        name="worker")
+        self.worker.daemon = True
         self.worker.start()
         self.sleeper = None
         super(Device, self).__init__(logger=LOGGER, file_path=__file__)
@@ -98,23 +93,26 @@ class Device(BaseClass):
         keyword matches one of the device's keywords (specified in __init__)"""
 
         if key == "chromecast_connection_change":
-            commands = []
+
+            if self.sleeper is not None:
+                # Stop the sleeper if it's already running
+                LOGGER.debug("Stopping the sleeper-thread.")
+                self.sleeper.stop()
+                self.sleeper.join()  # FIXME This literally does nothing
+                self.sleeper = None
 
             # Check if the Chromecast is connected to an app
             if data["display_name"] in [None, "Backdrop"]:  # not connected
+                LOGGER.debug("No app connected to the Chromecast.")
                 # Run the sleeper that turns off the AVR after 3 minutes
-                if self.sleeper is not None:
-                    # Only start the sleeper if it's not already running
-                    self.sleeper = threading.Thread(
-                        target=turn_off_with_delay, args=(self,))
-                    self.sleeper.start()
+                self.sleeper = Sleeper_Thread(target=turn_off_with_delay,
+                                              delay=120,
+                                              name=__name__ + ".sleeper")
+                self.sleeper.start()
                 return True
             else:  # An app is connected to the Chromecast
-                if self.sleeper is not None:
-                    # Stop the sleeper if it's already running
-                    LOGGER.debug("Stopping the sleeper-thread.")
-                    self.sleeper.join(0)
-                    self.sleeper = None
+                LOGGER.debug("'%s' connected to the Chromecast.",
+                             data["display_name"])
                 COMM_QUEUE.put("SIMPLAY")
                 return True
 
