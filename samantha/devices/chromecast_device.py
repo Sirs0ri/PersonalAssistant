@@ -10,6 +10,7 @@
 
 
 import logging
+import traceback
 
 import pychromecast
 
@@ -17,7 +18,7 @@ from devices.device import BaseClass
 import tools
 
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 # Initialize the logger
@@ -61,17 +62,28 @@ class Device(BaseClass):
         self.uid = uid
         self.keywords = ["onstart"]
 
-        self.cast = pychromecast.Chromecast("192.168.178.45")
-        self.cast.wait()
-        self.mc = self.cast.media_controller
-        self.listener = Listener(self.name)
-        self.mc.register_status_listener(self.listener)
-        self.cast.register_status_listener(self.listener)
-        super(Device, self).__init__(logger=LOGGER, file_path=__file__)
+        try:
+            self.cast = pychromecast.Chromecast("192.168.178.45")
+            self.cast.wait()
+            self.mc = self.cast.media_controller
+            self.listener = Listener(self.name)
+            self.mc.register_status_listener(self.listener)
+            self.cast.register_status_listener(self.listener)
+            active = True
+        except Exception:
+            self.cast = None
+            active = False
+            LOGGER.exception("Exception while connecting to the Chromecast:\n%s",
+                             traceback.format_exc())
+        finally:
+            super(Device, self).__init__(logger=LOGGER,
+                                         file_path=__file__,
+                                         active=active)
 
     def process(self, key, data=None):
-        if key == "onstart":
+        if key == "onstart" and self.cast:
             self.listener.new_media_status(self.mc.status)
+            self.listener.new_cast_status(self.cast.status)
             return True
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
