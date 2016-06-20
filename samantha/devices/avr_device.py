@@ -22,7 +22,7 @@ from devices.device import BaseClass
 from tools import Sleeper_Thread
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
@@ -87,6 +87,11 @@ class Device(BaseClass):
         self.worker.start()
         self.sleeper = None
         super(Device, self).__init__(logger=LOGGER, file_path=__file__)
+
+    def stop(self):
+        LOGGER.info("Exiting...")
+        COMM_QUEUE.join()
+        super(Device, self).stop()
 
     def process(self, key, data=None):
         """The main processing function. Ths will be called if an event's
