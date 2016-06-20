@@ -17,7 +17,7 @@ from devices.device import BaseClass
 import tools
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 # Initialize the logger
@@ -34,30 +34,23 @@ class Listener(object):
         self.display_name = None
 
     def new_media_status(self, status):
-        updated = 0
         if not status.player_state == self.player_state:
             self.player_state = status.player_state
             LOGGER.debug("New state: %s", self.player_state)
-            updated = 1
         if not status.content_type == self.content_type:
             self.content_type = status.content_type
             LOGGER.debug("New content_type: %s", self.content_type)
-            updated = 1
-        if updated:
-            tools.eventbuilder.Event(sender_id=self.name,
-                                     keyword="chromecast_playstate_change",
-                                     data=status.__dict__).trigger()
+        tools.eventbuilder.Event(sender_id=self.name,
+                                 keyword="chromecast_playstate_change",
+                                 data=status.__dict__).trigger()
 
     def new_cast_status(self, status):
-        updated = 0
         if not status.display_name == self.display_name:
             self.display_name = status.display_name
             LOGGER.debug("New app connected: %s", self.display_name)
-            updated = 1
-        if updated:
-            tools.eventbuilder.Event(sender_id=self.name,
-                                     keyword="chromecast_connection_change",
-                                     data=status.__dict__).trigger()
+        tools.eventbuilder.Event(sender_id=self.name,
+                                 keyword="chromecast_connection_change",
+                                 data=status.__dict__).trigger()
 
 
 class Device(BaseClass):
