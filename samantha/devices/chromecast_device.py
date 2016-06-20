@@ -16,6 +16,10 @@ import pychromecast
 from devices.device import BaseClass
 import tools
 
+
+__version__ = "1.1.2"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 logging.getLogger("pychromecast").setLevel(logging.INFO)

@@ -10,6 +10,10 @@
 
 import logging
 
+
+__version__ = "1.1.2"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

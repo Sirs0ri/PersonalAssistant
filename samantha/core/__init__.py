@@ -32,6 +32,8 @@ import services
 import tools
 
 
+__version__ = "1.2.2"
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

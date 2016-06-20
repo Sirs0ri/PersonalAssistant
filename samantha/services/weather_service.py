@@ -22,6 +22,9 @@ except ImportError:
     variables_private = None
 
 
+__version__ = "1.1.0"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

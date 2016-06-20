@@ -28,6 +28,9 @@
 import logging
 
 
+__version__ = "0.4.1"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

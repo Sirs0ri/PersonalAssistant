@@ -25,6 +25,9 @@ import os.path
 import core
 
 
+__version__ = "1.0.1"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

@@ -11,6 +11,9 @@ import logging
 import json
 
 
+__version__ = "1.1.0"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

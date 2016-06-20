@@ -18,6 +18,9 @@ from autobahn.twisted.websocket import WebSocketServerProtocol, \
 from twisted.internet import reactor
 
 
+__version__ = "1.2.0"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

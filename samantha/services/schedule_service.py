@@ -28,6 +28,9 @@ from services.service import BaseClass
 import tools
 
 
+__version__ = "1.1.1"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

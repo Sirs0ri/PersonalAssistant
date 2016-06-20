@@ -24,6 +24,10 @@ import time
 import handlers
 from handlers import variables_private
 
+
+__version__ = "1.5.1"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

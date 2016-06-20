@@ -12,6 +12,10 @@ import logger
 import services
 import tools
 
+
+__version__ = "0.7.0"
+
+
 if "--nodebug" in sys.argv:
     DEBUG = False
 else:

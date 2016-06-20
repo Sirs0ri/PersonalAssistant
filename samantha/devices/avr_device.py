@@ -21,6 +21,9 @@ import traceback
 from devices.device import BaseClass
 
 
+__version__ = "1.2.1"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 

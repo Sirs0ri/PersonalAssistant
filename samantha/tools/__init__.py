@@ -22,6 +22,9 @@ import eventbuilder
 import server
 
 
+__version__ = "0.3.3"
+
+
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
