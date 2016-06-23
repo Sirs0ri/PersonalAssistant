@@ -2,6 +2,10 @@
 ## Other
 #################
 
+# My own stuff
+*_private.py
+samantha.log.*
+
 #################
 ## Eclipse
 #################
