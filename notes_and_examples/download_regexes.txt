@@ -1,6 +1,0 @@
-<li>(<a (title=\".+\" )?href=\"(?P<link>.+)\">)?(<strong>)\1?(.+?)(<[\s\S]*?)<\/li>
-
-<li>((<a (title=\".+\" )?href=\"(?P<link1>.+)\">)(<strong>)|(<strong>)(<a (title=\".+\" )?href=\"(?P<link2>.+)\">))(?P<name>{name})(<[\s\S]*?)<\/li>
-
-
-<li>((<a (title=\".+\" )?href=\"(.+)\">)(<strong>)|(<strong>)(<a (title=\".+\" )?href=\"(.+)\">))(.*?)[Agents.]{6,}(.*?)[of.]{2,}(.*?)[Shield.]{6,}(.*?)(<[\s\S]*?)<\/li>
