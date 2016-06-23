@@ -24,7 +24,7 @@ import eventbuilder
 import server
 
 
-__version__ = "0.4.3"
+__version__ = "1.3.2"
 
 
 # Initialize the logger

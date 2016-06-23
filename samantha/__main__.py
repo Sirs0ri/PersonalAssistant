@@ -13,7 +13,7 @@ import services
 import tools
 
 
-__version__ = "0.7.1"
+__version__ = "1.4.2"
 
 
 if "--nodebug" in sys.argv:
