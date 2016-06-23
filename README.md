@@ -1,6 +1,6 @@
 # PersonalAssistant
 
-**I'm currently working on Samantha's 2nd iteration. The master-branch represents the stable version of the 1st one, this branch is a backup of that and all the magic happens in [sam_2.0](https://github.com/Sirs0ri/PersonalAssistant/tree/sam_2.0).**
+**I'm currently working on Samantha's 2nd iteration. The master-branch represents the current stable version, the branch [sam_1.0](https://github.com/Sirs0ri/PersonalAssistant/tree/sam_1.0) is a backup of Sam's first version and all the magic happens in [sam_2.0](https://github.com/Sirs0ri/PersonalAssistant/tree/sam_2.0).**
 
 The home for Sam, Glyph, Will and all the other assistants out there
 
@@ -11,7 +11,7 @@ The home for Sam, Glyph, Will and all the other assistants out there
     Samantha/main.py & Samantha/core.py
 
 The "Mainframe" currently consists of main.py and core.py and is the framework in which Samantha operates.
-Main.py is the file you want to run to start Samantha. It will start a very basic web-interface via **Flask** and handle starting the core. 
+Main.py is the file you want to run to start Samantha. It will start a very basic web-interface via **Flask** and handle starting the core.
 Core.py is a file that manages the different plugins. Upon being started by main.py, it imports and initializes the different plugins. It also provides the most important functions (process() and log(), to be exact) and handles system-wide variables.
 Via the core's process() function communication between plugins becomes possible. It requires a keyword to work and takes parameters and a target as optional parameters.
 When a command comes in, the core checks which Plugins can process it (via the keyword), forwards the data to them and then returns the results in a standardized format.
@@ -22,7 +22,7 @@ When a command comes in, the core checks which Plugins can process it (via the k
 
 Samantha's functionality comes from its different plugins. They can act as triggers/interface (see the Schedule-Plugin), pure processors (Identicon-Plugin) or a mix of both (433MHz-Transmitter-Plugin).
 Every plugin has to fulfill a couple of requirements to be loaded successfully:
-* It has to have a process()-function to handle input. 
+* It has to have a process()-function to handle input.
 * It has to declare it's name and which keywords it can handle, as well if it's meant to be loaded.
 
 Plugins finally process the data received by interfaces. Each Plugin has a list of certain keywords. If a command matches any of these keywords, the plugin will be activated during the processing of the command by the mainframe.
@@ -67,7 +67,7 @@ Interfaces should have functions to:
         - subprocess.Popen("home/pi/Desktop/update_git.sh")
     - stop and restart the server
     - wait 2 minutes for the "ok"
-    - if there is no Ok-command: 
+    - if there is no Ok-command:
         - stop the server
         - restore the previously backed-up files
         - start the Server again
@@ -86,7 +86,7 @@ Interfaces should have functions to:
 
 #### light
 
-- [ ] Transfer daemon to plugin 
+- [ ] Transfer daemon to plugin
 - [ ] Dimming
     - [ ] Save the absolute values for Red, Green and Blue and the brightness to calculate the current value:
         - Red (R), Green (G) & Blue (B): min=0, max=255
@@ -183,7 +183,7 @@ Interfaces should have functions to:
 
 ### Other
 
-- Eventghost 
+- Eventghost
     - magage autostart programs
         - while home
             - Input Director (only while PC is running as well) <-> Presence
