@@ -25,7 +25,7 @@ import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.2"
+__version__ = "1.5.3"
 
 
 # Initialize the logger
@@ -70,6 +70,8 @@ def _init(DEBUG):
     else:
         path = this_dir.replace("logger", "data/logs")
 
+    if not os.path.exists(path):
+        os.makedirs(path)
     file_handler = logging.handlers.TimedRotatingFileHandler(
         "{path}/samantha.log".format(path=path),
         when="midnight")
