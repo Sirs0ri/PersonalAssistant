@@ -23,7 +23,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.1.5"
+__version__ = "1.1.6"
 
 
 # Initialize the logger
@@ -78,7 +78,8 @@ class Device(BaseClass):
         except Exception:
             self.cast = None
             active = False
-            LOGGER.exception("Exception while connecting to the Chromecast:\n%s",
+            LOGGER.exception("Exception while connecting to the Chromecast:\n"
+                             "%s",
                              traceback.format_exc())
         finally:
             super(Device, self).__init__(logger=LOGGER,
