@@ -31,7 +31,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 
 # Initialize the logger
@@ -84,27 +84,25 @@ def _init(InputQueue, OutputQueue):
     files = glob.glob("{}/*_service.py".format(this_dir))
     LOGGER.debug("%d possible services found.", len(files))
 
-    for i in range(len(files)):
-        LOGGER.debug("Trying to import %s...", files[i])
+    for service_file in files:
+        LOGGER.debug("Trying to import %s...", service_file)
 
         try:
-            name = files[i].replace("samantha/", "") \
-                           .replace("/", ".") \
-                           .replace("_service.py", "")
-            service_source = imp.load_source(name, files[i])
-            LOGGER.debug("Successfully imported %s", files[i])
+            name = service_file.replace("samantha/", "") \
+                               .replace("/", ".") \
+                               .replace("_service.py", "")
+            service_source = imp.load_source(name, service_file)
+            LOGGER.debug("Successfully imported %s", service_file)
             if hasattr(service_source, "Service"):
                 UID = get_uid()
                 new_service = service_source.Service(UID)
                 if new_service.is_active:
                     add_to_index(new_service)
-                    LOGGER.debug("%s is a valid Service.", files[i])
+                    LOGGER.debug("%s is a valid Service.", service_file)
             else:
-                LOGGER.warn("%s is missing the Service-class!", files[i])
+                LOGGER.warn("%s is missing the Service-class!", service_file)
         except ImportError:
-            LOGGER.warn("%s couldn't be imported successfully!", files[i])
-        # except AttributeError:
-        #     LOGGER.warn("%s is not a valid service!", files[i])
+            LOGGER.warn("%s couldn't be imported successfully!", service_file)
 
     LOGGER.info("Initialisation complete.")
     s = ""

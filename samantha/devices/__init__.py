@@ -31,7 +31,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 
 # Initialize the logger
@@ -84,27 +84,25 @@ def _init(InputQueue, OutputQueue):
     files = glob.glob("{}/*_device.py".format(this_dir))
     LOGGER.debug("%d possible devices found.", len(files))
 
-    for i in range(len(files)):
-        LOGGER.debug("Trying to import %s...", files[i])
+    for device_file in files:
+        LOGGER.debug("Trying to import %s...", device_file)
 
         try:
-            name = files[i].replace("samantha/", "") \
-                           .replace("/", ".") \
-                           .replace("_device.py", "")
-            device_source = imp.load_source(name, files[i])
-            LOGGER.debug("Successfully imported %s", files[i])
+            name = device_file.replace("samantha/", "") \
+                              .replace("/", ".") \
+                              .replace("_device.py", "")
+            device_source = imp.load_source(name, device_file)
+            LOGGER.debug("Successfully imported %s", device_file)
             if hasattr(device_source, "Device"):
                 uid = get_uid()
                 new_device = device_source.Device(uid)
                 if new_device.is_active:
                     add_to_index(new_device)
-                    LOGGER.debug("%s is a valid Device.", files[i])
+                    LOGGER.debug("%s is a valid Device.", device_file)
             else:
-                LOGGER.warn("%s is missing the Device-class!", files[i])
+                LOGGER.warn("%s is missing the Device-class!", device_file)
         except ImportError:
-            LOGGER.warn("%s couldn't be imported successfully!", files[i])
-        # except AttributeError:
-        #     LOGGER.warn("%s is not a valid device!", files[i])
+            LOGGER.warn("%s couldn't be imported successfully!", device_file)
 
     LOGGER.info("Initialisation complete.")
     s = ""
