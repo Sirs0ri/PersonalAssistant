@@ -31,7 +31,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 
 # Initialize the logger
@@ -88,11 +88,10 @@ def _init(InputQueue, OutputQueue):
         LOGGER.debug("Trying to import %s...", files[i])
 
         try:
-            device_source = imp.load_source(
-                files[i].replace("samantha/", "")
-                        .replace("/", ".")
-                        .replace("_device.py", ""),
-                files[i])
+            name = files[i].replace("samantha/", "") \
+                           .replace("/", ".") \
+                           .replace("_device.py", "")
+            device_source = imp.load_source(name, files[i])
             LOGGER.debug("Successfully imported %s", files[i])
             if hasattr(device_source, "Device"):
                 uid = get_uid()
