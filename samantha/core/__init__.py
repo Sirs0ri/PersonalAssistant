@@ -37,7 +37,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.9"
+__version__ = "1.2.10"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -57,8 +57,12 @@ LOGGER.debug("I was imported.")
 
 
 class Processor(object):
+    """This class is a replacement for a full service to handle some internal
+    commands. To be removed, as soon as there is a decorator available to
+    register plugins (or rather their functions in the index.)"""
 
     def process(self, key, data=None):
+        """Process some internal commands via the framework directly"""
 
         # just for debugging purposes, to simulate long processing
         if key == "wait":
