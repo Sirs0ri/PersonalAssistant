@@ -32,7 +32,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.8"
+__version__ = "1.0.9"
 
 
 # Initialize the logger
@@ -121,8 +121,8 @@ def stop():
     INITIALIZED = False
 
     # Stop all devices
-    for UID in INDEX:
-        INDEX[UID].stop()
+    for uid in INDEX:
+        INDEX[uid].stop()
 
     LOGGER.info("Exited.")
     return True
