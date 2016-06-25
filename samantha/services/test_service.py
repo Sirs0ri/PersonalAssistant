@@ -8,14 +8,13 @@
 ###############################################################################
 
 
+import logging
+
 from services.service import BaseClass
 from tools import Sleeper_Thread
 
 
-import logging
-
-
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
