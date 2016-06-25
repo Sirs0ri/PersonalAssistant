@@ -25,10 +25,15 @@
 ###############################################################################
 
 
+# standard library imports
 import logging
 
+# related third party imports
 
-__version__ = "0.4.1"
+# application specific imports
+
+
+__version__ = "0.4.2"
 
 
 # Initialize the logger
