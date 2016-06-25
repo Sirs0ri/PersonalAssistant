@@ -32,7 +32,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 
 
 # Initialize the logger
@@ -105,10 +105,10 @@ def _init(queue_in, queue_out):
             LOGGER.warn("%s couldn't be imported successfully!", device_file)
 
     LOGGER.info("Initialisation complete.")
-    s = ""
+    device_str = ""
     for i in INDEX:
-        s += "\n\t%s:\t%r" % (i, INDEX[i])
-    LOGGER.debug("Imported %d Devices: %s", len(INDEX), s)
+        device_str += "\n\t%s:\t%r" % (i, INDEX[i])
+    LOGGER.debug("Imported %d Devices: %s", len(INDEX), device_str)
     core.add_keywords(KEYWORDS)
     return True
 
