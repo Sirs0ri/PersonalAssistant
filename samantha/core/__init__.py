@@ -30,7 +30,7 @@ import services
 import tools
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -43,8 +43,6 @@ NUM_SENDER_THREADS = 1
 
 INPUT = None
 OUTPUT = None
-
-THREADS = []
 
 KEYWORDS = {}
 
@@ -109,18 +107,18 @@ def worker():
         if message.keyword in KEYWORDS:
             for item in KEYWORDS[message.keyword]:
                 try:
-                    r = item.process(key=message.keyword,
-                                     data=message.data)
-                    results.append(r)
-                except Exception as e:
+                    res = item.process(key=message.keyword,
+                                       data=message.data)
+                    results.append(res)
+                except Exception:
                     LOGGER.exception("Exception in user code:\n%s",
                                      traceback.format_exc())
         results = [x for x in results if x]
 
         if results:
             message.result = results
-            s = ""
-            logger.info("[UID: %s] Processing of '%s' successful. %d result%s.",
+            logger.info("[UID: %s] Processing of '%s' successful. "
+                        "%d result%s.",
                         message.sender_id,
                         message.keyword,
                         len(results),
@@ -192,13 +190,13 @@ def sender():
         OUTPUT.task_done()
 
 
-def _init(InputQueue, OutputQueue):
+def _init(queue_in, queue_out):
     """Initializes the module."""
-    global INPUT, OUTPUT, NUM_WORKER_THREADS, NUM_SENDER_THREADS, THREADS
+    global INPUT, OUTPUT, NUM_WORKER_THREADS, NUM_SENDER_THREADS
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     # Read the number of threads to start from Samantha's config file
     # (/samantha/data/samantha.cfg)
@@ -219,18 +217,16 @@ def _init(InputQueue, OutputQueue):
     # Start the worker threads to process commands
     LOGGER.debug("Starting Worker")
     for i in range(NUM_WORKER_THREADS):
-        t = threading.Thread(target=worker, name="worker%d" % i)
-        t.daemon = True
-        t.start()
-        THREADS.append(t)
+        thread = threading.Thread(target=worker, name="worker%d" % i)
+        thread.daemon = True
+        thread.start()
 
     # Start the sender threads to process results
     LOGGER.debug("Starting Sender")
     for i in range(NUM_SENDER_THREADS):
-        t = threading.Thread(target=sender, name="sender%d" % i)
-        t.daemon = True
-        t.start()
-        THREADS.append(t)
+        thread = threading.Thread(target=sender, name="sender%d" % i)
+        thread.daemon = True
+        thread.start()
 
     # Add the Processor-class htat handles a few commands to the keyword-index
     add_keywords({"wait": [Processor()], "logger": [Processor()]})
@@ -250,10 +246,10 @@ def stop():
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")
