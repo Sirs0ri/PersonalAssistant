@@ -37,7 +37,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.10"
+__version__ = "1.2.11"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -86,7 +86,6 @@ class Processor(object):
 def add_keywords(keywords):
     """Adds a set of keywords to the core's list. Based on these keywords it
     will direct commands to services and/or devices."""
-    global KEYWORDS
     for key in keywords:
         if key in KEYWORDS:
             KEYWORDS[key] += keywords[key]
