@@ -20,7 +20,7 @@ from tools import Sleeper_Thread
 # pylint: enable=import-error
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -50,5 +50,5 @@ class Service(BaseClass):
 
     def process(self, key, data=None):
         if key == "onstart":
-            t = Sleeper_Thread(delay=30, target=function)
-            t.start()
+            thread = Sleeper_Thread(delay=30, target=function)
+            thread.start()
