@@ -32,7 +32,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.8"
+__version__ = "1.0.9"
 
 
 # Initialize the logger
@@ -62,7 +62,6 @@ def get_uid():
 
 def add_to_index(service):
     """Adds a device to the indexes."""
-    global INDEX, KEYWORDS
     INDEX[service.uid] = service
     for key in service.keywords:
         if key in KEYWORDS:
