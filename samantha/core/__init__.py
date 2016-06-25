@@ -30,7 +30,7 @@ import services
 import tools
 
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -134,7 +134,7 @@ def worker():
 
         # Put the result back into the OUTPUT queue, the incoming comm for now
         if message.event_type == "request":
-            OUTPUT.put(json.dumps(message))
+            OUTPUT.put(message)
 
         # Let the queue know that processing is complete
         INPUT.task_done()
@@ -153,38 +153,35 @@ def sender():
         logger.debug("Waiting for an item.")
         message = OUTPUT.get()
 
-        # open the message (JSON-String to a dict)
-        message = json.loads(message)
-
         logger.debug("[UID: %s] Got the Item '%s'",
-                     message["sender_id"],
-                     message["keyword"])
+                     message.sender_id,
+                     message.keyword)
 
         # If the message was a request...
-        if message["event_type"] == "request":
+        if message.event_type == "request":
             # ...send it's result back to where it came from
             LOGGER.debug("[UID: %s] Sending the result back",
-                         message["sender_id"])
-            if message["sender_id"][0] == "c":
+                         message.sender_id)
+            if message.sender_id[0] == "c":
                 # Original message came from a client via the server
                 LOGGER.debug("Sending the result '%s' back to client %s",
-                             message["result"], message["sender_id"])
+                             message.result, message.sender_id)
                 tools.server.send_message(message)
-            elif message["sender_id"][0] == "d":
+            elif message.sender_id[0] == "d":
                 # Original message came from a device
                 LOGGER.debug("Sending results to devices isn't possible yet.")
-            elif message["sender_id"][0] == "s":
+            elif message.sender_id[0] == "s":
                 # Original message came from a service
                 LOGGER.debug("Sending results to services isn't possible yet.")
             else:
-                LOGGER.warn("Invalid UID: %s", message["sender_id"])
+                LOGGER.warn("Invalid UID: %s", message.sender_id)
         else:
             LOGGER.debug("[UID: %s] Not sending the result back since the "
-                         "event was a trigger.", message["sender_id"])
+                         "event was a trigger.", message.sender_id)
 
         logger.info("[UID: %s] Processing of '%s' completed.",
-                    message["sender_id"],
-                    message["keyword"])
+                    message.sender_id,
+                    message.keyword)
 
         # Let the queue know that processing is complete
         OUTPUT.task_done()
