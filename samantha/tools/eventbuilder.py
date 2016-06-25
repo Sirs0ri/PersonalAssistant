@@ -7,11 +7,15 @@
 ###############################################################################
 
 
+# standard library imports
 import logging
-import json
+
+# related third party imports
+
+# application specific imports
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # Initialize the logger

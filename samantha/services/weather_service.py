@@ -11,19 +11,25 @@ as well as dates for sunrise/sunset.
 ###############################################################################
 
 
+# standard library imports
+import logging
 import requests
 import traceback
 
-import logging
+# related third party imports
+
+# application specific imports
+# pylint: disable=import-error
 from services.service import BaseClass
 import tools
 try:
     import variables_private
 except ImportError:
     variables_private = None
+# pylint: enable=import-error
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 
 # Initialize the logger

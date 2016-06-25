@@ -8,13 +8,19 @@
 ###############################################################################
 
 
+# standard library imports
 import logging
 
+# related third party imports
+
+# application specific imports
+# pylint: disable=import-error
 from services.service import BaseClass
 from tools import Sleeper_Thread
+# pylint: enable=import-error
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -24,6 +30,7 @@ def function():
     print "~"*30
     print "Heyho!"
     print "~"*30
+
 
 class Service(BaseClass):
 

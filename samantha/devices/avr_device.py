@@ -10,6 +10,8 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf"""
 #
 ###############################################################################
 
+
+# standard library imports
 import logging
 import Queue
 import socket
@@ -18,11 +20,16 @@ import threading
 import time
 import traceback
 
+# related third party imports
+
+# application specific imports
+# pylint: disable=import-error
 from devices.device import BaseClass
 from tools import Sleeper_Thread
+# pylint: enable=import-error
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 
 # Initialize the logger

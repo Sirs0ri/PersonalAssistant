@@ -3,11 +3,15 @@ Handler that color-codes the Loglevels for better readability or an AutoRemote-
 Handler that sends log messages to my phone."""
 
 
+# standard library imports
 import logging
 import logging.handlers
 import requests
 import traceback
 
+# related third party imports
+
+# application specific imports
 # Try importing variables_private.py for the AutoRemoteHandler. If it fails,
 # the handler will be ignored later.
 try:
@@ -22,7 +26,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # Initialize the logger

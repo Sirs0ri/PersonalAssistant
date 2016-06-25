@@ -17,6 +17,7 @@
 ###############################################################################
 
 
+# standard library imports
 import ConfigParser
 import json
 import logging
@@ -25,12 +26,17 @@ import threading
 import time
 import traceback
 
+# related third party imports
+
+# application specific imports
+# pylint: disable=import-error
 import devices
 import services
 import tools
+# pylint: enable=import-error
 
 
-__version__ = "1.2.6"
+__version__ = "1.2.7"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

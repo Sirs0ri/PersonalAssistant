@@ -16,16 +16,21 @@
 ###############################################################################
 
 
+# standard library imports
 import datetime
 import logging
 import logging.handlers
 import os.path
 import time
+
+# related third party imports
+
+# application specific imports
 import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.3"
+__version__ = "1.5.4"
 
 
 # Initialize the logger

@@ -18,17 +18,22 @@ triggered at 0:00, month on the 1st at 0:00, etc.
 ###############################################################################
 
 
+# standard library imports
 import datetime
 import threading
 import time
 
+# related third party imports
 
+# application specific imports
+# pylint: disable=import-error
 import logging
 from services.service import BaseClass
 import tools
+# pylint: enable=import-error
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 
 # Initialize the logger

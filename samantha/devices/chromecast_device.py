@@ -9,16 +9,21 @@
 ###############################################################################
 
 
+# standard library imports
 import logging
 import traceback
 
+# related third party imports
 import pychromecast
 
+# application specific imports
+# pylint: disable=import-error
 from devices.device import BaseClass
 import tools
+# pylint: enable=import-error
 
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 
 # Initialize the logger

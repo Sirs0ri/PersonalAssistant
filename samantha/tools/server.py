@@ -9,16 +9,21 @@ Opens a websocket on port 19113 to communicate with remote clients"""
 ###############################################################################
 
 
+# standard library imports
 import logging
 
-import tools
-
+# related third party imports
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
                                        WebSocketServerFactory
 from twisted.internet import reactor
 
+# application specific imports
+# pylint: disable=import-error
+import tools
+# pylint: enable=import-error
 
-__version__ = "1.2.0"
+
+__version__ = "1.2.1"
 
 
 # Initialize the logger

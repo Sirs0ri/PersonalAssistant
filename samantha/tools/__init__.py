@@ -16,10 +16,14 @@
 ###############################################################################
 
 
+# standard library imports
 import logging
 import threading
 import time
 
+# related third party imports
+
+# application specific imports
 import eventbuilder
 import server
 

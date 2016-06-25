@@ -17,15 +17,21 @@
 ###############################################################################
 
 
+# standard library imports
 import glob
 import imp
 import logging
 import os.path
 
+# related third party imports
+
+# application specific imports
+# pylint: disable=import-error
 import core
+# pylint: enable=import-error
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 # Initialize the logger

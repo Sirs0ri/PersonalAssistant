@@ -8,10 +8,15 @@
 ###############################################################################
 
 
+# standard library imports
 import logging
 
+# related third party imports
 
-__version__ = "1.1.2"
+# application specific imports
+
+
+__version__ = "1.1.3"
 
 
 # Initialize the logger

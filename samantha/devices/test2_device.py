@@ -8,16 +8,23 @@
 ###############################################################################
 
 
-from devices.device import BaseClass
-
+# standard library imports
 import logging
 
+# related third party imports
 
-__version__ = "1.1.0"
+# application specific imports
+# pylint: disable=import-error
+from devices.device import BaseClass
+# pylint: enable=import-error
+
+
+__version__ = "1.1.1"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
+
 
 class Device(BaseClass):
 

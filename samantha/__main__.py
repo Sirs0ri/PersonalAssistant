@@ -1,9 +1,15 @@
 """Samantha's main module. calling this via 'python samantha'
 should start everything else"""
+
+
+# standard library imports
 import logging
 import Queue
 import sys
 
+# related third party imports
+
+# application specific imports
 # TODO import only what's necessary
 import context
 import core
@@ -13,7 +19,7 @@ import services
 import tools
 
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 
 if "--nodebug" in sys.argv:
