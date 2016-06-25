@@ -28,7 +28,7 @@ import eventbuilder
 import server
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 
 # Initialize the logger
@@ -72,17 +72,17 @@ class Sleeper_Thread(threading.Thread):
         return self._stop.isSet()
 
 
-def _init(InputQueue, OutputQueue):
+def _init(queue_in, queue_out):
     """Initializes the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     # initialize all tools
-    eventbuilder.initialize(InputQueue, OutputQueue)
-    server.initialize(InputQueue, OutputQueue)
+    eventbuilder.initialize(queue_in, queue_out)
+    server.initialize(queue_in, queue_out)
 
     LOGGER.info("Initialisation complete.")
     return True
@@ -103,10 +103,10 @@ def stop():
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")

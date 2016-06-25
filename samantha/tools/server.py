@@ -23,7 +23,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 
 # Initialize the logger
@@ -96,13 +96,13 @@ class Server(WebSocketServerProtocol):
                 e.trigger()
 
 
-def _init(InputQueue, OutputQueue):
+def _init(queue_in, queue_out):
     """Initializes the module."""
     global INPUT, OUTPUT, factory
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     factory = WebSocketServerFactory()
     factory.protocol = Server
@@ -138,10 +138,10 @@ def stop():
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")

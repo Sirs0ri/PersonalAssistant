@@ -33,7 +33,7 @@ import logging
 # application specific imports
 
 
-__version__ = "0.4.2"
+__version__ = "0.4.3"
 
 
 # Initialize the logger
@@ -48,13 +48,13 @@ OUTPUT = None
 LOGGER.debug("I was imported.")
 
 
-def _init(InputQueue, OutputQueue):
+def _init(queue_in, queue_out):
     """Initializes the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     LOGGER.info("Initialisation complete.")
     return True
@@ -70,10 +70,10 @@ def stop():
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")
