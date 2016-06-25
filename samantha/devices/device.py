@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 # Initialize the logger
@@ -55,4 +55,4 @@ class BaseClass(object):
 
     def process(self, key, data=None):
         self.LOGGER.warn("My process() function isn't implemented yet! "
-                         "'%s' won't be processed.", key)
+                         "'%s, %s' won't be processed.", key, data)

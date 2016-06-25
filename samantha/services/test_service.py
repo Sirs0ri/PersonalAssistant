@@ -20,7 +20,7 @@ from tools import Sleeper_Thread
 # pylint: enable=import-error
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -52,3 +52,5 @@ class Service(BaseClass):
         if key == "onstart":
             thread = Sleeper_Thread(delay=30, target=function)
             thread.start()
+        else:
+            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
