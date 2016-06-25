@@ -32,7 +32,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.6"
+__version__ = "1.0.7"
 
 
 # Initialize the logger
@@ -106,10 +106,10 @@ def _init(queue_in, queue_out):
             LOGGER.warn("%s couldn't be imported successfully!", service_file)
 
     LOGGER.info("Initialisation complete.")
-    s = ""
+    service_str = ""
     for i in INDEX:
-        s += "\n\t%s:\t%r" % (i, INDEX[i])
-    LOGGER.debug("Imported %d Services: %s", len(INDEX), s)
+        service_str += "\n\t%s:\t%r" % (i, INDEX[i])
+    LOGGER.debug("Imported %d Services: %s", len(INDEX), service_str)
     core.add_keywords(KEYWORDS)
     return True
 
