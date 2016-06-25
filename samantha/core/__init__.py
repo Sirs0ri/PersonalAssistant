@@ -37,7 +37,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.8"
+__version__ = "1.2.9"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -74,6 +74,8 @@ class Processor(object):
                 root.handlers[2].setLevel(logging.DEBUG)
                 LOGGER.warn("Logging-Level set to DEBUG")
                 return True
+        else:
+            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
         return False
 
 
