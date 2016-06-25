@@ -3,6 +3,7 @@
 Opens a websocket on port 19113 to communicate with remote clients"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ]
 #
@@ -23,7 +24,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 
 # Initialize the logger

@@ -4,6 +4,7 @@
    versions, if available and if a certain series of tests passes"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ] Updater
 # TODO: [ ]     Monitor Sources for the modules
@@ -28,7 +29,7 @@ import eventbuilder
 import server
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 
 # Initialize the logger

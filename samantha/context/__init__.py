@@ -6,6 +6,7 @@
    automation"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ] finish initialize() and stop()
 # TODO: [ ]     Start a new context, then load the last one
@@ -33,7 +34,7 @@ import logging
 # application specific imports
 
 
-__version__ = "0.4.3"
+__version__ = "0.4.4"
 
 
 # Initialize the logger

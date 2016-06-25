@@ -5,6 +5,7 @@
    it becomes un-/available or if the service itself triggers a command)"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ] _init()
 # TODO: [ ]     load services & add them to INDEX
@@ -31,7 +32,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 
 # Initialize the logger

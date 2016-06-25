@@ -9,6 +9,7 @@
  - Sends outgoing messages back the the clients"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ] worker()
 # TODO: [ ]     parse the message
@@ -36,7 +37,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.7"
+__version__ = "1.2.8"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

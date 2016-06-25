@@ -5,6 +5,7 @@
    (e.g. if it becomes un-/available)"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ] _init()
 # TODO: [ ]     load devices & add them to INDEX
@@ -31,7 +32,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 
 # Initialize the logger

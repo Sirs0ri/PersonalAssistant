@@ -4,6 +4,7 @@
    AutoRemoteHandler with different formatters."""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ] _init()
 # TODO: [ ]     create the logs-folder if it doesn't exist
@@ -30,7 +31,7 @@ import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.4"
+__version__ = "1.5.5"
 
 
 # Initialize the logger

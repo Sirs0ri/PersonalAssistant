@@ -1,6 +1,7 @@
 """A tool to create events for Sam."""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [X] class Event
 #
@@ -15,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 
 # Initialize the logger
