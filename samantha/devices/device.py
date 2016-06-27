@@ -27,7 +27,7 @@ class BaseClass(object):
 
     def __init__(self, active=True, logger=None, file_path=None):
         if not hasattr(self, "name"):
-            self.name = "Dervice"
+            self.name = "Device"
         if not hasattr(self, "uid"):
             self.uid = "NO_UID"
         if not hasattr(self, "keywords"):
