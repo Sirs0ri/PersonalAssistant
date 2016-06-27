@@ -20,7 +20,7 @@ from tools import Sleeper_Thread
 # pylint: enable=import-error
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ class Service(BaseClass):
     def stop(self):
         LOGGER.info("Exiting...")
         LOGGER.debug("I'm not doing shit anymore.")
-        super(Service, self).stop()
+        return super(Service, self).stop()
 
     def process(self, key, data=None):
         if key == "onstart":

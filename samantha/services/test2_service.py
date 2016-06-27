@@ -19,7 +19,7 @@ from services.service import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 
 # Initialize the logger
@@ -39,4 +39,4 @@ class Service(BaseClass):
     def stop(self):
         LOGGER.info("Exiting...")
         LOGGER.debug("I'm not doing anything productive anymore.")
-        super(Service, self).stop()
+        return super(Service, self).stop()

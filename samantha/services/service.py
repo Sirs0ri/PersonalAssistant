@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.1.6"
+__version__ = "1.1.7"
 
 
 # Initialize the logger
@@ -52,6 +52,7 @@ class BaseClass(object):
 
     def stop(self):
         self.logger.info("Exited.")
+        return True
 
     def process(self, key, data=None):
         self.logger.warn("My process() function isn't implemented yet! "
