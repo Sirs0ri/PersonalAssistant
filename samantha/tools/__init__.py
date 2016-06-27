@@ -1,7 +1,8 @@
 """A collection of different tools Samantha might use.
 
- - Updater, to monitor it's sources on GitHub and automatically update to newer
-   versions, if available and if a certain series of tests passes"""
+- Updater, to monitor it's sources on GitHub and automatically update to newer
+  versions, if available and if a certain series of tests passes
+"""
 
 ###############################################################################
 # pylint: disable=global-statement
@@ -29,7 +30,7 @@ import eventbuilder
 import server
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 
 # Initialize the logger
@@ -44,17 +45,21 @@ OUTPUT = None
 LOGGER.debug("I was imported.")
 
 
-    """Thread class with a stop() method. The thread sleeps for 'delay'
 class SleeperThread(threading.Thread):
-    seconds, then runs the target-function."""
+    """Thread class with a stop() method.
+
+    The thread sleeps for "delay" seconds, then runs the target-function.
+    """
 
     def __init__(self, *args, **kwargs):
+        """Initialize the thread."""
         self.delay = kwargs.pop('delay', 0)
         super(SleeperThread, self).__init__(*args, **kwargs)
         self.logger = logging.getLogger(self.name)
         self._stop = threading.Event()
 
     def run(self):
+        """Run the thread. This'll start the delay, then target()."""
         self.logger.debug("Started the sleeper-thread.")
         i = 0
         while i < self.delay and not self.stopped():
@@ -67,14 +72,16 @@ class SleeperThread(threading.Thread):
             super(SleeperThread, self).run()
 
     def stop(self):
+        """Cancel the thread."""
         self._stop.set()
 
     def stopped(self):
+        """Check whether the thread should be stopped."""
         return self._stop.isSet()
 
 
 def _init(queue_in, queue_out):
-    """Initializes the module."""
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
@@ -90,7 +97,7 @@ def _init(queue_in, queue_out):
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

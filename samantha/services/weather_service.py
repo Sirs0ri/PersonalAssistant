@@ -1,7 +1,4 @@
-"""
-This plugin gives Samantha access to weather data,
-as well as dates for sunrise/sunset.
-"""
+"""This plugin gives Samantha access to weather data."""
 
 ###############################################################################
 #
@@ -29,7 +26,7 @@ except ImportError:
 # pylint: enable=import-error
 
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 
 # Initialize the logger
@@ -37,8 +34,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Service(BaseClass):
+    """Service that implements the Open Weather Map API."""
 
     def __init__(self, uid):
+        """Initialize the service."""
         LOGGER.info("Initializing...")
         self.name = "Weather"
         self.uid = uid
@@ -57,6 +56,7 @@ class Service(BaseClass):
             logger=LOGGER, file_path=__file__, active=active)
 
     def process(self, key, data=None):
+        """Process an event from the core."""
         if key in ["onstart", "schedule_hour"]:
             LOGGER.debug("Checking the Weather..")
             try:

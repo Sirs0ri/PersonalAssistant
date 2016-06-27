@@ -1,6 +1,7 @@
 """Samantha's server module.
 
-Opens a websocket on port 19113 to communicate with remote clients"""
+Open a websocket on port 19113 to communicate with remote clients.
+"""
 
 ###############################################################################
 # pylint: disable=global-statement
@@ -24,7 +25,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 
 # Initialize the logger
@@ -46,8 +47,10 @@ LOGGER.debug("I was imported.")
 
 
 def get_uid():
-    """provides a unique uid which is used as identifier for the different
-    server-client-connenctions"""
+    """Provide a unique id.
+
+    The UID is used as identifier for the different server-client-connenctions.
+    """
     global UID
     uid = "c_{0:04d}".format(UID)
     UID += 1
@@ -55,23 +58,27 @@ def get_uid():
 
 
 class Server(WebSocketServerProtocol):
-    """a websocket-server class"""
+    """A websocket-server class."""
 
     def __init__(self):
+        """Initialize the server."""
         self.UID = get_uid()
         super(Server, self).__init__()
 
     def onConnect(self, request):
+        """Handle a new connecting client."""
         LOGGER.info("[UID: %s] Client connecting: '%s'",
                     self.UID, request.peer)
 
     def onOpen(self):
+        """Handle a new open connection."""
         LOGGER.info("[UID: %s] WebSocket connection open.",
                     self.UID)
         # add this server-client-connenction to the index
         INDEX[self.UID] = self
 
     def onClose(self, wasClean, code, reason):
+        """Handle a closed connection."""
         LOGGER.info("[UID: %s] WebSocket connection closed: '%s'",
                     self.UID, reason)
         # remove this server-client-connenction from the index
@@ -79,6 +86,7 @@ class Server(WebSocketServerProtocol):
             del INDEX[self.UID]
 
     def onMessage(self, payload, isBinary):
+        """Handle a new incoming mesage."""
         if isBinary:
             LOGGER.debug("[UID: %s] Binary message received: %d bytes",
                          self.UID, len(payload))
@@ -98,7 +106,7 @@ class Server(WebSocketServerProtocol):
 
 
 def _init(queue_in, queue_out):
-    """Initializes the module."""
+    """Initialize the module."""
     global INPUT, OUTPUT, factory
 
     LOGGER.info("Initializing...")
@@ -115,13 +123,13 @@ def _init(queue_in, queue_out):
 
 
 def run():
-    """open the Websocket"""
+    """Open the Websocket."""
     LOGGER.info("Opening the Websocket.")
     reactor.run()
 
 
 def send_message(message):
-    """send a message to one of the connected devices"""
+    """Send a message to one of the connected devices."""
     if message["sender_id"] in INDEX:
         INDEX[message["sender_id"]].sendMessage(
             message["result"].encode('utf8'), False)
@@ -130,7 +138,7 @@ def send_message(message):
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

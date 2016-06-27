@@ -1,7 +1,10 @@
-"""Handler for a Denon AVR-X1200W Audio/Video Receiver. It reacts to various
-events triggered by my Chromecast, such as "App (dis-)connected" or the type of
-media playing. Commands are sent via Telnet and follow this documentation:
-http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf"""
+"""Handler for a Denon AVR-X1200W Audio/Video Receiver.
+
+It reacts to various events triggered by my Chromecast, such as "App
+(dis-)connected" or the type of media playing. Commands are sent via Telnet and
+follow this documentation:
+http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf
+"""
 
 ###############################################################################
 #
@@ -29,7 +32,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 
 
 # Initialize the logger
@@ -39,6 +42,7 @@ COMM_QUEUE = Queue.PriorityQueue()
 
 
 def send(command, device_ip, logger, retries=3):
+    """Send a command to the connected AVR via Telnet."""
     if retries > 0:
         try:
             telnet = telnetlib.Telnet(device_ip)
@@ -56,9 +60,14 @@ def send(command, device_ip, logger, retries=3):
                      "couldn't be sent.", command)
 
 
-    """Reads and processes commands from the COMM_QUEUE queue. Puts results
-    back into OUTPUT"""
 def worker(device_ip):
+    """Read and process commands from the COMM_QUEUE queue.
+
+    Put results back into OUTPUT. This helps if 2 commands should be sent at
+    the same time. Since the worker reads all items from a threadsafe Queue, no
+    parallel processing (and thus no attempt to create a 2 telnet connections
+    at the same time) is possible.
+    """
     # Get a new logger for each thread.
     # Used instead of the global LOGGER on purpose inside this function.
     logger = logging.getLogger(
@@ -73,14 +82,15 @@ def worker(device_ip):
 
 
 def turn_off_with_delay():
-    """Turns the AVR off"""
+    """Turn the AVR off."""
     COMM_QUEUE.put("ZMOFF")
 
 
 class Device(BaseClass):
-    """The main class implementing the Device."""
+    """The main class implementing the Audio/Video-Receiver."""
 
     def __init__(self, uid):
+        """Initialize the device's hadler."""
         LOGGER.info("Initializing...")
         self.name = "AVR"
         self.uid = uid
@@ -96,14 +106,13 @@ class Device(BaseClass):
         super(Device, self).__init__(logger=LOGGER, file_path=__file__)
 
     def stop(self):
+        """Exit the device's hadler."""
         LOGGER.info("Exiting...")
         COMM_QUEUE.join()
         return super(Device, self).stop()
 
     def process(self, key, data=None):
-        """The main processing function. Ths will be called if an event's
-        keyword matches one of the device's keywords (specified in __init__)"""
-
+        """Process a command."""
         if key == "chromecast_connection_change":
 
             if self.sleeper is not None:
@@ -118,8 +127,8 @@ class Device(BaseClass):
                 LOGGER.debug("No app connected to the Chromecast.")
                 # Run the sleeper that turns off the AVR after 3 minutes
                 self.sleeper = SleeperThread(target=turn_off_with_delay,
-                                              delay=120,
-                                              name=__name__ + ".sleeper")
+                                             delay=120,
+                                             name=__name__ + ".sleeper")
                 self.sleeper.start()
                 return True
             else:  # An app is connected to the Chromecast

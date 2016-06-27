@@ -1,4 +1,4 @@
-""""""
+"""Another test device to test loading devices."""
 
 ###############################################################################
 #
@@ -19,15 +19,18 @@ from services.service import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
+
 class Service(BaseClass):
+    """Just another test device without functionality."""
 
     def __init__(self, uid):
+        """Initialize the service."""
         LOGGER.info("Initializing...")
         self.name = "Test2"
         self.uid = uid
@@ -37,6 +40,7 @@ class Service(BaseClass):
             logger=LOGGER, file_path=__file__, active=False)
 
     def stop(self):
+        """Exit this device."""
         LOGGER.info("Exiting...")
         LOGGER.debug("I'm not doing anything productive anymore.")
         return super(Service, self).stop()

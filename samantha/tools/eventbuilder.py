@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -36,11 +36,14 @@ LOGGER.debug("I was imported.")
 
 
 class Event(object):
-    """An event for Samantha. Each event stores information about who
-    triggered it, what type it is and of course a keyword + optional data."""
+    """An event for Samantha.
+
+    Each event stores information about who triggered it, what type it is and
+    of course a keyword + optional data.
+    """
 
     def __init__(self, sender_id, keyword, event_type="trigger", data=None):
-        """initialize a new event"""
+        """Initialize a new event."""
         global EVENT_ID
 
         LOGGER.debug("Building new event (#%d): %s (%s) from %s",
@@ -60,7 +63,7 @@ class Event(object):
         self.result = None
 
     def trigger(self):
-        """puts the current event into the input queue as JSON-String"""
+        """Put the current event into the input queue."""
         if self.keyword in KEYWORDS:
             INPUT.put(self)
         else:
@@ -69,7 +72,7 @@ class Event(object):
 
 
 def _init(queue_in, queue_out):
-    """Initializes the module."""
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
@@ -81,12 +84,13 @@ def _init(queue_in, queue_out):
 
 
 def update_keywords(keywords):
+    """Update the global variable KEYWORDS."""
     global KEYWORDS
     KEYWORDS = keywords
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

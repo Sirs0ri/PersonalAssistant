@@ -1,4 +1,4 @@
-""""""
+"""Another test device, doesn't do anything either."""
 
 ###############################################################################
 #
@@ -19,7 +19,7 @@ from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 # Initialize the logger
@@ -27,8 +27,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Device(BaseClass):
+    """Just another test device without functionality."""
 
     def __init__(self, uid):
+        """Initialize this device."""
         LOGGER.info("Initializing...")
         self.name = "Test2"
         self.uid = uid
@@ -38,6 +40,7 @@ class Device(BaseClass):
             logger=LOGGER, file_path=__file__, active=False)
 
     def stop(self):
+        """Exit this device."""
         LOGGER.info("Exiting...")
         LOGGER.debug("I'm not doing anything productive anymore.")
         return super(Device, self).stop()

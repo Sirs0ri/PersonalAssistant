@@ -1,7 +1,8 @@
 """Samantha's logging module.
 
- - initializes a streamhandler, a TimedRotatingFileHandler and a custom
-   AutoRemoteHandler with different formatters."""
+- initializes a streamhandler, a TimedRotatingFileHandler and a custom
+  AutoRemoteHandler with different formatters.
+"""
 
 ###############################################################################
 # pylint: disable=global-statement
@@ -31,7 +32,7 @@ import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.7"
+__version__ = "1.5.8"
 
 
 # Initialize the logger
@@ -44,10 +45,12 @@ LOGGER.debug("I was imported.")
 
 
 def _init(debug):
-    """Configure Logging. Add a streamhandler, a TimedRotatingFileHandler and
-    a custom AutoRemoteHandler. The latter one will be added only, if an API-
-    Key is defined inside the file 'variables_private.py'."""
+    """Configure Logging.
 
+    Add a streamhandler, a TimedRotatingFileHandler and
+    a custom AutoRemoteHandler. The latter one will be added only, if an API-
+    Key is defined inside the file 'variables_private.py'.
+    """
     # Create the root-logger
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
@@ -122,7 +125,7 @@ def _init(debug):
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

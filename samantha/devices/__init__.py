@@ -1,8 +1,9 @@
 """Samantha's devices module.
 
- - forwards commands to devices (like set property COLOR of LED to GREEN)
- - fires events into the INPUT queue when an device's status changes
-   (e.g. if it becomes un-/available)"""
+- forwards commands to devices (like set property COLOR of LED to GREEN)
+- fires events into the INPUT queue when an device's status changes
+  (e.g. if it becomes un-/available)
+"""
 
 ###############################################################################
 # pylint: disable=global-statement
@@ -32,7 +33,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.9"
+__version__ = "1.0.10"
 
 
 # Initialize the logger
@@ -53,7 +54,7 @@ LOGGER.debug("I was imported.")
 
 
 def get_uid():
-    """Generates an incrementing UID for each device."""
+    """Generate an incrementing UID for each device."""
     global UID
     uid = "d_{0:04d}".format(UID)
     UID += 1
@@ -61,7 +62,7 @@ def get_uid():
 
 
 def add_to_index(device):
-    """Adds a device to the indexes."""
+    """Add a device to the indexes."""
     INDEX[device.uid] = device
     for key in device.keywords:
         if key in KEYWORDS:
@@ -71,7 +72,7 @@ def add_to_index(device):
 
 
 def _init(queue_in, queue_out):
-    """Initializes the module."""
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
@@ -114,7 +115,7 @@ def _init(queue_in, queue_out):
 
 
 def stop():
-    """Stops the module and all associated devices."""
+    """Stop the module and all associated devices."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

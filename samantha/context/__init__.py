@@ -1,9 +1,10 @@
 """Samantha's context module.
 
- - Handles storing the current context
- - saves/loads it when the program is ended/started.
- - Repeatedly compares the context against a given set of rules to allow basic
-   automation"""
+- Handles storing the current context
+- saves/loads it when the program is ended/started.
+- Repeatedly compares the context against a given set of rules to allow basic
+  automation
+"""
 
 ###############################################################################
 # pylint: disable=global-statement
@@ -34,7 +35,7 @@ import logging
 # application specific imports
 
 
-__version__ = "0.4.4"
+__version__ = "0.4.5"
 
 
 # Initialize the logger
@@ -50,7 +51,7 @@ LOGGER.debug("I was imported.")
 
 
 def _init(queue_in, queue_out):
-    """Initializes the module."""
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
@@ -62,7 +63,7 @@ def _init(queue_in, queue_out):
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

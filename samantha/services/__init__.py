@@ -1,8 +1,9 @@
 """Samantha's services module.
 
- - forwards commands to services (like get WEATHER-REPORT)
- - fires events into the INPUT queue when an services's status changes(e.g. if
-   it becomes un-/available or if the service itself triggers a command)"""
+- forwards commands to services (like get WEATHER-REPORT)
+- fires events into the INPUT queue when an services's status changes(e.g. if
+  it becomes un-/available or if the service itself triggers a command)
+"""
 
 ###############################################################################
 # pylint: disable=global-statement
@@ -32,7 +33,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.10"
+__version__ = "1.0.11"
 
 
 # Initialize the logger
@@ -53,7 +54,7 @@ LOGGER.debug("I was imported.")
 
 
 def get_uid():
-    """Generates an incrementing UID for each service."""
+    """Generate an incrementing UID for each service."""
     global UID
     uid = "s_{0:04d}".format(UID)
     UID += 1
@@ -61,7 +62,7 @@ def get_uid():
 
 
 def add_to_index(service):
-    """Adds a device to the indexes."""
+    """Add a device to the indexes."""
     INDEX[service.uid] = service
     for key in service.keywords:
         if key in KEYWORDS:
@@ -71,7 +72,7 @@ def add_to_index(service):
 
 
 def _init(queue_in, queue_out):
-    """Initializes the module."""
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
@@ -114,7 +115,7 @@ def _init(queue_in, queue_out):
 
 
 def stop():
-    """Stops the module and all associated services."""
+    """Stop the module and all associated services."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

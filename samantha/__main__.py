@@ -1,5 +1,6 @@
-"""Samantha's main module. calling this via 'python samantha'
-should start everything else"""
+"""Samantha's main module.
+
+Calling this via 'python samantha' starts everything else."""
 
 
 # standard library imports
@@ -19,7 +20,7 @@ import services
 import tools
 
 
-__version__ = "1.4.3"
+__version__ = "1.4.4"
 
 
 if "--nodebug" in sys.argv:

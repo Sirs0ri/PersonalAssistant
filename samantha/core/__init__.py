@@ -1,12 +1,13 @@
-"""Samantha's core module. Handles the processing of incoming commands
+"""Samantha's core module. Handles the processing of incoming commands.
 
- - Reads the global INPUT queue
- - Parses the incoming messages
- - Forwards them to services and/or devices
- - puts results back into the OUTPUT queue
+- Reads the global INPUT queue
+- Parses the incoming messages
+- Forwards them to services and/or devices
+- puts results back into the OUTPUT queue
 
- - Reads the global OUTOUT queue
- - Sends outgoing messages back the the clients"""
+- Reads the global OUTOUT queue
+- Sends outgoing messages back the the clients
+"""
 
 ###############################################################################
 # pylint: disable=global-statement
@@ -37,7 +38,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.12"
+__version__ = "1.2.13"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -57,13 +58,14 @@ LOGGER.debug("I was imported.")
 
 
 class Processor(object):
-    """This class is a replacement for a full service to handle some internal
-    commands. To be removed, as soon as there is a decorator available to
-    register plugins (or rather their functions in the index.)"""
+    """Replacement for a full service to handle some internal commands.
+
+    To be removed, as soon as there is a decorator available to
+    register plugins (or rather their functions in the index.)
+    """
 
     def process(self, key, data=None):
-        """Process some internal commands via the framework directly"""
-
+        """Process some internal commands via the framework directly."""
         # just for debugging purposes, to simulate long processing
         if key == "wait":
             time.sleep(5)
@@ -84,8 +86,10 @@ class Processor(object):
 
 
 def add_keywords(keywords):
-    """Adds a set of keywords to the core's list. Based on these keywords it
-    will direct commands to services and/or devices."""
+    """Add a set of keywords to the core's list.
+
+    Based on these keywords commands are directed to services and/or devices.
+    """
     for key in keywords:
         if key in KEYWORDS:
             KEYWORDS[key] += keywords[key]
@@ -99,8 +103,10 @@ def add_keywords(keywords):
 
 
 def worker():
-    """Reads and processes commands from the INPUT queue. Puts results back
-    into OUTPUT"""
+    """Read and process commands from the INPUT queue.
+
+    Puts results back into OUTPUT.
+    """
     # Get a new logger for each thread.
     # Used instead of the global LOGGER on purpose inside this function.
     logger = logging.getLogger(
@@ -153,8 +159,7 @@ def worker():
 
 
 def sender():
-    """Reads processed commands from the OUTPUT queue, then sends them back to
-    to the client they came from"""
+    """Read processed commands from OUTPUT queue; send them back to client."""
     # Get a new logger for each thread.
     # Used instead of the global LOGGER on purpose inside this function.
     logger = logging.getLogger(
@@ -200,7 +205,7 @@ def sender():
 
 
 def _init(queue_in, queue_out):
-    """Initializes the module."""
+    """Initialize the module."""
     global INPUT, OUTPUT, NUM_WORKER_THREADS, NUM_SENDER_THREADS
 
     LOGGER.info("Initializing...")
@@ -245,7 +250,7 @@ def _init(queue_in, queue_out):
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

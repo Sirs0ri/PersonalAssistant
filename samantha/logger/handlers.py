@@ -1,6 +1,8 @@
-"""This class contains custom Handlers for Logging, such as the ColorStream-
-Handler that color-codes the Loglevels for better readability or an AutoRemote-
-Handler that sends log messages to my phone."""
+"""This class contains custom Handlers for Logging.
+
+It contains the ColorStream-Handler that color-codes the Loglevels for better
+readability or an AutoRemote-Handler that sends log messages to my phone.
+"""
 
 
 # standard library imports
@@ -26,7 +28,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 
 # Initialize the logger
@@ -34,18 +36,20 @@ LOGGER = logging.getLogger(__name__)
 
 
 class AutoRemoteHandler(logging.Handler):
-    """A Handler that sends logging messages to AutoRemote. AutoRemote is a
-    service that was initially built as a plugin for the Android App Tasker
-    (http://tasker.dinglisch.net) which allows simple communication between
-    two phones. Sending messages works easily via HTTP Postrequests to AR's
-    server at https://autoremotejoaomgcd.appspot.com/sendmessage (see below
-    for more info on how the URL is built). The messages are then processed
-    further on the phone, for example to be displayed in a notification, or
-    on the user's homescreen."""
+    """A Handler that sends logging messages to AutoRemote.
+
+    AutoRemote is a service that was initially built as a plugin for the
+    Android App Tasker (http://tasker.dinglisch.net) which allows simple
+    communication between two phones. Sending messages works easily via
+    HTTP Postrequests to AutoRemote's server at
+    https://autoremotejoaomgcd.appspot.com/sendmessage (see below for more info
+    on how the URL is built). The messages are then processed further on the
+    phone, for example to be displayed in a notification, or on the user's
+    homescreen.
+    """
 
     def emit(self, record):
-        """This function actually sends the message via a POST request
-        to AutoRemote's server."""
+        """Send the message via a POST request to AutoRemote."""
         logging.getLogger("requests").setLevel(logging.WARNING)
         message = self.format(record)
         url = "https://autoremotejoaomgcd.appspot.com/sendmessage"
@@ -66,15 +70,17 @@ class AutoRemoteHandler(logging.Handler):
 
 
 class ColorStreamHandler(logging.StreamHandler):
-    """A Handler that prints colored messages to the current console. The
-    messages appear in various colors by using ANSI-escape-sequences."""
+    """A Handler that prints colored messages to the current console.
+
+    The messages appear in various colors by using ANSI-escape-sequences.
+    """
 
     def emit(self, record):
-        """
-        This is the function that actually 'logs' the record. Here, it reads
-        the part of the record containing the levelname (such as "DEBUG" or
-        "ERROR") and adds ANSI-escape-codes around it to change the color.
-        (see: http://ascii-table.com/ansi-escape-sequences.php)
+        """Log the current record.
+
+        Here, it reads the part of the record containing the levelname (such as
+        "DEBUG" or "ERROR") and adds ANSI-escape-codes around it to change the
+        color. (see: http://ascii-table.com/ansi-escape-sequences.php)
 
         The String "DEBUG" will be replaced by "\033[96mDEBUG\033[0m" this way,
         in which "\033[" is the beginning, "m" the end of the escape sequence
@@ -86,8 +92,8 @@ class ColorStreamHandler(logging.StreamHandler):
         Formatter, nothing changes.
 
         After transforming the string inside the given record, the printing is
-        handled via the original StreamHandler."""
-
+        handled via the original StreamHandler.
+        """
         fmt = self.formatter._fmt
         # Check if the levelname is even part of the current Formatter
         # If not, none of the transformations are necessary
