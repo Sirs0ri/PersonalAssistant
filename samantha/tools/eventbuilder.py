@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 
 # Initialize the logger
@@ -45,7 +45,7 @@ class Event(object):
 
         LOGGER.debug("Building new event (#%d): %s (%s) from %s",
                      EVENT_ID, event_type, keyword, sender_id)
-        self.id = EVENT_ID
+        self.event_id = EVENT_ID
         EVENT_ID += 1
         self.sender_id = sender_id
         self.keyword = keyword
