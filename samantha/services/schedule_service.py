@@ -33,7 +33,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 # Initialize the logger
@@ -102,14 +102,14 @@ class Service(BaseClass):
         self.name = "Schedule"
         self.uid = uid
         self.keywords = ["onstart"]
-        self.t = threading.Thread(target=worker)
-        self.t.daemon = True
+        self.thread = threading.Thread(target=worker)
+        self.thread.daemon = True
         super(Service, self).__init__(logger=LOGGER, file_path=__file__)
 
     def process(self, key, data=None):
         if key == "onstart":
             LOGGER.debug("Starting thread...")
-            self.t.start()
+            self.thread.start()
             return True
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
