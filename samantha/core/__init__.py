@@ -37,7 +37,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.11"
+__version__ = "1.2.12"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -109,18 +109,18 @@ def worker():
     while True:
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for an item.")
-        message = INPUT.get()
+        event = INPUT.get()
 
         logger.debug("[UID: %s] Now processing '%s'",
-                     message.sender_id,
-                     message.keyword)
+                     event.sender_id,
+                     event.keyword)
 
         results = [False]
-        if message.keyword in KEYWORDS:
-            for item in KEYWORDS[message.keyword]:
+        if event.keyword in KEYWORDS:
+            for item in KEYWORDS[event.keyword]:
                 try:
-                    res = item.process(key=message.keyword,
-                                       data=message.data)
+                    res = item.process(key=event.keyword,
+                                       data=event.data)
                     results.append(res)
                 except Exception:
                     LOGGER.exception("Exception in user code:\n%s",
@@ -128,25 +128,25 @@ def worker():
         results = [x for x in results if x]
 
         if results:
-            message.result = results
+            event.result = results
             logger.info("[UID: %s] Processing of '%s' successful. "
                         "%d result%s.",
-                        message.sender_id,
-                        message.keyword,
+                        event.sender_id,
+                        event.keyword,
                         len(results),
                         ("s" if len(results) > 1 else ""))
             logger.debug("Keyword: %s Result: %s",
-                         message.keyword,
+                         event.keyword,
                          results)
         else:
-            message.result = "No matching plugin/device found"
+            event.result = "No matching plugin/device found"
             logger.debug("[UID: %s] Processing of '%s' unsuccessful.",
-                         message.sender_id,
-                         message.keyword)
+                         event.sender_id,
+                         event.keyword)
 
         # Put the result back into the OUTPUT queue, the incoming comm for now
-        if message.event_type == "request":
-            OUTPUT.put(message)
+        if event.event_type == "request":
+            OUTPUT.put(event)
 
         # Let the queue know that processing is complete
         INPUT.task_done()
