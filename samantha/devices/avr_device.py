@@ -29,7 +29,7 @@ from tools import Sleeper_Thread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 
 # Initialize the logger
@@ -41,10 +41,10 @@ COMM_QUEUE = Queue.PriorityQueue()
 def send(command, device_ip, logger, retries=3):
     if retries > 0:
         try:
-            tn = telnetlib.Telnet(device_ip)
+            telnet = telnetlib.Telnet(device_ip)
             logger.debug("Sending command '%s'", command)
-            tn.write("{}\r".format(command))
-            tn.close()
+            telnet.write("{}\r".format(command))
+            telnet.close()
         except socket.error:
             logger.exception("AVR refused the connection. Is another "
                              "device using the Telnet connection already?"
