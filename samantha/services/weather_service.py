@@ -29,7 +29,7 @@ except ImportError:
 # pylint: enable=import-error
 
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 # Initialize the logger
@@ -60,11 +60,11 @@ class Service(BaseClass):
         if key in ["onstart", "schedule_hour"]:
             LOGGER.debug("Checking the Weather..")
             try:
-                req = requests.get("{baseurl}?id={location}&appid={key}".format(
+                req = requests.get("{baseurl}?{location}&{key}".format(
                     baseurl="http://api.openweathermap.org/data/2.5/weather",
-                    location=self.location,
-                    key=self.api_key),
-                    timeout=3)
+                    location="id=" + self.location,
+                    key="appid=" + self.api_key),
+                                   timeout=3)
                 if req.status_code == 200:
                     tools.eventbuilder.Event(sender_id=self.name,
                                              keyword="weather",
