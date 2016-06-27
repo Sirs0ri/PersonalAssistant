@@ -25,11 +25,11 @@ import traceback
 # application specific imports
 # pylint: disable=import-error
 from devices.device import BaseClass
-from tools import Sleeper_Thread
+from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
@@ -117,7 +117,7 @@ class Device(BaseClass):
             if data["display_name"] in [None, "Backdrop"]:  # not connected
                 LOGGER.debug("No app connected to the Chromecast.")
                 # Run the sleeper that turns off the AVR after 3 minutes
-                self.sleeper = Sleeper_Thread(target=turn_off_with_delay,
+                self.sleeper = SleeperThread(target=turn_off_with_delay,
                                               delay=120,
                                               name=__name__ + ".sleeper")
                 self.sleeper.start()

@@ -16,11 +16,11 @@ import logging
 # application specific imports
 # pylint: disable=import-error
 from services.service import BaseClass
-from tools import Sleeper_Thread
+from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class Service(BaseClass):
 
     def process(self, key, data=None):
         if key == "onstart":
-            thread = Sleeper_Thread(delay=30, target=function)
+            thread = SleeperThread(delay=30, target=function)
             thread.start()
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
