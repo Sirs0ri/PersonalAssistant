@@ -31,7 +31,7 @@ import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.6"
+__version__ = "1.5.7"
 
 
 # Initialize the logger
@@ -126,6 +126,7 @@ def stop():
     global INITIALIZED
 
     LOGGER.info("Exiting...")
+    # TODO stop logging.
     INITIALIZED = False
     LOGGER.info("Exited.")
     return True
