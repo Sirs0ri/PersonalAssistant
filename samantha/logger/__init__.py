@@ -31,7 +31,7 @@ import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.5"
+__version__ = "1.5.6"
 
 
 # Initialize the logger
@@ -43,7 +43,7 @@ INITIALIZED = False
 LOGGER.debug("I was imported.")
 
 
-def _init(DEBUG):
+def _init(debug):
     """Configure Logging. Add a streamhandler, a TimedRotatingFileHandler and
     a custom AutoRemoteHandler. The latter one will be added only, if an API-
     Key is defined inside the file 'variables_private.py'."""
@@ -110,7 +110,7 @@ def _init(DEBUG):
     # Displays the error levels nicely and colorful :3
 
     console_handler = handlers.ColorStreamHandler()
-    if DEBUG:
+    if debug:
         console_handler.setLevel(logging.DEBUG)
     else:
         console_handler.setLevel(logging.INFO)
@@ -131,10 +131,10 @@ def stop():
     return True
 
 
-def initialize(DEBUG):
+def initialize(debug):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(DEBUG)
+        INITIALIZED = _init(debug)
     else:
         LOGGER.info("Already initialized!")
