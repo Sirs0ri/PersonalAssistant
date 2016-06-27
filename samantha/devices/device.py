@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.1.7"
+__version__ = "1.1.8"
 
 
 # Initialize the logger
@@ -47,7 +47,7 @@ class BaseClass(object):
         return "Device '{}', UID {}".format(self.name, self.uid)
 
     def __repr__(self):
-        return "Device '{}', UID {} from {}. Keywords: {}".format(
+        return "Device '{}', UID {}. Loaded from {}. Keywords: {}".format(
             self.name, self.uid, self.path, self.keywords)
 
     def stop(self):
