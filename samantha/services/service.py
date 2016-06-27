@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.1.4"
+__version__ = "1.1.6"
 
 
 # Initialize the logger
@@ -34,14 +34,14 @@ class BaseClass(object):
             self.keywords = []
         self.is_active = active
         if logger:
-            self.LOGGER = logger
+            self.logger = logger
         else:
-            self.LOGGER = LOGGER
+            self.logger = LOGGER
         if file_path:
             self.path = file_path
         else:
             self.path = __file__
-        self.LOGGER.info("Initialisation complete")
+        self.logger.info("Initialisation complete")
 
     def __str__(self):
         return "Service '{}', UID {}".format(self.name, self.uid)
@@ -51,8 +51,8 @@ class BaseClass(object):
             self.name, self.uid, self.path, self.keywords)
 
     def stop(self):
-        self.LOGGER.info("Exited.")
+        self.logger.info("Exited.")
 
     def process(self, key, data=None):
-        self.LOGGER.warn("My process() function isn't implemented yet! "
+        self.logger.warn("My process() function isn't implemented yet! "
                          "'%s, %s' won't be processed.", key, data)
