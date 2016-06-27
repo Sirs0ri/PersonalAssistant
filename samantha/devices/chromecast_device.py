@@ -23,7 +23,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.1.6"
+__version__ = "1.1.7"
 
 
 # Initialize the logger
@@ -70,9 +70,9 @@ class Device(BaseClass):
         try:
             self.cast = pychromecast.Chromecast("192.168.178.45")
             self.cast.wait()
-            self.mc = self.cast.media_controller
+            self.mediacontroller = self.cast.media_controller
             self.listener = Listener(self.name)
-            self.mc.register_status_listener(self.listener)
+            self.mediacontroller.register_status_listener(self.listener)
             self.cast.register_status_listener(self.listener)
             active = True
         except Exception:
@@ -88,7 +88,7 @@ class Device(BaseClass):
 
     def process(self, key, data=None):
         if key == "onstart" and self.cast:
-            self.listener.new_media_status(self.mc.status)
+            self.listener.new_media_status(self.mediacontroller.status)
             self.listener.new_cast_status(self.cast.status)
             return True
         else:
