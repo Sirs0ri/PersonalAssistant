@@ -19,7 +19,7 @@ from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 
 # Initialize the logger
@@ -40,4 +40,4 @@ class Device(BaseClass):
     def stop(self):
         LOGGER.info("Exiting...")
         LOGGER.debug("I'm not doing anything productive anymore.")
-        super(Device, self).stop()
+        return super(Device, self).stop()

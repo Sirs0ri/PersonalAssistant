@@ -29,7 +29,7 @@ from tools import Sleeper_Thread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 
 # Initialize the logger
@@ -98,7 +98,7 @@ class Device(BaseClass):
     def stop(self):
         LOGGER.info("Exiting...")
         COMM_QUEUE.join()
-        super(Device, self).stop()
+        return super(Device, self).stop()
 
     def process(self, key, data=None):
         """The main processing function. Ths will be called if an event's

@@ -23,7 +23,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.1.7"
+__version__ = "1.1.8"
 
 
 # Initialize the logger
@@ -94,3 +94,11 @@ class Device(BaseClass):
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
         return False
+
+    def stop(self):
+        """Exit the device-handler.
+
+        I would un-register the listeners here, but the library pxchromecast
+        doesn't support it yet.
+        """
+        return super(Device, self).stop()
