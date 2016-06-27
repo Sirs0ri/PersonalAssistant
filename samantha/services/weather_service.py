@@ -29,7 +29,7 @@ except ImportError:
 # pylint: enable=import-error
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 # Initialize the logger
@@ -47,7 +47,7 @@ class Service(BaseClass):
             self.api_key = variables_private.owm_key
             self.location = variables_private.owm_location
             active = True
-        except Exception as e:
+        except Exception:
             LOGGER.exception("Couldn't access the API-Key and/or location.")
             self.api_key = ""
             self.location = ""
