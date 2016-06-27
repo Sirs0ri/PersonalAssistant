@@ -29,7 +29,7 @@ from tools import Sleeper_Thread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 
 # Initialize the logger
@@ -38,10 +38,10 @@ LOGGER = logging.getLogger(__name__)
 COMM_QUEUE = Queue.PriorityQueue()
 
 
-def send(command, ip, logger, retries=3):
+def send(command, device_ip, logger, retries=3):
     if retries > 0:
         try:
-            tn = telnetlib.Telnet(ip)
+            tn = telnetlib.Telnet(device_ip)
             logger.debug("Sending command '%s'", command)
             tn.write("{}\r".format(command))
             tn.close()
@@ -50,15 +50,15 @@ def send(command, ip, logger, retries=3):
                              "device using the Telnet connection already?"
                              "\n%s", traceback.format_exc())
             time.sleep(2)
-            send(command, ip, logger, retries-1)
+            send(command, device_ip, logger, retries-1)
     else:
         logger.error("Maximium count of retries reached. The command %s "
                      "couldn't be sent.", command)
 
 
-def worker(ip):
     """Reads and processes commands from the COMM_QUEUE queue. Puts results
     back into OUTPUT"""
+def worker(device_ip):
     # Get a new logger for each thread.
     # Used instead of the global LOGGER on purpose inside this function.
     logger = logging.getLogger(
@@ -68,7 +68,7 @@ def worker(ip):
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for a command.")
         command = COMM_QUEUE.get()
-        send(command, ip, logger)
+        send(command, device_ip, logger)
         COMM_QUEUE.task_done()
 
 
@@ -86,9 +86,9 @@ class Device(BaseClass):
         self.uid = uid
         self.keywords = ["chromecast_playstate_change",
                          "chromecast_connection_change"]
-        self.ip = "192.168.178.48"
+        self.device_ip = "192.168.178.48"
         self.worker = threading.Thread(target=worker,
-                                       args=(self.ip,),
+                                       args=(self.device_ip,),
                                        name="worker")
         self.worker.daemon = True
         self.worker.start()
