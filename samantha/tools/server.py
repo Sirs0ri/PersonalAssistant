@@ -21,11 +21,11 @@ from twisted.internet import reactor
 
 # application specific imports
 # pylint: disable=import-error
-import tools
+import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 
 # Initialize the logger
@@ -100,7 +100,7 @@ class Server(WebSocketServerProtocol):
                 self.sendClose()
                 reactor.stop()
             else:
-                event = tools.eventbuilder.Event(
+                event = eventbuilder.Event(
                     sender_id=self.uid,
                     keyword=payload.decode('utf8'))
                 event.trigger()
