@@ -20,13 +20,13 @@ import services
 import tools
 
 
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 
 
-if "--nodebug" in sys.argv:
-    DEBUG = False
-else:
+if "--debug" in sys.argv or "-D" in sys.argv:
     DEBUG = True
+else:
+    DEBUG = False
 
 
 # Initialize the logger
