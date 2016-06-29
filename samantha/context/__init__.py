@@ -1,11 +1,13 @@
 """Samantha's context module.
 
- - Handles storing the current context
- - saves/loads it when the program is ended/started.
- - Repeatedly compares the context against a given set of rules to allow basic
-   automation"""
+- Handles storing the current context
+- saves/loads it when the program is ended/started.
+- Repeatedly compares the context against a given set of rules to allow basic
+  automation
+"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ] finish initialize() and stop()
 # TODO: [ ]     Start a new context, then load the last one
@@ -25,10 +27,15 @@
 ###############################################################################
 
 
+# standard library imports
 import logging
 
+# related third party imports
 
-__version__ = "0.4.1"
+# application specific imports
+
+
+__version__ = "0.4.5"
 
 
 # Initialize the logger
@@ -43,20 +50,20 @@ OUTPUT = None
 LOGGER.debug("I was imported.")
 
 
-def _init(InputQueue, OutputQueue):
-    """Initializes the module."""
+def _init(queue_in, queue_out):
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     LOGGER.info("Initialisation complete.")
     return True
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")
@@ -65,10 +72,10 @@ def stop():
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")

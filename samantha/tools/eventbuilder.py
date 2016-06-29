@@ -1,17 +1,22 @@
 """A tool to create events for Sam."""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
-# TODO: [X] class Event
+# TODO: [ ]
 #
 ###############################################################################
 
 
+# standard library imports
 import logging
-import json
+
+# related third party imports
+
+# application specific imports
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.6"
 
 
 # Initialize the logger
@@ -31,16 +36,19 @@ LOGGER.debug("I was imported.")
 
 
 class Event(object):
-    """An event for Samantha. Each event stores information about who
-    triggered it, what type it is and of course a keyword + optional data."""
+    """An event for Samantha.
+
+    Each event stores information about who triggered it, what type it is and
+    of course a keyword + optional data.
+    """
 
     def __init__(self, sender_id, keyword, event_type="trigger", data=None):
-        """initialize a new event"""
+        """Initialize a new event."""
         global EVENT_ID
 
         LOGGER.debug("Building new event (#%d): %s (%s) from %s",
                      EVENT_ID, event_type, keyword, sender_id)
-        self.id = EVENT_ID
+        self.event_id = EVENT_ID
         EVENT_ID += 1
         self.sender_id = sender_id
         self.keyword = keyword
@@ -55,7 +63,7 @@ class Event(object):
         self.result = None
 
     def trigger(self):
-        """puts the current event into the input queue as JSON-String"""
+        """Put the current event into the input queue."""
         if self.keyword in KEYWORDS:
             INPUT.put(self)
         else:
@@ -63,25 +71,26 @@ class Event(object):
                          "not in use.", self.keyword, self.sender_id)
 
 
-def _init(InputQueue, OutputQueue):
-    """Initializes the module."""
+def _init(queue_in, queue_out):
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     LOGGER.info("Initialisation complete.")
     return True
 
 
 def update_keywords(keywords):
+    """Update the global variable KEYWORDS."""
     global KEYWORDS
     KEYWORDS = keywords
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")
@@ -91,10 +100,10 @@ def stop():
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")

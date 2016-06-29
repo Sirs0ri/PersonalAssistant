@@ -1,31 +1,35 @@
 """Samantha's logging module.
 
- - initializes a streamhandler, a TimedRotatingFileHandler and a custom
-   AutoRemoteHandler with different formatters."""
+- initializes a streamhandler, a TimedRotatingFileHandler and a custom
+  AutoRemoteHandler with different formatters.
+"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
-# TODO: [ ] _init()
-# TODO: [ ]     create the logs-folder if it doesn't exist
 # TODO: [ ] file_handler: if possible, rename logs to samantha.yyy-mm-dd.log
 #           instead of samantha.log.yy-mm-dd at midnight
 #           (-> 'time.strftime("%y-%m-%d")')
 # TODO: [ ] upload/backup logfiles at midnight
-# TODO: [ ] Set the ColorStreamHandler's level to INFO
 #
 ###############################################################################
 
 
+# standard library imports
 import datetime
 import logging
 import logging.handlers
 import os.path
 import time
+
+# related third party imports
+
+# application specific imports
 import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.3"
+__version__ = "1.5.9"
 
 
 # Initialize the logger
@@ -37,11 +41,13 @@ INITIALIZED = False
 LOGGER.debug("I was imported.")
 
 
-def _init(DEBUG):
-    """Configure Logging. Add a streamhandler, a TimedRotatingFileHandler and
-    a custom AutoRemoteHandler. The latter one will be added only, if an API-
-    Key is defined inside the file 'variables_private.py'."""
+def _init(debug):
+    """Configure Logging.
 
+    Add a streamhandler, a TimedRotatingFileHandler and
+    a custom AutoRemoteHandler. The latter one will be added only, if an API-
+    Key is defined inside the file 'variables_private.py'.
+    """
     # Create the root-logger
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
@@ -104,7 +110,7 @@ def _init(DEBUG):
     # Displays the error levels nicely and colorful :3
 
     console_handler = handlers.ColorStreamHandler()
-    if DEBUG:
+    if debug:
         console_handler.setLevel(logging.DEBUG)
     else:
         console_handler.setLevel(logging.INFO)
@@ -116,19 +122,20 @@ def _init(DEBUG):
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")
+    # TODO stop logging.
     INITIALIZED = False
     LOGGER.info("Exited.")
     return True
 
 
-def initialize(DEBUG):
+def initialize(debug):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(DEBUG)
+        INITIALIZED = _init(debug)
     else:
         LOGGER.info("Already initialized!")

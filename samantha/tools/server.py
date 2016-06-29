@@ -1,24 +1,31 @@
 """Samantha's server module.
 
-Opens a websocket on port 19113 to communicate with remote clients"""
+Open a websocket on port 19113 to communicate with remote clients.
+"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ]
 #
 ###############################################################################
 
 
+# standard library imports
 import logging
 
-import tools
-
+# related third party imports
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
                                        WebSocketServerFactory
 from twisted.internet import reactor
 
+# application specific imports
+# pylint: disable=import-error
+import tools
+# pylint: enable=import-error
 
-__version__ = "1.2.0"
+
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -30,7 +37,7 @@ INITIALIZED = False
 INPUT = None
 OUTPUT = None
 
-factory = None
+FACTORY = None
 
 INDEX = {}
 
@@ -40,8 +47,10 @@ LOGGER.debug("I was imported.")
 
 
 def get_uid():
-    """provides a unique uid which is used as identifier for the different
-    server-client-connenctions"""
+    """Provide a unique id.
+
+    The UID is used as identifier for the different server-client-connenctions.
+    """
     global UID
     uid = "c_{0:04d}".format(UID)
     UID += 1
@@ -49,73 +58,79 @@ def get_uid():
 
 
 class Server(WebSocketServerProtocol):
-    """a websocket-server class"""
+    """A websocket-server class."""
 
     def __init__(self):
-        self.UID = get_uid()
+        """Initialize the server."""
+        self.uid = get_uid()
         super(Server, self).__init__()
 
     def onConnect(self, request):
+        """Handle a new connecting client."""
         LOGGER.info("[UID: %s] Client connecting: '%s'",
-                    self.UID, request.peer)
+                    self.uid, request.peer)
 
     def onOpen(self):
+        """Handle a new open connection."""
         LOGGER.info("[UID: %s] WebSocket connection open.",
-                    self.UID)
+                    self.uid)
         # add this server-client-connenction to the index
-        INDEX[self.UID] = self
+        INDEX[self.uid] = self
 
     def onClose(self, wasClean, code, reason):
+        """Handle a closed connection."""
         LOGGER.info("[UID: %s] WebSocket connection closed: '%s'",
-                    self.UID, reason)
+                    self.uid, reason)
         # remove this server-client-connenction from the index
-        if self.UID in INDEX:
-            del INDEX[self.UID]
+        if self.uid in INDEX:
+            del INDEX[self.uid]
 
     def onMessage(self, payload, isBinary):
+        """Handle a new incoming mesage."""
         if isBinary:
             LOGGER.debug("[UID: %s] Binary message received: %d bytes",
-                         self.UID, len(payload))
+                         self.uid, len(payload))
         else:
             LOGGER.debug("[UID: %s] Text message received: '%s'",
-                         self.UID, payload.decode('utf8'))
+                         self.uid, payload.decode('utf8'))
             if payload.decode('utf8') == "exit_server":
                 LOGGER.fatal(
                     "[UID: %s] Received the request to close the server",
-                    self.UID)
+                    self.uid)
                 self.sendClose()
                 reactor.stop()
             else:
-                e = tools.eventbuilder.Event(sender_id=self.UID,
-                                             keyword=payload.decode('utf8'))
-                e.trigger()
+                event = tools.eventbuilder.Event(
+                    sender_id=self.uid,
+                    keyword=payload.decode('utf8'))
+                event.trigger()
 
 
-def _init(InputQueue, OutputQueue):
-    """Initializes the module."""
-    global INPUT, OUTPUT, factory
+def _init(queue_in, queue_out):
+    """Initialize the module."""
+    global INPUT, OUTPUT, FACTORY
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
-    factory = WebSocketServerFactory()
-    factory.protocol = Server
+    FACTORY = WebSocketServerFactory()
+    FACTORY.protocol = Server
 
-    reactor.listenTCP(19113, factory)
+    reactor.listenTCP(19113, FACTORY)
 
     LOGGER.info("Initialisation complete.")
     return True
 
 
 def run():
-    """open the Websocket"""
+    """Open the Websocket."""
     LOGGER.info("Opening the Websocket.")
     reactor.run()
 
 
 def send_message(message):
-    """send a message to one of the connected devices"""
+    """Send a message to one of the connected devices."""
     if message["sender_id"] in INDEX:
         INDEX[message["sender_id"]].sendMessage(
             message["result"].encode('utf8'), False)
@@ -124,7 +139,7 @@ def send_message(message):
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")
@@ -133,10 +148,10 @@ def stop():
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")

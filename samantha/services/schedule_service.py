@@ -1,34 +1,40 @@
-"""
-This plugin triggers schedules events. the different commands are triggered:
+"""This plugin triggers schedules events.
+
+The different commands are triggered:
     * every 10 seconds
     * at the start of every minute
     * ..hour
     * ..day
     * ..month
     * ..year
+
 All these events are triggered as soon as possible, i.e. 'Day' will be
 triggered at 0:00, month on the 1st at 0:00, etc.
 """
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
+# TODO: [ ]
 #
 ###############################################################################
 
 
+# standard library imports
 import datetime
 import threading
 import time
 
+# related third party imports
 
+# application specific imports
+# pylint: disable=import-error
 import logging
 from services.service import BaseClass
 import tools
+# pylint: enable=import-error
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.5"
 
 
 # Initialize the logger
@@ -36,26 +42,25 @@ LOGGER = logging.getLogger(__name__)
 
 
 def worker():
+    """Check if events should be triggered, sleep 1sec, repeat."""
     name = __name__ + ".Thread"
     logger = logging.getLogger(name)
     logger.debug("Started.")
-    # initialisation
+    # Initialisation
     while True:
         timetuple = datetime.datetime.now().timetuple()
-        """
-        value: time.struct_time(tm_year=2016, tm_mon=1, tm_mday=22,
-                                tm_hour=11, tm_min=26, tm_sec=13,
-                                tm_wday=4, tm_yday=22, tm_isdst=-1)
-            0: tm_year=2016
-            1: tm_mon=1
-            2: tm_mday=22
-            3: tm_hour=11
-            4: tm_min=26
-            5: tm_sec=13
-            6: tm_wday=4
-            7: tm_yday=22
-            8: tm_isdst=-1
-        """
+        # value: time.struct_time(tm_year=2016, tm_mon=1, tm_mday=22,
+        #                         tm_hour=11, tm_min=26, tm_sec=13,
+        #                         tm_wday=4, tm_yday=22, tm_isdst=-1)
+        # ..[0]: tm_year = 2016
+        # ..[1]: tm_mon = 1
+        # ..[2]: tm_mday = 22
+        # ..[3]: tm_hour = 11
+        # ..[4]: tm_min = 26
+        # ..[5]: tm_sec = 13
+        # ..[6]: tm_wday = 4
+        # ..[7]: tm_yday = 22
+        # ..[8]: tm_isdst = -1
         timelist = list(timetuple)
         if timelist[5] in [0, 10, 20, 30, 40, 50]:
             tools.eventbuilder.Event(sender_id=name,
@@ -90,21 +95,25 @@ def worker():
         # sleep to take work from the CPU
         time.sleep(1)
 
+
 class Service(BaseClass):
+    """This plugin triggers schedules events."""
 
     def __init__(self, uid):
+        """Initialize the service."""
         LOGGER.info("Initializing...")
         self.name = "Schedule"
         self.uid = uid
         self.keywords = ["onstart"]
-        self.t = threading.Thread(target=worker)
-        self.t.daemon = True
+        self.thread = threading.Thread(target=worker)
+        self.thread.daemon = True
         super(Service, self).__init__(logger=LOGGER, file_path=__file__)
 
     def process(self, key, data=None):
+        """process a command from the core."""
         if key == "onstart":
             LOGGER.debug("Starting thread...")
-            self.t.start()
+            self.thread.start()
             return True
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)

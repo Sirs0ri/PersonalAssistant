@@ -1,31 +1,33 @@
 """Samantha's services module.
 
- - forwards commands to services (like get WEATHER-REPORT)
- - fires events into the INPUT queue when an services's status changes(e.g. if
-   it becomes un-/available or if the service itself triggers a command)"""
+- forwards commands to services (like get WEATHER-REPORT)
+- fires events into the INPUT queue when an services's status changes(e.g. if
+  it becomes un-/available or if the service itself triggers a command)
+"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
-# TODO: [ ] _init()
-# TODO: [ ]     load services & add them to INDEX
-# TODO: [ ] stop()
-# TODO: [ ]     stop services if necessary
-# TODO: [ ] def process(keyword, params={}):
 # TODO: [ ] monitor status changes
-# TODO: [ ] comments
 #
 ###############################################################################
 
 
+# standard library imports
 import glob
 import imp
 import logging
 import os.path
 
+# related third party imports
+
+# application specific imports
+# pylint: disable=import-error
 import core
+# pylint: enable=import-error
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.13"
 
 
 # Initialize the logger
@@ -46,7 +48,7 @@ LOGGER.debug("I was imported.")
 
 
 def get_uid():
-    """Generates an incrementing UID for each service."""
+    """Generate an incrementing UID for each service."""
     global UID
     uid = "s_{0:04d}".format(UID)
     UID += 1
@@ -54,8 +56,7 @@ def get_uid():
 
 
 def add_to_index(service):
-    """Adds a device to the indexes."""
-    global INDEX, KEYWORDS
+    """Add a device to the indexes."""
     INDEX[service.uid] = service
     for key in service.keywords:
         if key in KEYWORDS:
@@ -64,13 +65,13 @@ def add_to_index(service):
             KEYWORDS[key] = [service]
 
 
-def _init(InputQueue, OutputQueue):
-    """Initializes the module."""
+def _init(queue_in, queue_out):
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     # initialize all services
     LOGGER.debug("Searching for services...")
@@ -78,57 +79,56 @@ def _init(InputQueue, OutputQueue):
     files = glob.glob("{}/*_service.py".format(this_dir))
     LOGGER.debug("%d possible services found.", len(files))
 
-    for i in range(len(files)):
-        LOGGER.debug("Trying to import %s...", files[i])
+    for service_file in files:
+        LOGGER.debug("Trying to import %s...", service_file)
 
         try:
-            service_source = imp.load_source(
-                files[i].replace("samantha/", "")
-                        .replace("/", ".")
-                        .replace("_service.py", ""),
-                files[i])
-            LOGGER.debug("Successfully imported %s", files[i])
+            name = service_file.replace("samantha/", "") \
+                               .replace("/", ".") \
+                               .replace("_service.py", "")
+            service_source = imp.load_source(name, service_file)
+            LOGGER.debug("Successfully imported %s", service_file)
             if hasattr(service_source, "Service"):
-                UID = get_uid()
-                new_service = service_source.Service(UID)
+                uid = get_uid()
+                new_service = service_source.Service(uid)
                 if new_service.is_active:
                     add_to_index(new_service)
-                    LOGGER.debug("%s is a valid Service.", files[i])
+                    LOGGER.debug("%s is a valid Service.", service_file)
+                else:
+                    LOGGER.debug("%s is marked as inactive.", service_file)
             else:
-                LOGGER.warn("%s is missing the Service-class!", files[i])
+                LOGGER.warn("%s is missing the Service-class!", service_file)
         except ImportError:
-            LOGGER.warn("%s couldn't be imported successfully!", files[i])
-        # except AttributeError:
-        #     LOGGER.warn("%s is not a valid service!", files[i])
+            LOGGER.warn("%s couldn't be imported successfully!", service_file)
 
     LOGGER.info("Initialisation complete.")
-    s = ""
+    service_str = ""
     for i in INDEX:
-        s += "\n\t%s:\t%r" % (i, INDEX[i])
-    LOGGER.debug("Imported %d Services: %s", len(INDEX), s)
+        service_str += "\n\t%s:\t%r" % (i, INDEX[i])
+    LOGGER.debug("Imported %d Services: %s", len(INDEX), service_str)
     core.add_keywords(KEYWORDS)
     return True
 
 
 def stop():
-    """Stops the module and all associated services."""
+    """Stop the module and all associated services."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")
     INITIALIZED = False
 
     # Stop all services
-    for UID in INDEX:
-        INDEX[UID].stop()
+    for uid in INDEX:
+        INDEX[uid].stop()
 
     LOGGER.info("Exited.")
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")

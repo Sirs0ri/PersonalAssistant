@@ -1,27 +1,35 @@
-""""""
+"""Another test device, doesn't do anything either."""
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
+# TODO: [ ]
 #
 ###############################################################################
 
 
-from devices.device import BaseClass
-
+# standard library imports
 import logging
 
+# related third party imports
 
-__version__ = "1.1.0"
+# application specific imports
+# pylint: disable=import-error
+from devices.device import BaseClass
+# pylint: enable=import-error
+
+
+__version__ = "1.1.4"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
+
 class Device(BaseClass):
+    """Just another test device without functionality."""
 
     def __init__(self, uid):
+        """Initialize this device."""
         LOGGER.info("Initializing...")
         self.name = "Test2"
         self.uid = uid
@@ -31,6 +39,7 @@ class Device(BaseClass):
             logger=LOGGER, file_path=__file__, active=False)
 
     def stop(self):
+        """Exit this device."""
         LOGGER.info("Exiting...")
         LOGGER.debug("I'm not doing anything productive anymore.")
-        super(Device, self).stop()
+        return super(Device, self).stop()

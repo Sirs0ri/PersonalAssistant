@@ -1,9 +1,11 @@
 """A collection of different tools Samantha might use.
 
- - Updater, to monitor it's sources on GitHub and automatically update to newer
-   versions, if available and if a certain series of tests passes"""
+- Updater, to monitor it's sources on GitHub and automatically update to newer
+  versions, if available and if a certain series of tests passes
+"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
 # TODO: [ ] Updater
 # TODO: [ ]     Monitor Sources for the modules
@@ -16,15 +18,19 @@
 ###############################################################################
 
 
+# standard library imports
 import logging
 import threading
 import time
 
+# related third party imports
+
+# application specific imports
 import eventbuilder
 import server
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.6"
 
 
 # Initialize the logger
@@ -39,17 +45,21 @@ OUTPUT = None
 LOGGER.debug("I was imported.")
 
 
-class Sleeper_Thread(threading.Thread):
-    """Thread class with a stop() method. The thread sleeps for 'delay'
-    seconds, then runs the target-function."""
+class SleeperThread(threading.Thread):
+    """Thread class with a stop() method.
+
+    The thread sleeps for "delay" seconds, then runs the target-function.
+    """
 
     def __init__(self, *args, **kwargs):
+        """Initialize the thread."""
         self.delay = kwargs.pop('delay', 0)
-        super(Sleeper_Thread, self).__init__(*args, **kwargs)
+        super(SleeperThread, self).__init__(*args, **kwargs)
         self.logger = logging.getLogger(self.name)
         self._stop = threading.Event()
 
     def run(self):
+        """Run the thread. This'll start the delay, then target()."""
         self.logger.debug("Started the sleeper-thread.")
         i = 0
         while i < self.delay and not self.stopped():
@@ -59,33 +69,35 @@ class Sleeper_Thread(threading.Thread):
             self.logger.debug("Exited.")
         else:
             self.logger.debug("Running the delayed function.")
-            super(Sleeper_Thread, self).run()
+            super(SleeperThread, self).run()
 
     def stop(self):
+        """Cancel the thread."""
         self._stop.set()
 
     def stopped(self):
+        """Check whether the thread should be stopped."""
         return self._stop.isSet()
 
 
-def _init(InputQueue, OutputQueue):
-    """Initializes the module."""
+def _init(queue_in, queue_out):
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     # initialize all tools
-    eventbuilder.initialize(InputQueue, OutputQueue)
-    server.initialize(InputQueue, OutputQueue)
+    eventbuilder.initialize(queue_in, queue_out)
+    server.initialize(queue_in, queue_out)
 
     LOGGER.info("Initialisation complete.")
     return True
 
 
 def stop():
-    """Stops the module."""
+    """Stop the module."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")
@@ -99,10 +111,10 @@ def stop():
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")

@@ -1,29 +1,31 @@
-"""
-This plugin gives Samantha access to weather data,
-as well as dates for sunrise/sunset.
-"""
+"""This plugin gives Samantha access to weather data."""
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
+# TODO: [ ]
 #
 ###############################################################################
 
 
-import requests
+# standard library imports
+import logging
 import traceback
 
-import logging
+# related third party imports
+import requests
+
+# application specific imports
+# pylint: disable=import-error
 from services.service import BaseClass
 import tools
 try:
     import variables_private
 except ImportError:
     variables_private = None
+# pylint: enable=import-error
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.7"
 
 
 # Initialize the logger
@@ -31,8 +33,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Service(BaseClass):
+    """Service that implements the Open Weather Map API."""
 
     def __init__(self, uid):
+        """Initialize the service."""
         LOGGER.info("Initializing...")
         self.name = "Weather"
         self.uid = uid
@@ -41,7 +45,7 @@ class Service(BaseClass):
             self.api_key = variables_private.owm_key
             self.location = variables_private.owm_location
             active = True
-        except Exception as e:
+        except Exception:
             LOGGER.exception("Couldn't access the API-Key and/or location.")
             self.api_key = ""
             self.location = ""
@@ -51,14 +55,15 @@ class Service(BaseClass):
             logger=LOGGER, file_path=__file__, active=active)
 
     def process(self, key, data=None):
+        """Process an event from the core."""
         if key in ["onstart", "schedule_hour"]:
             LOGGER.debug("Checking the Weather..")
             try:
-                req = requests.get("{baseurl}?id={location}&appid={key}".format(
+                req = requests.get("{baseurl}?{location}&{key}".format(
                     baseurl="http://api.openweathermap.org/data/2.5/weather",
-                    location=self.location,
-                    key=self.api_key),
-                    timeout=3)
+                    location="id=" + self.location,
+                    key="appid=" + self.api_key),
+                                   timeout=3)
                 if req.status_code == 200:
                     tools.eventbuilder.Event(sender_id=self.name,
                                              keyword="weather",

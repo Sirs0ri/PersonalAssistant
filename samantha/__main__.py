@@ -1,9 +1,16 @@
-"""Samantha's main module. calling this via 'python samantha'
-should start everything else"""
+"""Samantha's main module.
+
+Calling this via 'python samantha' starts everything else."""
+
+
+# standard library imports
 import logging
 import Queue
 import sys
 
+# related third party imports
+
+# application specific imports
 # TODO import only what's necessary
 import context
 import core
@@ -13,13 +20,13 @@ import services
 import tools
 
 
-__version__ = "1.4.2"
+__version__ = "1.4.6"
 
 
-if "--nodebug" in sys.argv:
-    DEBUG = False
-else:
+if "--debug" in sys.argv or "-D" in sys.argv:
     DEBUG = True
+else:
+    DEBUG = False
 
 
 # Initialize the logger
@@ -41,10 +48,8 @@ if __name__ == "__main__":
     services.initialize(INPUT, OUTPUT)
     tools.initialize(INPUT, OUTPUT)
 
-    # TODO
-    # load the context
-    # Initialize devices and services
-    # Start updater as part of tools
+    # TODO load the context
+    # TODO Start updater as part of tools
 
     LOGGER.info("Initialisation complete.")
     tools.eventbuilder.Event(sender_id="i_main",

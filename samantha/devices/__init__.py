@@ -1,31 +1,33 @@
 """Samantha's devices module.
 
- - forwards commands to devices (like set property COLOR of LED to GREEN)
- - fires events into the INPUT queue when an device's status changes
-   (e.g. if it becomes un-/available)"""
+- forwards commands to devices (like set property COLOR of LED to GREEN)
+- fires events into the INPUT queue when an device's status changes
+  (e.g. if it becomes un-/available)
+"""
 
 ###############################################################################
+# pylint: disable=global-statement
 #
-# TODO: [ ] _init()
-# TODO: [ ]     load devices & add them to INDEX
-# TODO: [ ] stop()
-# TODO: [ ]     stop devices if necessary
-# TODO: [ ] def process(keyword, params={}):
 # TODO: [ ] monitor status changes
-# TODO: [ ] comments
 #
 ###############################################################################
 
 
+# standard library imports
 import glob
 import imp
 import logging
 import os.path
 
+# related third party imports
+
+# application specific imports
+# pylint: disable=import-error
 import core
+# pylint: enable=import-error
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.12"
 
 
 # Initialize the logger
@@ -46,7 +48,7 @@ LOGGER.debug("I was imported.")
 
 
 def get_uid():
-    """Generates an incrementing UID for each device."""
+    """Generate an incrementing UID for each device."""
     global UID
     uid = "d_{0:04d}".format(UID)
     UID += 1
@@ -54,8 +56,7 @@ def get_uid():
 
 
 def add_to_index(device):
-    """Adds a device to the indexes."""
-    global INDEX, KEYWORDS
+    """Add a device to the indexes."""
     INDEX[device.uid] = device
     for key in device.keywords:
         if key in KEYWORDS:
@@ -64,13 +65,13 @@ def add_to_index(device):
             KEYWORDS[key] = [device]
 
 
-def _init(InputQueue, OutputQueue):
-    """Initializes the module."""
+def _init(queue_in, queue_out):
+    """Initialize the module."""
     global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
-    INPUT = InputQueue
-    OUTPUT = OutputQueue
+    INPUT = queue_in
+    OUTPUT = queue_out
 
     # initialize all devices
     LOGGER.debug("Searching for devices...")
@@ -78,57 +79,56 @@ def _init(InputQueue, OutputQueue):
     files = glob.glob("{}/*_device.py".format(this_dir))
     LOGGER.debug("%d possible devices found.", len(files))
 
-    for i in range(len(files)):
-        LOGGER.debug("Trying to import %s...", files[i])
+    for device_file in files:
+        LOGGER.debug("Trying to import %s...", device_file)
 
         try:
-            device_source = imp.load_source(
-                files[i].replace("samantha/", "")
-                        .replace("/", ".")
-                        .replace("_device.py", ""),
-                files[i])
-            LOGGER.debug("Successfully imported %s", files[i])
+            name = device_file.replace("samantha/", "") \
+                              .replace("/", ".") \
+                              .replace("_device.py", "")
+            device_source = imp.load_source(name, device_file)
+            LOGGER.debug("Successfully imported %s", device_file)
             if hasattr(device_source, "Device"):
                 uid = get_uid()
                 new_device = device_source.Device(uid)
                 if new_device.is_active:
                     add_to_index(new_device)
-                    LOGGER.debug("%s is a valid Device.", files[i])
+                    LOGGER.debug("%s is a valid Device.", device_file)
+                else:
+                    LOGGER.debug("%s is marked as inactive.", device_file)
             else:
-                LOGGER.warn("%s is missing the Device-class!", files[i])
+                LOGGER.warn("%s is missing the Device-class!", device_file)
         except ImportError:
-            LOGGER.warn("%s couldn't be imported successfully!", files[i])
-        # except AttributeError:
-        #     LOGGER.warn("%s is not a valid device!", files[i])
+            LOGGER.warn("%s couldn't be imported successfully!", device_file)
 
     LOGGER.info("Initialisation complete.")
-    s = ""
+    device_str = ""
     for i in INDEX:
-        s += "\n\t%s:\t%r" % (i, INDEX[i])
-    LOGGER.debug("Imported %d Devices: %s", len(INDEX), s)
+        device_str += "\n\t%s:\t%r" % (i, INDEX[i])
+    LOGGER.debug("Imported %d Devices: %s", len(INDEX), device_str)
     core.add_keywords(KEYWORDS)
     return True
 
 
 def stop():
-    """Stops the module and all associated devices."""
+    """Stop the module and all associated devices."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")
     INITIALIZED = False
 
     # Stop all devices
-    for UID in INDEX:
-        INDEX[UID].stop()
+    for uid in INDEX:
+        INDEX[uid].stop()
 
     LOGGER.info("Exited.")
     return True
 
 
-def initialize(InputQueue, OutputQueue):
+def initialize(queue_in, queue_out):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(InputQueue, OutputQueue)
+        INITIALIZED = _init(queue_in, queue_out)
     else:
         LOGGER.info("Already initialized!")
