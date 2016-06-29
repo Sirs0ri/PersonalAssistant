@@ -3,7 +3,7 @@
 ###############################################################################
 # pylint: disable=global-statement
 #
-# TODO: [X] class Event
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 
 # Initialize the logger

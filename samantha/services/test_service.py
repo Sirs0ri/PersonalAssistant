@@ -2,8 +2,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -20,7 +19,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.2.7"
+__version__ = "1.2.8"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

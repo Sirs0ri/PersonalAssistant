@@ -8,7 +8,6 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf
 
 ###############################################################################
 #
-# TODO: [ ] comments
 # TODO: [ ] get IP from config/router
 #
 ###############################################################################
@@ -32,7 +31,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 
 # Initialize the logger

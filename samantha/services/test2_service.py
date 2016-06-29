@@ -2,8 +2,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -19,7 +18,7 @@ from services.service import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 # Initialize the logger

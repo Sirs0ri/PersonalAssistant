@@ -2,8 +2,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -26,7 +25,7 @@ except ImportError:
 # pylint: enable=import-error
 
 
-__version__ = "1.1.6"
+__version__ = "1.1.7"
 
 
 # Initialize the logger

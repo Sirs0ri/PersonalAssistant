@@ -5,8 +5,6 @@ It fires events when the playback and the connection changes.
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
 # TODO: [ ] Read Chromecast IP from config
 #
 ###############################################################################
@@ -26,7 +24,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.1.9"
+__version__ = "1.1.10"
 
 
 # Initialize the logger

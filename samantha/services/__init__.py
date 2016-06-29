@@ -8,13 +8,7 @@
 ###############################################################################
 # pylint: disable=global-statement
 #
-# TODO: [ ] _init()
-# TODO: [ ]     load services & add them to INDEX
-# TODO: [ ] stop()
-# TODO: [ ]     stop services if necessary
-# TODO: [ ] def process(keyword, params={}):
 # TODO: [ ] monitor status changes
-# TODO: [ ] comments
 #
 ###############################################################################
 
@@ -33,7 +27,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.12"
+__version__ = "1.0.13"
 
 
 # Initialize the logger

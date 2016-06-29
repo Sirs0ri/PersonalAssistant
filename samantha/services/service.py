@@ -2,8 +2,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -16,7 +15,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.1.8"
+__version__ = "1.1.9"
 
 
 # Initialize the logger

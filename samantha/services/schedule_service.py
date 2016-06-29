@@ -14,8 +14,7 @@ triggered at 0:00, month on the 1st at 0:00, etc.
 
 ###############################################################################
 #
-# TODO: [ ] docstrings
-# TODO: [ ] comments
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -35,7 +34,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 
 # Initialize the logger

@@ -7,13 +7,10 @@
 ###############################################################################
 # pylint: disable=global-statement
 #
-# TODO: [ ] _init()
-# TODO: [ ]     create the logs-folder if it doesn't exist
 # TODO: [ ] file_handler: if possible, rename logs to samantha.yyy-mm-dd.log
 #           instead of samantha.log.yy-mm-dd at midnight
 #           (-> 'time.strftime("%y-%m-%d")')
 # TODO: [ ] upload/backup logfiles at midnight
-# TODO: [ ] Set the ColorStreamHandler's level to INFO
 #
 ###############################################################################
 
@@ -32,7 +29,7 @@ import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.8"
+__version__ = "1.5.9"
 
 
 # Initialize the logger
