@@ -37,7 +37,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.15"
+__version__ = "1.2.16"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -224,8 +224,12 @@ def _init(queue_in, queue_out):
     config = ConfigParser.RawConfigParser()
     config.read("{path}/samantha.cfg".format(path=path))
 
-    NUM_WORKER_THREADS = config.getint(__name__, "NUM_WORKER_THREADS")
-    NUM_SENDER_THREADS = config.getint(__name__, "NUM_SENDER_THREADS")
+    try:
+        NUM_WORKER_THREADS = config.getint(__name__, "NUM_WORKER_THREADS")
+        NUM_SENDER_THREADS = config.getint(__name__, "NUM_SENDER_THREADS")
+    except Exception:
+        LOGGER.exception("Exception while reading the config:\n%s",
+                         traceback.format_exc())
 
     # Start the worker threads to process commands
     LOGGER.debug("Starting Worker")
