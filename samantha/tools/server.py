@@ -98,6 +98,7 @@ class Server(WebSocketServerProtocol):
                     "[UID: %s] Received the request to close the server",
                     self.uid)
                 self.sendClose()
+                # TODO: Exit all conections cleanly
                 reactor.stop()
             else:
                 event = eventbuilder.Event(
