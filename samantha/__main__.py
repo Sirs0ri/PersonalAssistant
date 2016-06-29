@@ -20,7 +20,7 @@ import services
 import tools
 
 
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 
 
 if "--debug" in sys.argv or "-D" in sys.argv:
@@ -48,10 +48,8 @@ if __name__ == "__main__":
     services.initialize(INPUT, OUTPUT)
     tools.initialize(INPUT, OUTPUT)
 
-    # TODO
-    # load the context
-    # Initialize devices and services
-    # Start updater as part of tools
+    # TODO load the context
+    # TODO Start updater as part of tools
 
     LOGGER.info("Initialisation complete.")
     tools.eventbuilder.Event(sender_id="i_main",

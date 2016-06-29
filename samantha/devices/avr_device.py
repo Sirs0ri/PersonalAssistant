@@ -31,7 +31,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 
 # Initialize the logger
@@ -118,7 +118,7 @@ class Device(BaseClass):
                 # Stop the sleeper if it's already running
                 LOGGER.debug("Stopping the sleeper-thread.")
                 self.sleeper.stop()
-                self.sleeper.join()  # FIXME This literally does nothing
+                self.sleeper.join()
                 self.sleeper = None
 
             # Check if the Chromecast is connected to an app
