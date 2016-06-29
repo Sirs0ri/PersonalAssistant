@@ -33,7 +33,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.11"
+__version__ = "1.0.12"
 
 
 # Initialize the logger
@@ -100,6 +100,8 @@ def _init(queue_in, queue_out):
                 if new_service.is_active:
                     add_to_index(new_service)
                     LOGGER.debug("%s is a valid Service.", service_file)
+                else:
+                    LOGGER.debug("%s is marked as inactive.", service_file)
             else:
                 LOGGER.warn("%s is missing the Service-class!", service_file)
         except ImportError:

@@ -33,7 +33,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.10"
+__version__ = "1.0.11"
 
 
 # Initialize the logger
@@ -100,6 +100,8 @@ def _init(queue_in, queue_out):
                 if new_device.is_active:
                     add_to_index(new_device)
                     LOGGER.debug("%s is a valid Device.", device_file)
+                else:
+                    LOGGER.debug("%s is marked as inactive.", device_file)
             else:
                 LOGGER.warn("%s is missing the Device-class!", device_file)
         except ImportError:
