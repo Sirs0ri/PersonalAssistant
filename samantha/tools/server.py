@@ -25,7 +25,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -37,7 +37,7 @@ INITIALIZED = False
 INPUT = None
 OUTPUT = None
 
-factory = None
+FACTORY = None
 
 INDEX = {}
 
@@ -62,61 +62,62 @@ class Server(WebSocketServerProtocol):
 
     def __init__(self):
         """Initialize the server."""
-        self.UID = get_uid()
+        self.uid = get_uid()
         super(Server, self).__init__()
 
     def onConnect(self, request):
         """Handle a new connecting client."""
         LOGGER.info("[UID: %s] Client connecting: '%s'",
-                    self.UID, request.peer)
+                    self.uid, request.peer)
 
     def onOpen(self):
         """Handle a new open connection."""
         LOGGER.info("[UID: %s] WebSocket connection open.",
-                    self.UID)
+                    self.uid)
         # add this server-client-connenction to the index
-        INDEX[self.UID] = self
+        INDEX[self.uid] = self
 
     def onClose(self, wasClean, code, reason):
         """Handle a closed connection."""
         LOGGER.info("[UID: %s] WebSocket connection closed: '%s'",
-                    self.UID, reason)
+                    self.uid, reason)
         # remove this server-client-connenction from the index
-        if self.UID in INDEX:
-            del INDEX[self.UID]
+        if self.uid in INDEX:
+            del INDEX[self.uid]
 
     def onMessage(self, payload, isBinary):
         """Handle a new incoming mesage."""
         if isBinary:
             LOGGER.debug("[UID: %s] Binary message received: %d bytes",
-                         self.UID, len(payload))
+                         self.uid, len(payload))
         else:
             LOGGER.debug("[UID: %s] Text message received: '%s'",
-                         self.UID, payload.decode('utf8'))
+                         self.uid, payload.decode('utf8'))
             if payload.decode('utf8') == "exit_server":
                 LOGGER.fatal(
                     "[UID: %s] Received the request to close the server",
-                    self.UID)
+                    self.uid)
                 self.sendClose()
                 reactor.stop()
             else:
-                e = tools.eventbuilder.Event(sender_id=self.UID,
-                                             keyword=payload.decode('utf8'))
-                e.trigger()
+                event = tools.eventbuilder.Event(
+                    sender_id=self.uid,
+                    keyword=payload.decode('utf8'))
+                event.trigger()
 
 
 def _init(queue_in, queue_out):
     """Initialize the module."""
-    global INPUT, OUTPUT, factory
+    global INPUT, OUTPUT, FACTORY
 
     LOGGER.info("Initializing...")
     INPUT = queue_in
     OUTPUT = queue_out
 
-    factory = WebSocketServerFactory()
-    factory.protocol = Server
+    FACTORY = WebSocketServerFactory()
+    FACTORY.protocol = Server
 
-    reactor.listenTCP(19113, factory)
+    reactor.listenTCP(19113, FACTORY)
 
     LOGGER.info("Initialisation complete.")
     return True

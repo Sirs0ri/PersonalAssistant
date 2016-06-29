@@ -8,10 +8,10 @@ readability or an AutoRemote-Handler that sends log messages to my phone.
 # standard library imports
 import logging
 import logging.handlers
-import requests
 import traceback
 
 # related third party imports
+import requests
 
 # application specific imports
 # Try importing variables_private.py for the AutoRemoteHandler. If it fails,
@@ -28,7 +28,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 
 # Initialize the logger
