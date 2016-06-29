@@ -31,7 +31,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.11"
+__version__ = "1.3.12"
 
 
 # Initialize the logger
@@ -108,6 +108,7 @@ class Device(BaseClass):
         """Exit the device's hadler."""
         LOGGER.info("Exiting...")
         if self.sleeper:
+            self.sleeper.stop()
             self.sleeper.join()
         COMM_QUEUE.join()
         return super(Device, self).stop()
