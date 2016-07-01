@@ -76,19 +76,19 @@ def send(command, device_ip, logger, condition=None, retries=3):
                 logger.debug("Sending command '%s'", command)
                 telnet.write("{}\r".format(command))
                 logger.debug("Successfully sent the command '%s'.", command)
+            # Close the telnet connection in any case
+            telnet.close()
 
         except ValueError:
             logger.exception("Error while procesing the condition '%s'.",
                              condition)
+            telnet.close()
         except socket.error:
             logger.exception("AVR refused the connection. Is another "
                              "device using the Telnet connection already?"
                              "\n%s", traceback.format_exc())
             time.sleep(2)
             send(command, device_ip, logger, condition, retries-1)
-        finally:
-            # Close the telnet connection in any case
-            telnet.close()
 
     else:
         logger.error("Maximium count of retries reached. The command '%s' "
