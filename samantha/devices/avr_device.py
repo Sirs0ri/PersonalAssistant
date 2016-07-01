@@ -32,7 +32,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 
 # Initialize the logger
@@ -62,10 +62,10 @@ def send(command, device_ip, logger, condition=None, retries=3):
                 logger.debug("Condition was: '%s'. Output was: '%s'",
                              condition, output)
 
-                if (condition_must_match and cond_val not in output):
+                if condition_must_match and cond_val not in output:
                     # Condition must match but it's not in the output
                     skip_command = True
-                elif (not condition_must_match and cond_val in output):
+                elif not condition_must_match and cond_val in output:
                     # Condition must not match but it is in the output
                     skip_command = True
 
