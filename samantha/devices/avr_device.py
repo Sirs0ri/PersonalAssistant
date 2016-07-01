@@ -32,7 +32,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.4.0"
+__version__ = "1.4.3"
 
 
 # Initialize the logger
@@ -62,10 +62,10 @@ def send(command, device_ip, logger, condition=None, retries=3):
                 logger.debug("Condition was: '%s'. Output was: '%s'",
                              condition, output)
 
-                if (condition_must_match and cond_val not in output):
+                if condition_must_match and cond_val not in output:
                     # Condition must match but it's not in the output
                     skip_command = True
-                elif (not condition_must_match and cond_val in output):
+                elif not condition_must_match and cond_val in output:
                     # Condition must not match but it is in the output
                     skip_command = True
 
@@ -76,19 +76,19 @@ def send(command, device_ip, logger, condition=None, retries=3):
                 logger.debug("Sending command '%s'", command)
                 telnet.write("{}\r".format(command))
                 logger.debug("Successfully sent the command '%s'.", command)
+            # Close the telnet connection in any case
+            telnet.close()
 
         except ValueError:
             logger.exception("Error while procesing the condition '%s'.",
                              condition)
+            telnet.close()
         except socket.error:
             logger.exception("AVR refused the connection. Is another "
                              "device using the Telnet connection already?"
                              "\n%s", traceback.format_exc())
             time.sleep(2)
             send(command, device_ip, logger, condition, retries-1)
-        finally:
-            # Close the telnet connection in any case
-            telnet.close()
 
     else:
         logger.error("Maximium count of retries reached. The command '%s' "
