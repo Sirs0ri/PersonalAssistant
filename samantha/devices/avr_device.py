@@ -32,7 +32,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 
 
 # Initialize the logger
@@ -41,54 +41,60 @@ LOGGER = logging.getLogger(__name__)
 COMM_QUEUE = Queue.PriorityQueue()
 
 
+def check_condition(condition, telnet, logger):
+    if condition is None:
+        return True
+    try:
+        condition_must_match = condition[1]
+        cond_comm, cond_val = condition[0].split("=")
+
+        telnet.read_very_eager()  # Clear the device's output
+
+        # Send the command specified in the condition
+        telnet.write("{}\r".format(cond_comm))
+
+        output = telnet.read_some()  # Read the output
+        output = output.replace("\r", " ")
+        logger.debug("Condition was: '%s'. Output was: '%s'",
+                     condition, output)
+
+        if condition_must_match == (cond_val in output):
+            return True
+
+    except ValueError:
+        logger.exception("Error while procesing the condition '%s'.",
+                         condition)
+
+    return False
+
+
 def send(command, device_ip, logger, condition=None, retries=3):
     """Send a command to the connected AVR via Telnet."""
     if retries > 0:
-        try:
-            telnet = telnetlib.Telnet(device_ip)
-            skip_command = False
-
-            if condition is not None:
-                condition_must_match = condition[1]
-                cond_comm, cond_val = condition[0].split("=")
-
-                telnet.read_very_eager()  # Clear the device's output
-
-                # Send the command specified in the condition
-                telnet.write("{}\r".format(cond_comm))
-
-                output = telnet.read_some()  # Read the output
-                output = output.split("\r")
-                logger.debug("Condition was: '%s'. Output was: '%s'",
-                             condition, output)
-
-                if condition_must_match and cond_val not in output:
-                    # Condition must match but it's not in the output
-                    skip_command = True
-                elif not condition_must_match and cond_val in output:
-                    # Condition must not match but it is in the output
-                    skip_command = True
-
-            if skip_command:  # This is False if there's no condition
+        telnet = None
+        while retries > 0:
+            try:
+                telnet = telnetlib.Telnet(device_ip)
+                break
+            except socket.error:
+                logger.warn("AVR refused the connection. Retrying...")
+                retries -= 1
+                time.sleep(1)
+        if telnet is None:
+            logger.exception("AVR refused the connection. Is another "
+                             "device using the Telnet connection already?"
+                             "\n%s", traceback.format_exc())
+        else:
+            if not check_condition(condition, telnet, logger):
                 logger.debug("Not sending the command because the condition "
                              "'%s' is not fulfilled.", condition)
             else:
                 logger.debug("Sending command '%s'", command)
                 telnet.write("{}\r".format(command))
                 logger.debug("Successfully sent the command '%s'.", command)
+
             # Close the telnet connection in any case
             telnet.close()
-
-        except ValueError:
-            logger.exception("Error while procesing the condition '%s'.",
-                             condition)
-            telnet.close()
-        except socket.error:
-            logger.exception("AVR refused the connection. Is another "
-                             "device using the Telnet connection already?"
-                             "\n%s", traceback.format_exc())
-            time.sleep(2)
-            send(command, device_ip, logger, condition, retries-1)
 
     else:
         logger.error("Maximium count of retries reached. The command '%s' "
