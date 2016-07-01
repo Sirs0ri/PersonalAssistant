@@ -14,6 +14,7 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf
 
 
 # standard library imports
+from collections import Iterable
 import logging
 import Queue
 import socket
@@ -31,7 +32,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.12"
+__version__ = "1.4.0"
 
 
 # Initialize the logger
@@ -40,22 +41,57 @@ LOGGER = logging.getLogger(__name__)
 COMM_QUEUE = Queue.PriorityQueue()
 
 
-def send(command, device_ip, logger, retries=3):
+def send(command, device_ip, logger, condition=None, retries=3):
     """Send a command to the connected AVR via Telnet."""
     if retries > 0:
         try:
             telnet = telnetlib.Telnet(device_ip)
-            logger.debug("Sending command '%s'", command)
-            telnet.write("{}\r".format(command))
-            telnet.close()
+            skip_command = False
+
+            if condition is not None:
+                condition_must_match = condition[1]
+                cond_comm, cond_val = condition[0].split("=")
+
+                telnet.read_very_eager()  # Clear the device's output
+
+                # Send the command specified in the condition
+                telnet.write("{}\r".format(cond_comm))
+
+                output = telnet.read_some()  # Read the output
+                output = output.split("\r")
+                logger.debug("Condition was: '%s'. Output was: '%s'",
+                             condition, output)
+
+                if (condition_must_match and cond_val not in output):
+                    # Condition must match but it's not in the output
+                    skip_command = True
+                elif (not condition_must_match and cond_val in output):
+                    # Condition must not match but it is in the output
+                    skip_command = True
+
+            if skip_command:  # This is False if there's no condition
+                logger.debug("Not sending the command because the condition "
+                             "'%s' is not fulfilled.", condition)
+            else:
+                logger.debug("Sending command '%s'", command)
+                telnet.write("{}\r".format(command))
+                logger.debug("Successfully sent the command '%s'.", command)
+
+        except ValueError:
+            logger.exception("Error while procesing the condition '%s'.",
+                             condition)
         except socket.error:
             logger.exception("AVR refused the connection. Is another "
                              "device using the Telnet connection already?"
                              "\n%s", traceback.format_exc())
             time.sleep(2)
-            send(command, device_ip, logger, retries-1)
+            send(command, device_ip, logger, condition, retries-1)
+        finally:
+            # Close the telnet connection in any case
+            telnet.close()
+
     else:
-        logger.error("Maximium count of retries reached. The command %s "
+        logger.error("Maximium count of retries reached. The command '%s' "
                      "couldn't be sent.", command)
 
 
@@ -76,13 +112,16 @@ def worker(device_ip):
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for a command.")
         command = COMM_QUEUE.get()
-        send(command, device_ip, logger)
+        if not isinstance(command, str) and isinstance(command, Iterable):
+            send(command[0], device_ip, logger, command[1])
+        else:
+            send(command, device_ip, logger)
         COMM_QUEUE.task_done()
 
 
 def turn_off_with_delay():
     """Turn the AVR off."""
-    COMM_QUEUE.put("ZMOFF")
+    COMM_QUEUE.put(["ZMOFF", ["SI?=SIMPLAY", True]])
 
 
 class Device(BaseClass):
@@ -136,7 +175,7 @@ class Device(BaseClass):
             else:  # An app is connected to the Chromecast
                 LOGGER.debug("'%s' connected to the Chromecast.",
                              data["display_name"])
-                COMM_QUEUE.put("SIMPLAY")
+                COMM_QUEUE.put(["SIMPLAY", ["SI?=SIMPLAY", False]])
                 return True
 
         elif key == "chromecast_playstate_change":
@@ -146,7 +185,7 @@ class Device(BaseClass):
                 command = ("MSSTEREO" if "audio" in data["content_type"] else
                            "MSDOLBY DIGITAL")
                 # Prefer stereo audio for music, surround for everything else
-                COMM_QUEUE.put(command)
+                COMM_QUEUE.put([command, ["MS?={}".format(command), False]])
                 return True
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
