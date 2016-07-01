@@ -32,7 +32,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.4.3"
+__version__ = "1.4.4"
 
 
 # Initialize the logger
@@ -185,7 +185,8 @@ class Device(BaseClass):
                 command = ("MSSTEREO" if "audio" in data["content_type"] else
                            "MSDOLBY DIGITAL")
                 # Prefer stereo audio for music, surround for everything else
-                COMM_QUEUE.put([command, ["MS?={}".format(command), False]])
+                condition = "MS?={}".format(command.split(" ")[0])
+                COMM_QUEUE.put([command, [condition, False]])
                 return True
         else:
             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
