@@ -32,7 +32,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.4.6"
+__version__ = "1.4.7"
 
 
 # Initialize the logger
@@ -42,6 +42,12 @@ COMM_QUEUE = Queue.PriorityQueue()
 
 
 def check_condition(condition, telnet, logger):
+    """Check if the given condition is met.
+
+    Is must be in the format ["COMMAND=RESULT", Boolean]. Depending on the
+    boolean, the condition is met when the result is part of the command's
+    result (Bool == True) or not (Bool == False).
+    """
     if condition is None:
         return True
     try:
