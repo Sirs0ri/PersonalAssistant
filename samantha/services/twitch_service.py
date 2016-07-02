@@ -25,7 +25,7 @@ except ImportError:
 # pylint: enable=import-error
 
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -66,13 +66,26 @@ class Service(BaseClass):
             # If so, streams are available
             data = data["streams"]
             for item in data:
-                new_streamlist[item["channel"]["name"]] = item
-                if item["channel"]["name"] not in self.streamlist:
+                channelname = item["channel"]["name"]
+                new_streamlist[channelname] = item
+                if channelname not in self.streamlist:
                     # That means the stream came online since the last check
-                    eventbuilder.Event(sender_id=self.name,
-                                       keyword="media.twitch.online.{}".format(
-                                           item["channel"]["name"]),
-                                       data=item).trigger()
+                    eventbuilder.Event(
+                        sender_id=self.name,
+                        keyword="media.twitch.online.{}".format(
+                            item["channel"]["name"]),
+                        data=item).trigger()
+                else:
+                    # The stream is online and already was at the last check
+                    del self.streamlist[channelname]
+
+        for channel in self.streamlist:
+            # self.streamlist now contains all those streams that were online
+            # during the last check but have gone offline since.
+            eventbuilder.Event(
+                sender_id=self.name,
+                keyword="media.twitch.offline.{}".format(channel),
+                data=self.streamlist[channel]).trigger()
         # update the existing streamlist with the new streams
         self.streamlist = new_streamlist
 
