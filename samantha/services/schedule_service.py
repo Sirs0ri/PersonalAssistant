@@ -34,7 +34,7 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.1.5"
+__version__ = "1.1.6"
 
 
 # Initialize the logger
