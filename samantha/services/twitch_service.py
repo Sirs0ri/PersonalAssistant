@@ -25,7 +25,7 @@ except ImportError:
 # pylint: enable=import-error
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -40,16 +40,15 @@ class Service(BaseClass):
         self.name = "Twitch"
         self.uid = uid
         self.keywords = ["onstart", "schedule_min"]
-        self.url = "https://api.twitch.tv/kraken/streams/followed"
         self.streamlist = []
         try:
-            self.url_params = {
+            self.secrets = {
                 "oauth_token": variables_private.twitch_oauth_token,
                 "client_id": variables_private.twitch_client_id}
             active = True
         except AttributeError:
             LOGGER.exception("Couldn't access the API-Key and/or client-ID.")
-            self.url_params = None
+            self.secrets = None
             active = False
         self.weather = None
         super(Service, self).__init__(
@@ -58,7 +57,8 @@ class Service(BaseClass):
     def check_followed_streams(self):
         """Check for new online streams on twitch.tv."""
         # Make the http-request
-        req = requests.get(self.url, params=self.url_params)
+        url = "https://api.twitch.tv/kraken/streams/followed"
+        req = requests.get(url, params=self.secrets)
         data = json.loads(req.text)
         new_streamlist = {}
         # parse the data
