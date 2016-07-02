@@ -32,7 +32,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 
 
 # Initialize the logger
@@ -181,6 +181,7 @@ class Device(BaseClass):
             else:  # An app is connected to the Chromecast
                 LOGGER.debug("'%s' connected to the Chromecast.",
                              data["display_name"])
+                COMM_QUEUE.put(["ZMON", ["ZM?=ZMON", False]])
                 COMM_QUEUE.put(["SIMPLAY", ["SI?=SIMPLAY", False]])
                 return True
 
