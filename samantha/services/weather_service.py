@@ -17,7 +17,7 @@ import requests
 # application specific imports
 # pylint: disable=import-error
 from services.service import BaseClass
-import tools
+from tools import eventbuilder
 try:
     import variables_private
 except ImportError:
@@ -25,7 +25,7 @@ except ImportError:
 # pylint: enable=import-error
 
 
-__version__ = "1.1.7"
+__version__ = "1.1.8"
 
 
 # Initialize the logger
@@ -45,7 +45,7 @@ class Service(BaseClass):
             self.api_key = variables_private.owm_key
             self.location = variables_private.owm_location
             active = True
-        except Exception:
+        except AttributeError:
             LOGGER.exception("Couldn't access the API-Key and/or location.")
             self.api_key = ""
             self.location = ""
@@ -65,9 +65,9 @@ class Service(BaseClass):
                     key="appid=" + self.api_key),
                                    timeout=3)
                 if req.status_code == 200:
-                    tools.eventbuilder.Event(sender_id=self.name,
-                                             keyword="weather",
-                                             data=req.json()).trigger()
+                    eventbuilder.Event(sender_id=self.name,
+                                       keyword="weather",
+                                       data=req.json()).trigger()
                     return True
             except Exception:
                 LOGGER.exception("Exception while connecting to OWM:\n%s",

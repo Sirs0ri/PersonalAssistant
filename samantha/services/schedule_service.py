@@ -30,7 +30,7 @@ import time
 # pylint: disable=import-error
 import logging
 from services.service import BaseClass
-import tools
+from tools import eventbuilder
 # pylint: enable=import-error
 
 
@@ -63,35 +63,34 @@ def worker():
         # ..[8]: tm_isdst = -1
         timelist = list(timetuple)
         if timelist[5] in [0, 10, 20, 30, 40, 50]:
-            tools.eventbuilder.Event(sender_id=name,
-                                     keyword="schedule_10s",
-                                     data=timelist).trigger()
+            eventbuilder.Event(sender_id=name,
+                               keyword="schedule_10s",
+                               data=timelist).trigger()
             if timelist[5] == 0:
                 # Seconds = 0 -> New Minute
-                tools.eventbuilder.Event(sender_id=name,
-                                         keyword="schedule_min",
-                                         data=timelist).trigger()
+                eventbuilder.Event(sender_id=name,
+                                   keyword="schedule_min",
+                                   data=timelist).trigger()
                 if timelist[4] == 0:
                     # Minutes = 0 -> New Hour
-                    tools.eventbuilder.Event(sender_id=name,
-                                             keyword="schedule_hour",
-                                             data=timelist).trigger()
+                    eventbuilder.Event(sender_id=name,
+                                       keyword="schedule_hour",
+                                       data=timelist).trigger()
                     if timelist[3] == 0:
                         # Hours = 0 -> New Day
-                        tools.eventbuilder.Event(sender_id=name,
-                                                 keyword="schedule_day",
-                                                 data=timelist).trigger()
+                        eventbuilder.Event(sender_id=name,
+                                           keyword="schedule_day",
+                                           data=timelist).trigger()
                         if timelist[2] == 1:
                             # Day of Month = 1 -> New Month
-                            tools.eventbuilder.Event(sender_id=name,
-                                                     keyword="schedule_mon",
-                                                     data=timelist).trigger()
+                            eventbuilder.Event(sender_id=name,
+                                               keyword="schedule_mon",
+                                               data=timelist).trigger()
                             if timelist[1] == 1:
                                 # Month = 1 -> New Year
-                                tools.eventbuilder.Event(
-                                    sender_id=name,
-                                    keyword="schedule_year",
-                                    data=timelist).trigger()
+                                eventbuilder.Event(sender_id=name,
+                                                   keyword="schedule_year",
+                                                   data=timelist).trigger()
         # sleep to take work from the CPU
         time.sleep(1)
 
