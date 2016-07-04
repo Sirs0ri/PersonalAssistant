@@ -14,47 +14,67 @@ import logging
 
 # application specific imports
 # pylint: disable=import-error
+from core import subscription
 from services.service import BaseClass
 from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.2.8"
+__version__ = "1.3.0"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-
-def function():
-    """Print "Heyho!" and a bunch of ~ around."""
-    print "~"*30
-    print "Heyho!"
-    print "~"*30
+service = BaseClass("Test", True, LOGGER, __file__)
 
 
-class Service(BaseClass):
-    """Just a test service without functionality."""
+@subscription.start
+def start_func(key, data):
+    LOGGER.debug("I'm now doing something productive!")
+    return True
 
-    def __init__(self, uid):
-        """Initialize this device."""
-        LOGGER.info("Initializing...")
-        self.name = "Test"
-        self.uid = uid
-        self.keywords = ["onstart"]
-        LOGGER.debug("I'm now doing shit!")
-        super(Service, self).__init__(
-            logger=LOGGER, file_path=__file__, active=False)
 
-    def stop(self):
-        """Exit this device."""
-        LOGGER.info("Exiting...")
-        LOGGER.debug("I'm not doing shit anymore.")
-        return super(Service, self).stop()
+@subscription.event("test")
+def test(key, data):
+    def function():
+        """Print "Heyho!" and a bunch of ~ around."""
+        print "~"*30
+        print "Heyho!"
+        print "~"*30
+    thread = SleeperThread(delay=7, target=function)
+    thread.start()
+    return True
 
-    def process(self, key, data=None):
-        """Process a command from the core."""
-        if key == "onstart":
-            thread = SleeperThread(delay=30, target=function)
-            thread.start()
-        else:
-            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
+
+@subscription.exit
+def stop_func(key, data):
+    LOGGER.debug("I'm not doing anything productive anymore.")
+    return True
+
+
+# class Service(BaseClass):
+#     """Just a test service without functionality."""
+#
+#     def __init__(self, uid):
+#         """Initialize this device."""
+#         LOGGER.info("Initializing...")
+#         self.name = "Test"
+#         self.uid = uid
+#         self.keywords = ["onstart", "test", "onexit"]
+#         LOGGER.debug("I'm now doing shit!")
+#         super(Service, self).__init__(
+#             logger=LOGGER, file_path=__file__, active=True)
+#
+#     def stop(self):
+#         """Exit this device."""
+#         LOGGER.info("Exiting...")
+#         LOGGER.debug("I'm not doing shit anymore.")
+#         return super(Service, self).stop()
+#
+#     def process(self, key, data=None):
+#         """Process a command from the core."""
+#         if key == "test":
+#             thread = SleeperThread(delay=7, target=function)
+#             thread.start()
+#         else:
+#             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)

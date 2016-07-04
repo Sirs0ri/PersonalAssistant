@@ -28,17 +28,20 @@ import time
 
 # application specific imports
 # pylint: disable=import-error
+from core import subscription
 import logging
 from services.service import BaseClass
 from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.1.6"
+__version__ = "1.2.0"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
+
+service = BaseClass("Schedule", True, LOGGER, __file__)
 
 
 def worker():
@@ -95,25 +98,32 @@ def worker():
         time.sleep(1)
 
 
-class Service(BaseClass):
-    """This plugin triggers schedules events."""
+@subscription.start
+def start_thread(key, data):
+    thread = threading.Thread(target=worker)
+    thread.daemon = True
+    thread.start()
 
-    def __init__(self, uid):
-        """Initialize the service."""
-        LOGGER.info("Initializing...")
-        self.name = "Schedule"
-        self.uid = uid
-        self.keywords = ["onstart"]
-        self.thread = threading.Thread(target=worker)
-        self.thread.daemon = True
-        super(Service, self).__init__(logger=LOGGER, file_path=__file__)
 
-    def process(self, key, data=None):
-        """process a command from the core."""
-        if key == "onstart":
-            LOGGER.debug("Starting thread...")
-            self.thread.start()
-            return True
-        else:
-            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
-        return False
+# class Service(BaseClass):
+#     """This plugin triggers schedules events."""
+#
+#     def __init__(self, uid):
+#         """Initialize the service."""
+#         LOGGER.info("Initializing...")
+#         self.name = "Schedule"
+#         self.uid = uid
+#         self.keywords = ["onstart"]
+#         self.thread = threading.Thread(target=worker)
+#         self.thread.daemon = True
+#         super(Service, self).__init__(logger=LOGGER, file_path=__file__)
+#
+#     def process(self, key, data=None):
+#         """process a command from the core."""
+#         if key == "onstart":
+#             LOGGER.debug("Starting thread...")
+#             self.thread.start()
+#             return True
+#         else:
+#             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
+#         return False

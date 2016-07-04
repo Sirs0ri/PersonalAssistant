@@ -19,12 +19,13 @@ import pychromecast
 
 # application specific imports
 # pylint: disable=import-error
+from core import subscription
 from devices.device import BaseClass
 import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.1.10"
+__version__ = "1.2.0"
 
 
 # Initialize the logger
@@ -64,54 +65,78 @@ class Listener(object):
                                  data=status.__dict__).trigger()
 
 
-class Device(BaseClass):
-    """Implement methods to monitor a Chromecats's status."""
+device = BaseClass("Chromecast", True, LOGGER, __file__)
 
-    def __init__(self, uid):
-        """Initialize this device."""
-        LOGGER.info("Initializing...")
-        self.name = "Chromecast"
-        self.uid = uid
-        self.keywords = ["onstart"]
 
-        try:
-            # Connect to the Chromecast
-            self.cast = pychromecast.Chromecast("192.168.178.45")
-            self.cast.wait()  # Wait until the connection is ready.
-            self.mediacontroller = self.cast.media_controller
-            self.listener = Listener(self.name)
-            # Register the listener to the Chromecast's status and media-status
-            # events.
-            self.mediacontroller.register_status_listener(self.listener)
-            self.cast.register_status_listener(self.listener)
-            active = True
-        except Exception:
-            self.cast = None
-            active = False
-            # This will mark the device as inactive later so that it's not
-            # being forwarded any commands.
-            LOGGER.exception(
-                "Exception while connecting to the Chromecast:\n%s",
-                traceback.format_exc())
-        finally:
-            super(Device, self).__init__(logger=LOGGER,
-                                         file_path=__file__,
-                                         active=active)
+@subscription.start
+def onstart(key, data):
+    try:
+        # Connect to the Chromecast
+        cast = pychromecast.Chromecast("192.168.178.45")
+        cast.wait()  # Wait until the connection is ready.
+        mediacontroller = cast.media_controller
+        listener = Listener(device.name)
+        # Register the listener to the Chromecast's status and media-status
+        # events.
+        mediacontroller.register_status_listener(listener)
+        cast.register_status_listener(listener)
+        listener.new_media_status(mediacontroller.status)
+        listener.new_cast_status(cast.status)
+        return True
+    except Exception:
+        LOGGER.exception(
+            "Exception while connecting to the Chromecast:\n%s",
+            traceback.format_exc())
+    return False
 
-    def process(self, key, data=None):
-        """Process a command from the core."""
-        if key == "onstart" and self.cast:
-            self.listener.new_media_status(self.mediacontroller.status)
-            self.listener.new_cast_status(self.cast.status)
-            return True
-        else:
-            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
-        return False
-
-    def stop(self):
-        """Exit the device-handler.
-
-        I would un-register the listeners here, but the library pxchromecast
-        doesn't support it yet.
-        """
-        return super(Device, self).stop()
+# class Device(BaseClass):
+#     """Implement methods to monitor a Chromecats's status."""
+#
+#     def __init__(self, uid):
+#         """Initialize this device."""
+#         LOGGER.info("Initializing...")
+#         self.name = "Chromecast"
+#         self.uid = uid
+#         self.keywords = ["onstart"]
+#
+#         try:
+#             # Connect to the Chromecast
+#             self.cast = pychromecast.Chromecast("192.168.178.45")
+#             self.cast.wait()  # Wait until the connection is ready.
+#             self.mediacontroller = self.cast.media_controller
+#             self.listener = Listener(self.name)
+#             # Register the listener to the Chromecast's status and media-status
+#             # events.
+#             self.mediacontroller.register_status_listener(self.listener)
+#             self.cast.register_status_listener(self.listener)
+#             active = True
+#         except Exception:
+#             self.cast = None
+#             active = False
+#             # This will mark the device as inactive later so that it's not
+#             # being forwarded any commands.
+#             LOGGER.exception(
+#                 "Exception while connecting to the Chromecast:\n%s",
+#                 traceback.format_exc())
+#         finally:
+#             super(Device, self).__init__(active=active,
+#                                          logger=LOGGER,
+#                                          file_path=__file__)
+#
+#     def process(self, key, data=None):
+#         """Process a command from the core."""
+#         if key == "onstart" and self.cast:
+#             self.listener.new_media_status(self.mediacontroller.status)
+#             self.listener.new_cast_status(self.cast.status)
+#             return True
+#         else:
+#             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
+#         return False
+#
+#     def stop(self):
+#         """Exit the device-handler.
+#
+#         I would un-register the listeners here, but the library pxchromecast
+#         doesn't support it yet.
+#         """
+#         return super(Device, self).stop()

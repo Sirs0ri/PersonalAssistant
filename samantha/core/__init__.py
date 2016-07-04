@@ -14,12 +14,17 @@
 #
 #           worker()
 # TODO: [ ] parse the message
+# TODO: [ ] allow a hierarchy in commands,
+#           Example: "media.twitch.online.channename" will trigger plugins that
+#           subscribed to "media.*", "*.online.*", "media.twitch.online.*", etc
 #
 ###############################################################################
 
 
 # standard library imports
+from collections import Iterable
 import ConfigParser
+from functools import wraps
 import json
 import logging
 import os
@@ -37,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.16"
+__version__ = "1.3.0"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -52,9 +57,83 @@ INPUT = None
 OUTPUT = None
 
 KEYWORDS = {}
+FUNC_KEYWORDS = {}
+
+UID = 0
 
 LOGGER.debug("I was imported.")
 
+
+def get_uid():
+    """Generate an incrementing UID for unknown plugins."""
+    global UID
+    uid = "u_{0:04d}".format(UID)
+    UID += 1
+    return uid
+
+
+def subscribe_to(keyword):
+    # code in this function is executed at runtime
+
+    def decorator(func):
+        # code in this function is also executed at runtime
+        LOGGER.debug("Decorating '%s.%s'. Key(s): %s..", func.__module__, func.__name__, keyword)
+        valid = False
+
+        # Initialize the module
+        mod = __import__(func.__module__, {}, {}, ('*', ))
+        if hasattr(mod, "device"):
+            if mod.device.is_active:
+                if mod.device.uid == "NO_UID":
+                    LOGGER.debug("This is a new device.")
+                    uid = devices.get_uid()
+                    mod.device.uid = uid
+                else:
+                    LOGGER.debug("This is an existing device.")
+                valid = True
+        elif hasattr(mod, "service"):
+            if mod.service.is_active:
+                if mod.service.uid == "NO_UID":
+                    LOGGER.debug("This is a new service.")
+                    uid = services.get_uid()
+                    mod.service.uid = uid
+                else:
+                    LOGGER.debug("This is an existing service.")
+                valid = True
+        else:
+            LOGGER.debug("This is not a valid plugin")
+
+        if valid:
+            if not isinstance(keyword, str) and isinstance(keyword, Iterable):
+                for key in keyword:
+                    if key not in FUNC_KEYWORDS:
+                        FUNC_KEYWORDS[key] = []
+                    FUNC_KEYWORDS[key].append(func)
+            else:
+                if keyword not in FUNC_KEYWORDS:
+                    FUNC_KEYWORDS[keyword] = []
+                FUNC_KEYWORDS[keyword].append(func)
+                tools.eventbuilder.update_keywords(KEYWORDS, FUNC_KEYWORDS)
+            LOGGER.debug("'%s.%s' decorated successfully.",
+                         func.__module__,
+                         func.__name__)
+
+        @wraps(func)
+        def executer(*args, **kwargs):
+            # code in this function is executed once
+            # the decorated function is executed
+            return func(*args, **kwargs)
+
+        return executer
+    return decorator
+
+class Subscription(object):
+    def __init__(self):
+        self.start = subscribe_to("onstart")
+        self.event = subscribe_to
+        self.exit = subscribe_to("onexit")
+
+subscription = Subscription()
 
 class Processor(object):
     """Replacement for a full service to handle some internal commands.
@@ -95,7 +174,7 @@ def add_keywords(keywords):
         else:
             KEYWORDS[key] = keywords[key]
 
-    tools.eventbuilder.update_keywords(KEYWORDS)
+    tools.eventbuilder.update_keywords(KEYWORDS, FUNC_KEYWORDS)
     LOGGER.info("%d new keywords added to the index. It now has %d entries.",
                 len(keywords), len(KEYWORDS))
     LOGGER.debug("%s", KEYWORDS.keys())
@@ -126,6 +205,16 @@ def worker():
                 try:
                     res = item.process(key=event.keyword,
                                        data=event.data)
+                    results.append(res)
+                except Exception:
+                    LOGGER.exception("Exception in user code:\n%s",
+                                     traceback.format_exc())
+        if event.keyword in FUNC_KEYWORDS:
+            for func in FUNC_KEYWORDS[event.keyword]:
+                try:
+                    LOGGER.warn("Executing '%s.%s'.", func.__module__, func.__name__)
+                    res = func(key=event.keyword,
+                               data=event.data)
                     results.append(res)
                 except Exception:
                     LOGGER.exception("Exception in user code:\n%s",
