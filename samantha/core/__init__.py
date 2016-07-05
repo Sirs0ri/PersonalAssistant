@@ -156,25 +156,6 @@ def change_logger(key, data):
         return True
 
 
-
-
-def add_keywords(keywords):
-    """Add a set of keywords to the core's list.
-
-    Based on these keywords commands are directed to services and/or devices.
-    """
-    for key in keywords:
-        if key in KEYWORDS:
-            KEYWORDS[key] += keywords[key]
-        else:
-            KEYWORDS[key] = keywords[key]
-
-    tools.eventbuilder.update_keywords(KEYWORDS, FUNC_KEYWORDS)
-    LOGGER.info("%d new keywords added to the index. It now has %d entries.",
-                len(keywords), len(KEYWORDS))
-    LOGGER.debug("%s", KEYWORDS.keys())
-
-
 def worker():
     """Read and process commands from the INPUT queue.
 
