@@ -90,7 +90,6 @@ def subscribe_to(keyword):
                     mod.device.uid = uid
                 else:
                     LOGGER.debug("This is an existing device.")
-                valid = True
         elif hasattr(mod, "service"):
             if mod.service.is_active:
                 if mod.service.uid == "NO_UID":
@@ -99,24 +98,22 @@ def subscribe_to(keyword):
                     mod.service.uid = uid
                 else:
                     LOGGER.debug("This is an existing service.")
-                valid = True
         else:
             LOGGER.debug("This is not a valid plugin")
 
-        if valid:
-            if not isinstance(keyword, str) and isinstance(keyword, Iterable):
-                for key in keyword:
-                    if key not in FUNC_KEYWORDS:
-                        FUNC_KEYWORDS[key] = []
-                    FUNC_KEYWORDS[key].append(func)
-            else:
-                if keyword not in FUNC_KEYWORDS:
-                    FUNC_KEYWORDS[keyword] = []
-                FUNC_KEYWORDS[keyword].append(func)
-                tools.eventbuilder.update_keywords(KEYWORDS, FUNC_KEYWORDS)
-            LOGGER.debug("'%s.%s' decorated successfully.",
-                         func.__module__,
-                         func.__name__)
+        if not isinstance(keyword, str) and isinstance(keyword, Iterable):
+            for key in keyword:
+                if key not in FUNC_KEYWORDS:
+                    FUNC_KEYWORDS[key] = []
+                FUNC_KEYWORDS[key].append(func)
+        else:
+            if keyword not in FUNC_KEYWORDS:
+                FUNC_KEYWORDS[keyword] = []
+            FUNC_KEYWORDS[keyword].append(func)
+            tools.eventbuilder.update_keywords(KEYWORDS, FUNC_KEYWORDS)
+        LOGGER.debug("'%s.%s' decorated successfully.",
+                     func.__module__,
+                     func.__name__)
 
         @wraps(func)
         def executer(*args, **kwargs):
