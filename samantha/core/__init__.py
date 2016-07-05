@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -77,7 +77,10 @@ def subscribe_to(keyword):
 
     def decorator(func):
         # code in this function is also executed at runtime
-        LOGGER.debug("Decorating '%s.%s'. Key(s): %s..", func.__module__, func.__name__, keyword)
+        LOGGER.debug("Decorating '%s.%s'. Key(s): %s..",
+                     func.__module__,
+                     func.__name__,
+                     keyword)
         valid = False
 
         # Initialize the module
@@ -123,6 +126,7 @@ def subscribe_to(keyword):
 
         return executer
     return decorator
+
 
 class Subscription(object):
     def __init__(self):
