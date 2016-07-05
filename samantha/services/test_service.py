@@ -20,7 +20,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -50,31 +50,3 @@ def test(key, data):
 def stop_func(key, data):
     LOGGER.debug("I'm not doing anything productive anymore.")
     return True
-
-
-# class Service(BaseClass):
-#     """Just a test service without functionality."""
-#
-#     def __init__(self, uid):
-#         """Initialize this device."""
-#         LOGGER.info("Initializing...")
-#         self.name = "Test"
-#         self.uid = uid
-#         self.keywords = ["onstart", "test", "onexit"]
-#         LOGGER.debug("I'm now doing shit!")
-#         super(Service, self).__init__(
-#             logger=LOGGER, file_path=__file__, active=True)
-#
-#     def stop(self):
-#         """Exit this device."""
-#         LOGGER.info("Exiting...")
-#         LOGGER.debug("I'm not doing shit anymore.")
-#         return super(Service, self).stop()
-#
-#     def process(self, key, data=None):
-#         """Process a command from the core."""
-#         if key == "test":
-#             thread = SleeperThread(delay=7, target=function)
-#             thread.start()
-#         else:
-#             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
