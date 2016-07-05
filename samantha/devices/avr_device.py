@@ -33,7 +33,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.5.6"
+__version__ = "1.5.7"
 
 
 # Initialize the logger
@@ -145,6 +145,7 @@ DEVICE = BaseClass("AVR", True, LOGGER, __file__)
 
 @subscribe_to("onstart")
 def onstart(key, data):
+    """Set up the device by starting the worker-thread."""
     global WORKER
     LOGGER.debug("Starting the worker")
     device_ip = "192.168.178.48"
@@ -156,6 +157,7 @@ def onstart(key, data):
 
 @subscribe_to("chromecast_connection_change")
 def chromecast_connection_change(key, data):
+    """React to a change of the Chromecast's connection."""
     global SLEEPER
 
     if SLEEPER is not None:
@@ -202,6 +204,7 @@ def test(key, data):
 
 @subscribe_to("chromecast_playstate_change")
 def chromecast_playstate_change(key, data):
+    """React to a change of the Chromecast's playstate."""
 
     # Set the audio mode depending on what kind of content is playing
     if data["content_type"] is not None:
