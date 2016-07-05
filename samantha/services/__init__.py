@@ -27,7 +27,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 # Initialize the logger
@@ -66,6 +66,9 @@ def _init(queue_in, queue_out):
     files = glob.glob("{}/*_service.py".format(this_dir))
     LOGGER.debug("%d possible services found.", len(files))
 
+    service_str = ""
+    count = 0
+
     for service_file in files:
         LOGGER.debug("Trying to import %s...", service_file)
 
@@ -77,6 +80,8 @@ def _init(queue_in, queue_out):
             LOGGER.debug("Successfully imported %s", service_file)
             if hasattr(service_source, "SERVICE"):
                 if service_source.SERVICE.is_active:
+                    count += 1
+                    service_str += "\n\t%r" % (service_source.SERVICE)
                     LOGGER.debug("%s is a valid Service.", service_file)
                 else:
                     LOGGER.debug("%s is marked as inactive.", service_file)
@@ -86,6 +91,8 @@ def _init(queue_in, queue_out):
             LOGGER.warn("%s couldn't be imported successfully!", service_file)
 
     LOGGER.info("Initialisation complete.")
+
+    LOGGER.debug("Imported %d Services: %s", count, service_str)
     return True
 
 

@@ -27,7 +27,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.1.3"
+__version__ = "1.1.4"
 
 
 # Initialize the logger
@@ -65,6 +65,8 @@ def _init(queue_in, queue_out):
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
     files = glob.glob("{}/*_device.py".format(this_dir))
     LOGGER.debug("%d possible devices found.", len(files))
+    device_str = ""
+    count = 0
 
     for device_file in files:
         LOGGER.debug("Trying to import %s...", device_file)
@@ -77,6 +79,8 @@ def _init(queue_in, queue_out):
             LOGGER.debug("Successfully imported %s", device_file)
             if hasattr(device_source, "DEVICE"):
                 if device_source.DEVICE.is_active:
+                    count += 1
+                    device_str += "\n\t%r" % (device_source.DEVICE)
                     LOGGER.debug("%s is a valid Device.", device_file)
                 else:
                     LOGGER.debug("%s is marked as inactive.", device_file)
@@ -86,6 +90,8 @@ def _init(queue_in, queue_out):
             LOGGER.warn("%s couldn't be imported successfully!", device_file)
 
     LOGGER.info("Initialisation complete.")
+
+    LOGGER.debug("Imported %d Devices: %s", count, device_str)
     return True
 
 
