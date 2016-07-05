@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
