@@ -33,7 +33,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.5.7"
+__version__ = "1.5.8"
 
 
 # Initialize the logger
@@ -148,7 +148,6 @@ def onstart(key, data):
     """Set up the device by starting the worker-thread."""
     global WORKER
     LOGGER.debug("Starting the worker")
-    device_ip = "192.168.178.48"
     WORKER = threading.Thread(target=worker, name="worker")
     WORKER.daemon = True
     WORKER.start()
@@ -182,24 +181,6 @@ def chromecast_connection_change(key, data):
         COMM_QUEUE.put(["ZMON", ["ZM?=ZMON", False]])
         COMM_QUEUE.put(["SIMPLAY", ["SI?=SIMPLAY", False]])
         return True
-
-
-@subscribe_to("test")
-def test(key, data):
-    global SLEEPER
-
-    if SLEEPER is not None:
-        # Stop the sleeper if it's already running
-        LOGGER.debug("Stopping the sleeper-thread.")
-        SLEEPER.stop()
-        SLEEPER.join()
-        SLEEPER = None
-
-    SLEEPER = SleeperThread(target=turn_off_with_delay,
-                            delay=5,
-                            name=__name__ + ".sleeper")
-    SLEEPER.start()
-    return True
 
 
 @subscribe_to("chromecast_playstate_change")
