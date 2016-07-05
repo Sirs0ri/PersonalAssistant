@@ -19,13 +19,13 @@ from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-device = BaseClass("Test", True, LOGGER, __file__)
+DEVICE = BaseClass("Test", True, LOGGER, __file__)
 
 
 @subscribe_to("onstart")

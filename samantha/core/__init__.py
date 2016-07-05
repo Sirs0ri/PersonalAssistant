@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -100,12 +100,12 @@ def subscribe_to(keyword):
 
         # Initialize the module
         mod = __import__(func.__module__, {}, {}, ('*', ))
-        if hasattr(mod, "device"):
-            if mod.device.is_active:
-                if mod.device.uid == "NO_UID":
+        if hasattr(mod, "DEVICE"):
+            if mod.DEVICE.is_active:
+                if mod.DEVICE.uid == "NO_UID":
                     LOGGER.debug("This is a new device.")
                     uid = devices.get_uid()
-                    mod.device.uid = uid
+                    mod.DEVICE.uid = uid
                 else:
                     LOGGER.debug("This is an existing device.")
         elif hasattr(mod, "service"):

@@ -33,7 +33,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.5.5"
+__version__ = "1.5.6"
 
 
 # Initialize the logger
@@ -140,7 +140,7 @@ def turn_off_with_delay():
 SLEEPER = None
 WORKER = None
 
-device = BaseClass("AVR", True, LOGGER, __file__)
+DEVICE = BaseClass("AVR", True, LOGGER, __file__)
 
 
 @subscribe_to("onstart")
