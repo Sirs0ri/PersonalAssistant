@@ -15,7 +15,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 
 # Initialize the logger
@@ -48,13 +48,3 @@ class BaseClass(object):
         """Return a verbose string representation of the service."""
         return "Service '{}', UID {} from {}.".format(
             self.name, self.uid, self.path)
-
-    # def stop(self):
-    #     """Cleanly exit the device."""
-    #     self.logger.info("Exited.")
-    #     return True
-    #
-    # def process(self, key, data=None):
-    #     """Process a command from the core."""
-    #     self.logger.warn("My process() function isn't implemented yet! "
-    #                      "'%s, %s' won't be processed.", key, data)
