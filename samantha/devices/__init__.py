@@ -27,7 +27,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 # Initialize the logger
@@ -38,9 +38,6 @@ INITIALIZED = False
 
 INPUT = None
 OUTPUT = None
-
-INDEX = {}
-KEYWORDS = {}
 
 UID = 0
 
@@ -53,16 +50,6 @@ def get_uid():
     uid = "d_{0:04d}".format(UID)
     UID += 1
     return uid
-
-
-def add_to_index(device):
-    """Add a device to the indexes."""
-    INDEX[device.uid] = device
-    for key in device.keywords:
-        if key in KEYWORDS:
-            KEYWORDS[key].append(device)
-        else:
-            KEYWORDS[key] = [device]
 
 
 def _init(queue_in, queue_out):
@@ -88,9 +75,6 @@ def _init(queue_in, queue_out):
                               .replace("_device.py", "")
             device_source = imp.load_source(name, device_file)
             LOGGER.debug("Successfully imported %s", device_file)
-                # uid = get_uid()
-                # new_device = device_source.Device(uid)
-                    # add_to_index(new_device)
             if hasattr(device_source, "DEVICE"):
                 if device_source.DEVICE.is_active:
                     LOGGER.debug("%s is a valid Device.", device_file)
@@ -102,10 +86,6 @@ def _init(queue_in, queue_out):
             LOGGER.warn("%s couldn't be imported successfully!", device_file)
 
     LOGGER.info("Initialisation complete.")
-    device_str = ""
-    for i in INDEX:
-        device_str += "\n\t%s:\t%r" % (i, INDEX[i])
-    LOGGER.debug("Imported %d Devices: %s", len(INDEX), device_str)
     return True
 
 
@@ -115,10 +95,6 @@ def stop():
 
     LOGGER.info("Exiting...")
     INITIALIZED = False
-
-    # Stop all devices
-    for uid in INDEX:
-        INDEX[uid].stop()
 
     LOGGER.info("Exited.")
     return True
