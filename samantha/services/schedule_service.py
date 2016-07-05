@@ -28,14 +28,14 @@ import time
 
 # application specific imports
 # pylint: disable=import-error
-from core import subscription
+from core import subscribe_to
 import logging
 from services.service import BaseClass
 from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # Initialize the logger
@@ -98,7 +98,7 @@ def worker():
         time.sleep(1)
 
 
-@subscription.start
+@subscribe_to("onstart")
 def start_thread(key, data):
     thread = threading.Thread(target=worker)
     thread.daemon = True

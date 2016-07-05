@@ -16,7 +16,7 @@ import requests
 
 # application specific imports
 # pylint: disable=import-error
-from core import subscription
+from core import subscribe_to
 from services.service import BaseClass
 from tools import eventbuilder
 try:
@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # Initialize the logger
@@ -46,7 +46,7 @@ if location is None:
 service = BaseClass("Weather", True, LOGGER, __file__)
 
 
-@subscription.event(["onstart", "schedule_hour"])
+@subscribe_to(["onstart", "schedule_hour"])
 def check_weather(key, data):
     LOGGER.debug("Checking the Weather..")
     try:

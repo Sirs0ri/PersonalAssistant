@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -133,15 +133,6 @@ def subscribe_to(keyword):
 
         return executer
     return decorator
-
-
-class Subscription(object):
-    def __init__(self):
-        self.start = subscribe_to("onstart")
-        self.event = subscribe_to
-        self.exit = subscribe_to("onexit")
-
-subscription = Subscription()
 
 
 @subscribe_to("wait")

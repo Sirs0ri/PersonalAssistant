@@ -14,13 +14,13 @@ import logging
 
 # application specific imports
 # pylint: disable=import-error
-from core import subscription
+from core import subscribe_to
 from services.service import BaseClass
 from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -28,13 +28,13 @@ LOGGER = logging.getLogger(__name__)
 service = BaseClass("Test", True, LOGGER, __file__)
 
 
-@subscription.start
+@subscribe_to("onstart")
 def start_func(key, data):
     LOGGER.debug("I'm now doing something productive!")
     return True
 
 
-@subscription.event("test")
+@subscribe_to("test")
 def test(key, data):
     def function():
         """Print "Heyho!" and a bunch of ~ around."""
@@ -46,7 +46,7 @@ def test(key, data):
     return True
 
 
-@subscription.exit
+@subscribe_to("onexit")
 def stop_func(key, data):
     LOGGER.debug("I'm not doing anything productive anymore.")
     return True

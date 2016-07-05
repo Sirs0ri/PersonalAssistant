@@ -27,13 +27,13 @@ import traceback
 
 # application specific imports
 # pylint: disable=import-error
-from core import subscription
+from core import subscribe_to
 from devices.device import BaseClass
 from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 
 
 # Initialize the logger
@@ -143,7 +143,7 @@ sleeper = None
 device = BaseClass("AVR", True, LOGGER, __file__)
 
 
-@subscription.start
+@subscribe_to("onstart")
 def onstart(key, data):
     global worker_thread
     LOGGER.debug("Starting the worker")
@@ -154,7 +154,8 @@ def onstart(key, data):
     worker_thread.start()
     return True
 
-@subscription.event("chromecast_connection_change")
+
+@subscribe_to("chromecast_connection_change")
 def chromecast_connection_change(key, data):
     global sleeper
 
@@ -182,7 +183,7 @@ def chromecast_connection_change(key, data):
         return True
 
 
-@subscription.event("test")
+@subscribe_to("test")
 def test(key, data):
     global sleeper
 
@@ -200,7 +201,7 @@ def test(key, data):
     return True
 
 
-@subscription.event("chromecast_playstate_change")
+@subscribe_to("chromecast_playstate_change")
 def chromecast_playstate_change(key, data):
 
     # Set the audio mode depending on what kind of content is playing
@@ -213,7 +214,7 @@ def chromecast_playstate_change(key, data):
         return True
 
 
-@subscription.exit
+@subscribe_to("onexit")
 def stop(key, data):
     """Exit the device's hadler."""
     LOGGER.info("Exiting...")

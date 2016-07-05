@@ -16,7 +16,7 @@ import requests
 
 # application specific imports
 # pylint: disable=import-error
-from core import subscription
+from core import subscribe_to
 from services.service import BaseClass
 from tools import eventbuilder
 try:
@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ service = BaseClass("Twitch", secrets is not None, LOGGER, __file__)
 streamlist = []
 
 
-@subscription.event(["onstart", "schedule_min"])
+@subscribe_to(["onstart", "schedule_min"])
 def check_followed_streams(key, data):
     """Check for new online streams on twitch.tv."""
     global streamlist

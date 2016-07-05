@@ -19,13 +19,13 @@ import pychromecast
 
 # application specific imports
 # pylint: disable=import-error
-from core import subscription
+from core import subscribe_to
 from devices.device import BaseClass
 import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # Initialize the logger
@@ -68,7 +68,7 @@ class Listener(object):
 device = BaseClass("Chromecast", True, LOGGER, __file__)
 
 
-@subscription.start
+@subscribe_to("onstart")
 def onstart(key, data):
     try:
         # Connect to the Chromecast
