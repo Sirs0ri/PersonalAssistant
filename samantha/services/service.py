@@ -15,7 +15,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 
 # Initialize the logger
@@ -25,7 +25,8 @@ LOGGER = logging.getLogger(__name__)
 class BaseClass(object):
     """Baseclass, that holds the mandatory methods a device must support."""
 
-    def __init__(self, name="Service", active=False, logger=None, file_path=None):
+    def __init__(self, name="Service", active=False,
+                 logger=None, file_path=None):
         """Set the service's attributes, if they're not set already."""
         self.name = name
         self.uid = "NO_UID"
