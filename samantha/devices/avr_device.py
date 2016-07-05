@@ -33,7 +33,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 
 # Initialize the logger
@@ -137,21 +137,20 @@ def turn_off_with_delay():
     LOGGER.debug("Sending the command to shut down the AVR.")
     COMM_QUEUE.put(["ZMOFF", ["SI?=SIMPLAY", True]])
 
-worker_thread = None
 sleeper = None
+WORKER = None
 
 device = BaseClass("AVR", True, LOGGER, __file__)
 
 
 @subscribe_to("onstart")
 def onstart(key, data):
-    global worker_thread
+    global WORKER
     LOGGER.debug("Starting the worker")
     device_ip = "192.168.178.48"
-    worker_thread = threading.Thread(target=worker,
-                              name="worker")
-    worker_thread.daemon = True
-    worker_thread.start()
+    WORKER = threading.Thread(target=worker, name="worker")
+    WORKER.daemon = True
+    WORKER.start()
     return True
 
 
