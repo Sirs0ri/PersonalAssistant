@@ -15,7 +15,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # Initialize the logger
@@ -46,8 +46,8 @@ class BaseClass(object):
 
     def __repr__(self):
         """Return a verbose string representation of the service."""
-        return "Service '{}', UID {} from {}. Keywords: {}".format(
-            self.name, self.uid, self.path, self.keywords)
+        return "Service '{}', UID {} from {}.".format(
+            self.name, self.uid, self.path)
 
     # def stop(self):
     #     """Cleanly exit the device."""
