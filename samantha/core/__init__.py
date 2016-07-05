@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -72,9 +72,11 @@ def get_uid():
 
 
 def subscribe_to(keyword):
+    """Add a function to the keyword-index. To be used as a decorator."""
     # code in this function is executed at runtime
 
     def decorator(func):
+        """Add the decorated function to the index."""
         # code in this function is also executed at runtime
         LOGGER.debug("Decorating '%s.%s'. Key(s): %s..",
                      func.__module__,
@@ -119,6 +121,7 @@ def subscribe_to(keyword):
 
         @wraps(func)
         def executer(*args, **kwargs):
+            """Execute the decorated function."""
             # code in this function is executed once
             # the decorated function is executed
             return func(*args, **kwargs)
@@ -138,12 +141,14 @@ subscription = Subscription()
 
 @subscribe_to("wait")
 def wait(key, data):
+    """Wait five seconds."""
     time.sleep(5)
     return True
 
 
 @subscribe_to(["logger", "logging"])
 def change_logger(key, data):
+    """Toggle the level of logging's ConsoleHandler between DEBUG and INFO."""
     root = logging.getLogger()
     if root.handlers[2].level == 10:
         root.handlers[2].setLevel(logging.INFO)
