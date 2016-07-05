@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ if variables_private is None:
 if secrets is None:
     LOGGER.exception("Couldn't access the API-Key and/or client-ID.")
 
-service = BaseClass("Twitch", secrets is not None, LOGGER, __file__)
+SERVICE = BaseClass("Twitch", secrets is not None, LOGGER, __file__)
 
 streamlist = []
 
@@ -65,7 +65,7 @@ def check_followed_streams(key, data):
                 # That means the stream came online since the last check
                 LOGGER.debug("'%s' is now online.", channelname)
                 eventbuilder.Event(
-                    sender_id=service.name,
+                    sender_id=SERVICE.name,
                     keyword="media.twitch.online.{}".format(
                         item["channel"]["name"]),
                     data=item).trigger()
@@ -79,7 +79,7 @@ def check_followed_streams(key, data):
         # during the last check but have gone offline since.
         LOGGER.debug("'%s' is now offline.", channelname)
         eventbuilder.Event(
-            sender_id=service.name,
+            sender_id=SERVICE.name,
             keyword="media.twitch.offline.{}".format(channelname),
             data=streamlist[channelname]).trigger()
     # update the existing streamlist with the new streams

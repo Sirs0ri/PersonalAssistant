@@ -20,12 +20,12 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-service = BaseClass("Test", True, LOGGER, __file__)
+SERVICE = BaseClass("Test", True, LOGGER, __file__)
 
 
 @subscribe_to("onstart")

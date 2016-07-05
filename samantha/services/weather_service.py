@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 
 # Initialize the logger
@@ -43,7 +43,7 @@ if api_key is None:
 if location is None:
     LOGGER.exception("Couldn't access the Location.")
 
-service = BaseClass("Weather", True, LOGGER, __file__)
+SERVICE = BaseClass("Weather", True, LOGGER, __file__)
 
 
 @subscribe_to(["onstart", "schedule_hour"])
@@ -56,7 +56,7 @@ def check_weather(key, data):
             key="appid=" + api_key),
                            timeout=3)
         if req.status_code == 200:
-            eventbuilder.Event(sender_id=service.name,
+            eventbuilder.Event(sender_id=SERVICE.name,
                                keyword="weather",
                                data=req.json()).trigger()
             return True
