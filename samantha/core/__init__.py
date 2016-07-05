@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -174,11 +174,17 @@ def worker():
                      event.sender_id,
                      event.keyword)
 
+        if event.keyword == "onstart":
+            LOGGER.info("The index now has %d entries.", len(FUNC_KEYWORDS))
+            LOGGER.debug("%s", FUNC_KEYWORDS.keys())
+
         results = [False]
         if event.keyword in FUNC_KEYWORDS:
             for func in FUNC_KEYWORDS[event.keyword]:
                 try:
-                    LOGGER.warn("Executing '%s.%s'.", func.__module__, func.__name__)
+                    LOGGER.debug("Executing '%s.%s'.",
+                                 func.__module__,
+                                 func.__name__)
                     res = func(key=event.keyword,
                                data=event.data)
                     results.append(res)
