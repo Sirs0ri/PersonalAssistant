@@ -137,8 +137,8 @@ def turn_off_with_delay():
     LOGGER.debug("Sending the command to shut down the AVR.")
     COMM_QUEUE.put(["ZMOFF", ["SI?=SIMPLAY", True]])
 
-SLEEPER = None
 WORKER = None
+SLEEPER = None
 
 DEVICE = BaseClass("AVR", True, LOGGER, __file__)
 
