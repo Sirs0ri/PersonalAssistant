@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -56,7 +56,6 @@ NUM_SENDER_THREADS = 1
 INPUT = None
 OUTPUT = None
 
-KEYWORDS = {}
 FUNC_KEYWORDS = {}
 
 UID = 0
@@ -156,32 +155,6 @@ def change_logger(key, data):
         return True
 
 
-# class Processor(object):
-#     """Replacement for a full service to handle some internal commands.
-#
-#     To be removed, as soon as there is a decorator available to
-#     register plugins (or rather their functions in the index.)
-#     """
-#
-#     def process(self, key, data=None):
-#         """Process some internal commands via the framework directly."""
-#         # just for debugging purposes, to simulate long processing
-#         if key == "wait":
-#             time.sleep(5)
-#             return True
-#         elif key == "logger":
-#             root = logging.getLogger()
-#             if root.handlers[2].level == 10:
-#                 root.handlers[2].setLevel(logging.INFO)
-#                 LOGGER.warn("Logging-Level set to INFO")
-#                 return True
-#             else:
-#                 root.handlers[2].setLevel(logging.DEBUG)
-#                 LOGGER.warn("Logging-Level set to DEBUG")
-#                 return True
-#         else:
-#             LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
-#         return False
 
 
 def add_keywords(keywords):
@@ -354,9 +327,6 @@ def _init(queue_in, queue_out):
         thread = threading.Thread(target=sender, name="sender%d" % i)
         thread.daemon = True
         thread.start()
-
-    # Add the Processor-class htat handles a few commands to the keyword-index
-    # add_keywords({"wait": [Processor()], "logger": [Processor()]})
 
     LOGGER.info("Initialisation complete.")
     return True
