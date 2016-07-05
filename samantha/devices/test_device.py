@@ -19,7 +19,7 @@ from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 
 # Initialize the logger
@@ -50,23 +50,3 @@ def test2(key, data):
 def stop_func(key, data):
     LOGGER.debug("I'm not doing anything productive anymore.")
     return True
-
-
-# class Device(BaseClass):
-#     """Just another test device without functionality."""
-#
-#     def __init__(self, uid):
-#         """Initialize this device."""
-#         LOGGER.info("Initializing...")
-#         self.name = "Test1"
-#         self.uid = uid
-#         self.keywords = ["test1", "service_test"]
-#         LOGGER.debug("I'm now doing something productive!")
-#         super(Device, self).__init__(
-#             logger=LOGGER, file_path=__file__, active=False)
-#
-#     def stop(self):
-#         """Exit this device."""
-#         LOGGER.info("Exiting...")
-#         LOGGER.debug("I'm not doing anything productive anymore.")
-#         return super(Device, self).stop()
