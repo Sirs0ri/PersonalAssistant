@@ -33,7 +33,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.5.4"
+__version__ = "1.5.5"
 
 
 # Initialize the logger
