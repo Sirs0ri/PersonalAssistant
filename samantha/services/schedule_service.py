@@ -35,7 +35,7 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 
 # Initialize the logger
@@ -100,6 +100,7 @@ def worker():
 
 @subscribe_to("onstart")
 def start_thread(key, data):
+    """Set up the service by starting the worker-thread."""
     thread = threading.Thread(target=worker)
     thread.daemon = True
     thread.start()
