@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -96,7 +96,6 @@ def subscribe_to(keyword):
                      func.__module__,
                      func.__name__,
                      keyword)
-        valid = False
 
         # Initialize the module
         mod = __import__(func.__module__, {}, {}, ('*', ))
@@ -176,15 +175,6 @@ def worker():
                      event.keyword)
 
         results = [False]
-        if event.keyword in KEYWORDS:
-            for item in KEYWORDS[event.keyword]:
-                try:
-                    res = item.process(key=event.keyword,
-                                       data=event.data)
-                    results.append(res)
-                except Exception:
-                    LOGGER.exception("Exception in user code:\n%s",
-                                     traceback.format_exc())
         if event.keyword in FUNC_KEYWORDS:
             for func in FUNC_KEYWORDS[event.keyword]:
                 try:
