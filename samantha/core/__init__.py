@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -69,6 +69,20 @@ def get_uid():
     uid = "u_{0:04d}".format(UID)
     UID += 1
     return uid
+
+
+def _index(keyword, func):
+    """Add a function to the index."""
+    if not isinstance(keyword, str) and isinstance(keyword, Iterable):
+        for key in keyword:
+            if key not in FUNC_KEYWORDS:
+                FUNC_KEYWORDS[key] = []
+            FUNC_KEYWORDS[key].append(func)
+    else:
+        if keyword not in FUNC_KEYWORDS:
+            FUNC_KEYWORDS[keyword] = []
+        FUNC_KEYWORDS[keyword].append(func)
+    tools.eventbuilder.update_keywords(FUNC_KEYWORDS)
 
 
 def subscribe_to(keyword):
@@ -105,16 +119,7 @@ def subscribe_to(keyword):
         else:
             LOGGER.debug("This is not a valid plugin")
 
-        if not isinstance(keyword, str) and isinstance(keyword, Iterable):
-            for key in keyword:
-                if key not in FUNC_KEYWORDS:
-                    FUNC_KEYWORDS[key] = []
-                FUNC_KEYWORDS[key].append(func)
-        else:
-            if keyword not in FUNC_KEYWORDS:
-                FUNC_KEYWORDS[keyword] = []
-            FUNC_KEYWORDS[keyword].append(func)
-            tools.eventbuilder.update_keywords(KEYWORDS, FUNC_KEYWORDS)
+        _index(keyword, func)
         LOGGER.debug("'%s.%s' decorated successfully.",
                      func.__module__,
                      func.__name__)
