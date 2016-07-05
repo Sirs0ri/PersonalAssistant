@@ -27,7 +27,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 # Initialize the logger
@@ -38,9 +38,6 @@ INITIALIZED = False
 
 INPUT = None
 OUTPUT = None
-
-INDEX = {}
-KEYWORDS = {}
 
 UID = 0
 
@@ -53,16 +50,6 @@ def get_uid():
     uid = "s_{0:04d}".format(UID)
     UID += 1
     return uid
-
-
-def add_to_index(service):
-    """Add a device to the indexes."""
-    INDEX[service.uid] = service
-    for key in service.keywords:
-        if key in KEYWORDS:
-            KEYWORDS[key].append(service)
-        else:
-            KEYWORDS[key] = [service]
 
 
 def _init(queue_in, queue_out):
@@ -88,9 +75,6 @@ def _init(queue_in, queue_out):
                                .replace("_service.py", "")
             service_source = imp.load_source(name, service_file)
             LOGGER.debug("Successfully imported %s", service_file)
-                # uid = get_uid()
-                # new_service = service_source.Service(uid)
-                    # add_to_index(new_service)
             if hasattr(service_source, "SERVICE"):
                 if service_source.SERVICE.is_active:
                     LOGGER.debug("%s is a valid Service.", service_file)
@@ -102,10 +86,6 @@ def _init(queue_in, queue_out):
             LOGGER.warn("%s couldn't be imported successfully!", service_file)
 
     LOGGER.info("Initialisation complete.")
-    service_str = ""
-    for i in INDEX:
-        service_str += "\n\t%s:\t%r" % (i, INDEX[i])
-    LOGGER.debug("Imported %d Services: %s", len(INDEX), service_str)
     return True
 
 
@@ -115,10 +95,6 @@ def stop():
 
     LOGGER.info("Exiting...")
     INITIALIZED = False
-
-    # Stop all services
-    for uid in INDEX:
-        INDEX[uid].stop()
 
     LOGGER.info("Exited.")
     return True
