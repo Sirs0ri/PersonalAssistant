@@ -33,7 +33,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.5.8"
+__version__ = "1.5.9"
 
 
 # Initialize the logger
@@ -143,7 +143,7 @@ SLEEPER = None
 DEVICE = BaseClass("AVR", True, LOGGER, __file__)
 
 
-@subscribe_to("onstart")
+@subscribe_to("system.onstart")
 def onstart(key, data):
     """Set up the device by starting the worker-thread."""
     global WORKER
@@ -154,7 +154,7 @@ def onstart(key, data):
     return True
 
 
-@subscribe_to("chromecast_connection_change")
+@subscribe_to("chromecast.connection_change")
 def chromecast_connection_change(key, data):
     """React to a change of the Chromecast's connection."""
     global SLEEPER
@@ -183,7 +183,7 @@ def chromecast_connection_change(key, data):
         return True
 
 
-@subscribe_to("chromecast_playstate_change")
+@subscribe_to("chromecast.playstate_change")
 def chromecast_playstate_change(key, data):
     """React to a change of the Chromecast's playstate."""
 
@@ -197,7 +197,7 @@ def chromecast_playstate_change(key, data):
         return True
 
 
-@subscribe_to("onexit")
+@subscribe_to("system.onexit")
 def stop(key, data):
     """Exit the device's hadler."""
     LOGGER.info("Exiting...")

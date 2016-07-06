@@ -20,7 +20,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ LOGGER = logging.getLogger(__name__)
 SERVICE = BaseClass("Test", True, LOGGER, __file__)
 
 
-@subscribe_to("onstart")
+@subscribe_to("system.onstart")
 def start_func(key, data):
     """Test the 'onstart' event."""
     LOGGER.debug("I'm now doing something productive!")
@@ -48,7 +48,7 @@ def test(key, data):
     return True
 
 
-@subscribe_to("onexit")
+@subscribe_to("system.onexit")
 def stop_func(key, data):
     """Test the 'onexit' event."""
     LOGGER.debug("I'm not doing anything productive anymore.")

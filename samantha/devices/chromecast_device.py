@@ -25,7 +25,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -52,7 +52,7 @@ class Listener(object):
             self.content_type = status.content_type
             LOGGER.debug("New content_type: %s", self.content_type)
         tools.eventbuilder.Event(sender_id=self.name,
-                                 keyword="chromecast_playstate_change",
+                                 keyword="chromecast.playstate_change",
                                  data=status.__dict__).trigger()
 
     def new_cast_status(self, status):
@@ -61,14 +61,14 @@ class Listener(object):
             self.display_name = status.display_name
             LOGGER.debug("New app connected: %s", self.display_name)
         tools.eventbuilder.Event(sender_id=self.name,
-                                 keyword="chromecast_connection_change",
+                                 keyword="chromecast.connection_change",
                                  data=status.__dict__).trigger()
 
 
 DEVICE = BaseClass("Chromecast", True, LOGGER, __file__)
 
 
-@subscribe_to("onstart")
+@subscribe_to("system.onstart")
 def onstart(key, data):
     """Set up the Chromecast listener."""
     try:

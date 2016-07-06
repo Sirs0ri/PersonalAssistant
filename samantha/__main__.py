@@ -20,7 +20,7 @@ import services
 import tools
 
 
-__version__ = "1.4.7"
+__version__ = "1.4.8"
 
 
 if "--debug" in sys.argv or "-D" in sys.argv:
@@ -53,11 +53,11 @@ if __name__ == "__main__":
 
     LOGGER.info("Initialisation complete.")
     tools.eventbuilder.Event(sender_id="i_main",
-                             keyword="onstart").trigger()
+                             keyword="system.onstart").trigger()
     tools.server.run()
 
     tools.eventbuilder.Event(sender_id="i_main",
-                             keyword="onexit").trigger()
+                             keyword="system.onexit").trigger()
 
     LOGGER.info("Exiting...")
     INPUT.join()

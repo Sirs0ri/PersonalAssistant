@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ SERVICE = BaseClass("Twitch", SECRETS is not None, LOGGER, __file__)
 STREAM_LIST = []
 
 
-@subscribe_to(["onstart", "schedule_min"])
+@subscribe_to(["system.onstart", "time.schedule.min"])
 def check_followed_streams(key, data):
     """Check for new online streams on twitch.tv."""
     global STREAM_LIST

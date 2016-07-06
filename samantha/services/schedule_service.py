@@ -35,7 +35,7 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -67,38 +67,39 @@ def worker():
         timelist = list(timetuple)
         if timelist[5] in [0, 10, 20, 30, 40, 50]:
             eventbuilder.Event(sender_id=name,
-                               keyword="schedule_10s",
+                               keyword="time.schedule.10s",
                                data=timelist).trigger()
             if timelist[5] == 0:
                 # Seconds = 0 -> New Minute
                 eventbuilder.Event(sender_id=name,
-                                   keyword="schedule_min",
+                                   keyword="time.schedule.min",
                                    data=timelist).trigger()
                 if timelist[4] == 0:
                     # Minutes = 0 -> New Hour
                     eventbuilder.Event(sender_id=name,
-                                       keyword="schedule_hour",
+                                       keyword="time.schedule.hour",
                                        data=timelist).trigger()
                     if timelist[3] == 0:
                         # Hours = 0 -> New Day
                         eventbuilder.Event(sender_id=name,
-                                           keyword="schedule_day",
+                                           keyword="time.schedule.day",
                                            data=timelist).trigger()
                         if timelist[2] == 1:
                             # Day of Month = 1 -> New Month
                             eventbuilder.Event(sender_id=name,
-                                               keyword="schedule_mon",
+                                               keyword="time.schedule.mon",
                                                data=timelist).trigger()
                             if timelist[1] == 1:
                                 # Month = 1 -> New Year
-                                eventbuilder.Event(sender_id=name,
-                                                   keyword="schedule_year",
-                                                   data=timelist).trigger()
+                                eventbuilder.Event(
+                                    sender_id=name,
+                                    keyword="time.schedule.year",
+                                    data=timelist).trigger()
         # sleep to take work from the CPU
         time.sleep(1)
 
 
-@subscribe_to("onstart")
+@subscribe_to("system.onstart")
 def start_thread(key, data):
     """Set up the service by starting the worker-thread."""
     thread = threading.Thread(target=worker)

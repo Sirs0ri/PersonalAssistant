@@ -19,7 +19,7 @@ from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -28,7 +28,7 @@ LOGGER = logging.getLogger(__name__)
 DEVICE = BaseClass("Test", True, LOGGER, __file__)
 
 
-@subscribe_to("onstart")
+@subscribe_to("system.onstart")
 def start_func(key, data):
     """Test the 'onstart' event."""
     LOGGER.debug("I'm now doing something productive!")
@@ -49,7 +49,7 @@ def test2(key, data):
     return True
 
 
-@subscribe_to("onexit")
+@subscribe_to("system.onexit")
 def stop_func(key, data):
     """Test the 'onexit' event."""
     LOGGER.debug("I'm not doing anything productive anymore.")
