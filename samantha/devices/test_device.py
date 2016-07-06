@@ -14,32 +14,43 @@ import logging
 
 # application specific imports
 # pylint: disable=import-error
+from core import subscribe_to
 from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.4"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
+DEVICE = BaseClass("Test", True, LOGGER, __file__)
 
-class Device(BaseClass):
-    """Just a test device without functionality."""
 
-    def __init__(self, uid):
-        """Initialize this device."""
-        LOGGER.info("Initializing...")
-        self.name = "Test"
-        self.uid = uid
-        self.keywords = ["test", "service_test"]
-        LOGGER.debug("I'm now doing shit!")
-        super(Device, self).__init__(
-            logger=LOGGER, file_path=__file__, active=False)
+@subscribe_to("system.onstart")
+def start_func(key, data):
+    """Test the 'onstart' event."""
+    LOGGER.debug("I'm now doing something productive!")
+    return True
 
-    def stop(self):
-        """Exit this device."""
-        LOGGER.info("Exiting...")
-        LOGGER.debug("I'm not doing shit anymore.")
-        return super(Device, self).stop()
+
+@subscribe_to(["test", "test.1", "test.device"])
+def test1(key, data):
+    """Test various events."""
+    LOGGER.warn("Test1 successful!\n%s - %s", key, data)
+    return True
+
+
+@subscribe_to("test.2")
+def test2(key, data):
+    """Test the 'test.2' event."""
+    LOGGER.warn("Test2 successful!\n%s - %s", key, data)
+    return True
+
+
+@subscribe_to("system.onexit")
+def stop_func(key, data):
+    """Test the 'onexit' event."""
+    LOGGER.debug("I'm not doing anything productive anymore.")
+    return True

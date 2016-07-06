@@ -14,12 +14,17 @@
 #
 #           worker()
 # TODO: [ ] parse the message
+# TODO: [ ] allow a hierarchy in commands,
+#           Example: "media.twitch.online.channename" will trigger plugins that
+#           subscribed to "media.*", "*.online.*", "media.twitch.online.*", etc
 #
 ###############################################################################
 
 
 # standard library imports
+from collections import Iterable
 import ConfigParser
+from functools import wraps
 import json
 import logging
 import os
@@ -37,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.16"
+__version__ = "1.3.11"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -51,54 +56,103 @@ NUM_SENDER_THREADS = 1
 INPUT = None
 OUTPUT = None
 
-KEYWORDS = {}
+FUNC_KEYWORDS = {}
+
+UID = 0
 
 LOGGER.debug("I was imported.")
 
 
-class Processor(object):
-    """Replacement for a full service to handle some internal commands.
+def get_uid():
+    """Generate an incrementing UID for unknown plugins."""
+    global UID
+    uid = "u_{0:04d}".format(UID)
+    UID += 1
+    return uid
 
-    To be removed, as soon as there is a decorator available to
-    register plugins (or rather their functions in the index.)
-    """
 
-    def process(self, key, data=None):
-        """Process some internal commands via the framework directly."""
-        # just for debugging purposes, to simulate long processing
-        if key == "wait":
-            time.sleep(5)
-            return True
-        elif key == "logger":
-            root = logging.getLogger()
-            if root.handlers[2].level == 10:
-                root.handlers[2].setLevel(logging.INFO)
-                LOGGER.warn("Logging-Level set to INFO")
-                return True
-            else:
-                root.handlers[2].setLevel(logging.DEBUG)
-                LOGGER.warn("Logging-Level set to DEBUG")
-                return True
+def _index(keyword, func):
+    """Add a function to the index."""
+    if not isinstance(keyword, str) and isinstance(keyword, Iterable):
+        for key in keyword:
+            if key not in FUNC_KEYWORDS:
+                FUNC_KEYWORDS[key] = []
+            FUNC_KEYWORDS[key].append(func)
+    else:
+        if keyword not in FUNC_KEYWORDS:
+            FUNC_KEYWORDS[keyword] = []
+        FUNC_KEYWORDS[keyword].append(func)
+    tools.eventbuilder.update_keywords(FUNC_KEYWORDS)
+
+
+def subscribe_to(keyword):
+    """Add a function to the keyword-index. To be used as a decorator."""
+    # code in this function is executed at runtime
+
+    def decorator(func):
+        """Add the decorated function to the index."""
+        # code in this function is also executed at runtime
+        LOGGER.debug("Decorating '%s.%s'. Key(s): %s..",
+                     func.__module__,
+                     func.__name__,
+                     keyword)
+
+        # Initialize the module
+        mod = __import__(func.__module__, {}, {}, ('*', ))
+        if hasattr(mod, "DEVICE"):
+            if mod.DEVICE.is_active:
+                if mod.DEVICE.uid == "NO_UID":
+                    LOGGER.debug("This is a new device.")
+                    uid = devices.get_uid()
+                    mod.DEVICE.uid = uid
+                else:
+                    LOGGER.debug("This is an existing device.")
+        elif hasattr(mod, "service"):
+            if mod.service.is_active:
+                if mod.service.uid == "NO_UID":
+                    LOGGER.debug("This is a new service.")
+                    uid = services.get_uid()
+                    mod.service.uid = uid
+                else:
+                    LOGGER.debug("This is an existing service.")
         else:
-            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
-        return False
+            LOGGER.debug("This is not a valid plugin")
+
+        _index(keyword, func)
+        LOGGER.debug("'%s.%s' decorated successfully.",
+                     func.__module__,
+                     func.__name__)
+
+        @wraps(func)
+        def executer(*args, **kwargs):
+            """Execute the decorated function."""
+            # code in this function is executed once
+            # the decorated function is executed
+            return func(*args, **kwargs)
+
+        return executer
+    return decorator
 
 
-def add_keywords(keywords):
-    """Add a set of keywords to the core's list.
+@subscribe_to("wait")
+def wait(key, data):
+    """Wait five seconds."""
+    time.sleep(5)
+    return True
 
-    Based on these keywords commands are directed to services and/or devices.
-    """
-    for key in keywords:
-        if key in KEYWORDS:
-            KEYWORDS[key] += keywords[key]
-        else:
-            KEYWORDS[key] = keywords[key]
 
-    tools.eventbuilder.update_keywords(KEYWORDS)
-    LOGGER.info("%d new keywords added to the index. It now has %d entries.",
-                len(keywords), len(KEYWORDS))
-    LOGGER.debug("%s", KEYWORDS.keys())
+@subscribe_to(["logger", "logging"])
+def change_logger(key, data):
+    """Toggle the level of logging's ConsoleHandler between DEBUG and INFO."""
+    root = logging.getLogger()
+    if root.handlers[2].level == 10:
+        root.handlers[2].setLevel(logging.INFO)
+        LOGGER.warn("Logging-Level set to INFO")
+        return True
+    else:
+        root.handlers[2].setLevel(logging.DEBUG)
+        LOGGER.warn("Logging-Level set to DEBUG")
+        return True
 
 
 def worker():
@@ -120,12 +174,19 @@ def worker():
                      event.sender_id,
                      event.keyword)
 
+        if event.keyword == "onstart":
+            LOGGER.info("The index now has %d entries.", len(FUNC_KEYWORDS))
+            LOGGER.debug("%s", FUNC_KEYWORDS.keys())
+
         results = [False]
-        if event.keyword in KEYWORDS:
-            for item in KEYWORDS[event.keyword]:
+        if event.keyword in FUNC_KEYWORDS:
+            for func in FUNC_KEYWORDS[event.keyword]:
                 try:
-                    res = item.process(key=event.keyword,
-                                       data=event.data)
+                    LOGGER.debug("Executing '%s.%s'.",
+                                 func.__module__,
+                                 func.__name__)
+                    res = func(key=event.keyword,
+                               data=event.data)
                     results.append(res)
                 except Exception:
                     LOGGER.exception("Exception in user code:\n%s",
@@ -244,9 +305,6 @@ def _init(queue_in, queue_out):
         thread = threading.Thread(target=sender, name="sender%d" % i)
         thread.daemon = True
         thread.start()
-
-    # Add the Processor-class htat handles a few commands to the keyword-index
-    add_keywords({"wait": [Processor()], "logger": [Processor()]})
 
     LOGGER.info("Initialisation complete.")
     return True

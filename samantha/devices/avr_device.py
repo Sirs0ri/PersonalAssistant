@@ -27,12 +27,13 @@ import traceback
 
 # application specific imports
 # pylint: disable=import-error
+from core import subscribe_to
 from devices.device import BaseClass
 from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.4.7"
+__version__ = "1.5.9"
 
 
 # Initialize the logger
@@ -41,7 +42,7 @@ LOGGER = logging.getLogger(__name__)
 COMM_QUEUE = Queue.PriorityQueue()
 
 
-def check_condition(condition, telnet, logger):
+def _check_condition(condition, telnet, logger):
     """Check if the given condition is met.
 
     Is must be in the format ["COMMAND=RESULT", Boolean]. Depending on the
@@ -74,7 +75,7 @@ def check_condition(condition, telnet, logger):
     return False
 
 
-def send(command, device_ip, logger, condition=None, retries=3):
+def _send(command, device_ip, logger, condition=None, retries=3):
     """Send a command to the connected AVR via Telnet."""
     if retries > 0:
         telnet = None
@@ -91,7 +92,7 @@ def send(command, device_ip, logger, condition=None, retries=3):
                              "device using the Telnet connection already?"
                              "\n%s", traceback.format_exc())
         else:
-            if not check_condition(condition, telnet, logger):
+            if not _check_condition(condition, telnet, logger):
                 logger.debug("Not sending the command because the condition "
                              "'%s' is not fulfilled.", condition)
             else:
@@ -107,7 +108,7 @@ def send(command, device_ip, logger, condition=None, retries=3):
                      "couldn't be sent.", command)
 
 
-def worker(device_ip):
+def worker(device_ip="192.168.178.48"):
     """Read and process commands from the COMM_QUEUE queue.
 
     Put results back into OUTPUT. This helps if 2 commands should be sent at
@@ -125,82 +126,82 @@ def worker(device_ip):
         logger.debug("Waiting for a command.")
         command = COMM_QUEUE.get()
         if not isinstance(command, str) and isinstance(command, Iterable):
-            send(command[0], device_ip, logger, command[1])
+            _send(command[0], device_ip, logger, command[1])
         else:
-            send(command, device_ip, logger)
+            _send(command, device_ip, logger)
         COMM_QUEUE.task_done()
 
 
 def turn_off_with_delay():
     """Turn the AVR off."""
+    LOGGER.debug("Sending the command to shut down the AVR.")
     COMM_QUEUE.put(["ZMOFF", ["SI?=SIMPLAY", True]])
 
+WORKER = None
+SLEEPER = None
 
-class Device(BaseClass):
-    """The main class implementing the Audio/Video-Receiver."""
+DEVICE = BaseClass("AVR", True, LOGGER, __file__)
 
-    def __init__(self, uid):
-        """Initialize the device's hadler."""
-        LOGGER.info("Initializing...")
-        self.name = "AVR"
-        self.uid = uid
-        self.keywords = ["chromecast_playstate_change",
-                         "chromecast_connection_change"]
-        self.device_ip = "192.168.178.48"
-        self.worker = threading.Thread(target=worker,
-                                       args=(self.device_ip,),
-                                       name="worker")
-        self.worker.daemon = True
-        self.worker.start()
-        self.sleeper = None
-        super(Device, self).__init__(logger=LOGGER, file_path=__file__)
 
-    def stop(self):
-        """Exit the device's hadler."""
-        LOGGER.info("Exiting...")
-        if self.sleeper:
-            self.sleeper.stop()
-            self.sleeper.join()
-        COMM_QUEUE.join()
-        return super(Device, self).stop()
+@subscribe_to("system.onstart")
+def onstart(key, data):
+    """Set up the device by starting the worker-thread."""
+    global WORKER
+    LOGGER.debug("Starting the worker")
+    WORKER = threading.Thread(target=worker, name="worker")
+    WORKER.daemon = True
+    WORKER.start()
+    return True
 
-    def process(self, key, data=None):
-        """Process a command."""
-        if key == "chromecast_connection_change":
 
-            if self.sleeper is not None:
-                # Stop the sleeper if it's already running
-                LOGGER.debug("Stopping the sleeper-thread.")
-                self.sleeper.stop()
-                self.sleeper.join()
-                self.sleeper = None
+@subscribe_to("chromecast.connection_change")
+def chromecast_connection_change(key, data):
+    """React to a change of the Chromecast's connection."""
+    global SLEEPER
 
-            # Check if the Chromecast is connected to an app
-            if data["display_name"] in [None, "Backdrop"]:  # not connected
-                LOGGER.debug("No app connected to the Chromecast.")
-                # Run the sleeper that turns off the AVR after 3 minutes
-                self.sleeper = SleeperThread(target=turn_off_with_delay,
-                                             delay=120,
-                                             name=__name__ + ".sleeper")
-                self.sleeper.start()
-                return True
-            else:  # An app is connected to the Chromecast
-                LOGGER.debug("'%s' connected to the Chromecast.",
-                             data["display_name"])
-                COMM_QUEUE.put(["ZMON", ["ZM?=ZMON", False]])
-                COMM_QUEUE.put(["SIMPLAY", ["SI?=SIMPLAY", False]])
-                return True
+    if SLEEPER is not None:
+        # Stop the sleeper if it's already running
+        LOGGER.debug("Stopping the sleeper-thread.")
+        SLEEPER.stop()
+        SLEEPER.join()
+        SLEEPER = None
 
-        elif key == "chromecast_playstate_change":
+    # Check if the Chromecast is connected to an app
+    if data["display_name"] in [None, "Backdrop"]:  # not connected
+        LOGGER.debug("No app connected to the Chromecast.")
+        # Run the sleeper that turns off the AVR after 3 minutes
+        SLEEPER = SleeperThread(target=turn_off_with_delay,
+                                delay=120,
+                                name=__name__ + ".sleeper")
+        SLEEPER.start()
+        return True
+    else:  # An app is connected to the Chromecast
+        LOGGER.debug("'%s' connected to the Chromecast.",
+                     data["display_name"])
+        COMM_QUEUE.put(["ZMON", ["ZM?=ZMON", False]])
+        COMM_QUEUE.put(["SIMPLAY", ["SI?=SIMPLAY", False]])
+        return True
 
-            # Set the audio mode depending on what kind of content is playing
-            if data["content_type"] is not None:
-                command = ("MSSTEREO" if "audio" in data["content_type"] else
-                           "MSDOLBY DIGITAL")
-                # Prefer stereo audio for music, surround for everything else
-                condition = "MS?={}".format(command.split(" ")[0])
-                COMM_QUEUE.put([command, [condition, False]])
-                return True
-        else:
-            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
-        return False
+
+@subscribe_to("chromecast.playstate_change")
+def chromecast_playstate_change(key, data):
+    """React to a change of the Chromecast's playstate."""
+
+    # Set the audio mode depending on what kind of content is playing
+    if data["content_type"] is not None:
+        command = ("MSSTEREO" if "audio" in data["content_type"] else
+                   "MSDOLBY DIGITAL")
+        # Prefer stereo audio for music, surround for everything else
+        condition = "MS?={}".format(command.split(" ")[0])
+        COMM_QUEUE.put([command, [condition, False]])
+        return True
+
+
+@subscribe_to("system.onexit")
+def stop(key, data):
+    """Exit the device's hadler."""
+    LOGGER.info("Exiting...")
+    if SLEEPER:
+        SLEEPER.stop()
+        SLEEPER.join()
+    COMM_QUEUE.join()

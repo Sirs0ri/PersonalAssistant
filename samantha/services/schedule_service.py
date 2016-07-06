@@ -28,17 +28,20 @@ import time
 
 # application specific imports
 # pylint: disable=import-error
+from core import subscribe_to
 import logging
 from services.service import BaseClass
 from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.1.6"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
+
+SERVICE = BaseClass("Schedule", True, LOGGER, __file__)
 
 
 def worker():
@@ -64,56 +67,41 @@ def worker():
         timelist = list(timetuple)
         if timelist[5] in [0, 10, 20, 30, 40, 50]:
             eventbuilder.Event(sender_id=name,
-                               keyword="schedule_10s",
+                               keyword="time.schedule.10s",
                                data=timelist).trigger()
             if timelist[5] == 0:
                 # Seconds = 0 -> New Minute
                 eventbuilder.Event(sender_id=name,
-                                   keyword="schedule_min",
+                                   keyword="time.schedule.min",
                                    data=timelist).trigger()
                 if timelist[4] == 0:
                     # Minutes = 0 -> New Hour
                     eventbuilder.Event(sender_id=name,
-                                       keyword="schedule_hour",
+                                       keyword="time.schedule.hour",
                                        data=timelist).trigger()
                     if timelist[3] == 0:
                         # Hours = 0 -> New Day
                         eventbuilder.Event(sender_id=name,
-                                           keyword="schedule_day",
+                                           keyword="time.schedule.day",
                                            data=timelist).trigger()
                         if timelist[2] == 1:
                             # Day of Month = 1 -> New Month
                             eventbuilder.Event(sender_id=name,
-                                               keyword="schedule_mon",
+                                               keyword="time.schedule.mon",
                                                data=timelist).trigger()
                             if timelist[1] == 1:
                                 # Month = 1 -> New Year
-                                eventbuilder.Event(sender_id=name,
-                                                   keyword="schedule_year",
-                                                   data=timelist).trigger()
+                                eventbuilder.Event(
+                                    sender_id=name,
+                                    keyword="time.schedule.year",
+                                    data=timelist).trigger()
         # sleep to take work from the CPU
         time.sleep(1)
 
 
-class Service(BaseClass):
-    """This plugin triggers schedules events."""
-
-    def __init__(self, uid):
-        """Initialize the service."""
-        LOGGER.info("Initializing...")
-        self.name = "Schedule"
-        self.uid = uid
-        self.keywords = ["onstart"]
-        self.thread = threading.Thread(target=worker)
-        self.thread.daemon = True
-        super(Service, self).__init__(logger=LOGGER, file_path=__file__)
-
-    def process(self, key, data=None):
-        """process a command from the core."""
-        if key == "onstart":
-            LOGGER.debug("Starting thread...")
-            self.thread.start()
-            return True
-        else:
-            LOGGER.warn("Keyword not in use. (%s, %s)", key, data)
-        return False
+@subscribe_to("system.onstart")
+def start_thread(key, data):
+    """Set up the service by starting the worker-thread."""
+    thread = threading.Thread(target=worker)
+    thread.daemon = True
+    thread.start()

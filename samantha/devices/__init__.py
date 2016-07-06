@@ -27,7 +27,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.0.12"
+__version__ = "1.1.4"
 
 
 # Initialize the logger
@@ -38,9 +38,6 @@ INITIALIZED = False
 
 INPUT = None
 OUTPUT = None
-
-INDEX = {}
-KEYWORDS = {}
 
 UID = 0
 
@@ -53,16 +50,6 @@ def get_uid():
     uid = "d_{0:04d}".format(UID)
     UID += 1
     return uid
-
-
-def add_to_index(device):
-    """Add a device to the indexes."""
-    INDEX[device.uid] = device
-    for key in device.keywords:
-        if key in KEYWORDS:
-            KEYWORDS[key].append(device)
-        else:
-            KEYWORDS[key] = [device]
 
 
 def _init(queue_in, queue_out):
@@ -78,6 +65,8 @@ def _init(queue_in, queue_out):
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
     files = glob.glob("{}/*_device.py".format(this_dir))
     LOGGER.debug("%d possible devices found.", len(files))
+    device_str = ""
+    count = 0
 
     for device_file in files:
         LOGGER.debug("Trying to import %s...", device_file)
@@ -88,11 +77,10 @@ def _init(queue_in, queue_out):
                               .replace("_device.py", "")
             device_source = imp.load_source(name, device_file)
             LOGGER.debug("Successfully imported %s", device_file)
-            if hasattr(device_source, "Device"):
-                uid = get_uid()
-                new_device = device_source.Device(uid)
-                if new_device.is_active:
-                    add_to_index(new_device)
+            if hasattr(device_source, "DEVICE"):
+                if device_source.DEVICE.is_active:
+                    count += 1
+                    device_str += "\n\t%r" % (device_source.DEVICE)
                     LOGGER.debug("%s is a valid Device.", device_file)
                 else:
                     LOGGER.debug("%s is marked as inactive.", device_file)
@@ -102,11 +90,8 @@ def _init(queue_in, queue_out):
             LOGGER.warn("%s couldn't be imported successfully!", device_file)
 
     LOGGER.info("Initialisation complete.")
-    device_str = ""
-    for i in INDEX:
-        device_str += "\n\t%s:\t%r" % (i, INDEX[i])
-    LOGGER.debug("Imported %d Devices: %s", len(INDEX), device_str)
-    core.add_keywords(KEYWORDS)
+
+    LOGGER.debug("Imported %d Devices: %s", count, device_str)
     return True
 
 
@@ -116,10 +101,6 @@ def stop():
 
     LOGGER.info("Exiting...")
     INITIALIZED = False
-
-    # Stop all devices
-    for uid in INDEX:
-        INDEX[uid].stop()
 
     LOGGER.info("Exited.")
     return True

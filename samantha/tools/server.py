@@ -25,7 +25,7 @@ import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.2.6"
+__version__ = "1.3.0"
 
 
 # Initialize the logger
@@ -55,6 +55,29 @@ def get_uid():
     uid = "c_{0:04d}".format(UID)
     UID += 1
     return uid
+
+
+def parse(message):
+    """Parse a message.
+
+    Split the message into words, if a message contains '=', it's considered as
+    parameter and will be put into data, otherwise it's appended to the keyword
+    after a period.
+    """
+    message = message.decode('utf8')
+    words = message.split(" ")
+    keyword = ""
+    data = {}
+    for word in words:
+        if "=" in word:
+            # The word contains a parameter
+            data[word.partition("=")[0]] = word.partition("=")[2]
+        else:
+            # The word is a keyword
+            if keyword:
+                keyword += "."
+            keyword += word
+    return keyword, data
 
 
 class Server(WebSocketServerProtocol):
@@ -101,10 +124,10 @@ class Server(WebSocketServerProtocol):
                 # TODO: Exit all conections cleanly
                 reactor.stop()
             else:
-                event = eventbuilder.Event(
-                    sender_id=self.uid,
-                    keyword=payload.decode('utf8'))
-                event.trigger()
+                key, data = parse(payload)
+                eventbuilder.Event(sender_id=self.uid,
+                                   keyword=key,
+                                   data=data).trigger()
 
 
 def _init(queue_in, queue_out):

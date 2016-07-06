@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.2.6"
+__version__ = "1.3.1"
 
 
 # Initialize the logger
@@ -28,7 +28,7 @@ INITIALIZED = False
 INPUT = None
 OUTPUT = None
 
-KEYWORDS = {}
+FUNC_KEYWORDS = {}
 
 EVENT_ID = 0
 
@@ -64,7 +64,7 @@ class Event(object):
 
     def trigger(self):
         """Put the current event into the input queue."""
-        if self.keyword in KEYWORDS:
+        if self.keyword in FUNC_KEYWORDS:
             INPUT.put(self)
         else:
             LOGGER.debug("Skipping event '%s' from %s because the keyword is "
@@ -83,10 +83,10 @@ def _init(queue_in, queue_out):
     return True
 
 
-def update_keywords(keywords):
-    """Update the global variable KEYWORDS."""
-    global KEYWORDS
-    KEYWORDS = keywords
+def update_keywords(func_keywords):
+    """Update the global variable FUNC_KEYWORDS."""
+    global FUNC_KEYWORDS
+    FUNC_KEYWORDS = func_keywords
 
 
 def stop():
