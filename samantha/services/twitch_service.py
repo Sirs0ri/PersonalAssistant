@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -42,17 +42,21 @@ if SECRETS is None:
 
 SERVICE = BaseClass("Twitch", SECRETS is not None, LOGGER, __file__)
 
-STREAM_LIST = []
+STREAM_LIST = {}
 
 
 @subscribe_to(["system.onstart", "time.schedule.min"])
 def check_followed_streams(key, data):
     """Check for new online streams on twitch.tv."""
-    global STREAM_LIST
     # Make the http-request
     url = "https://api.twitch.tv/kraken/streams/followed"
     req = requests.get(url, params=SECRETS)
-    data = json.loads(req.text)
+    try:
+        data = json.loads(req.text)
+    except ValueError:
+        # Thrown by json if parsing a string fails due to an invalid format.
+        data = {}
+        LOGGER.exception("The call to Twitch's API returned invalid data.")
     new_streamlist = {}
     # parse the data
     if "streams" in data:
@@ -82,6 +86,9 @@ def check_followed_streams(key, data):
             sender_id=SERVICE.name,
             keyword="media.twitch.offline.{}".format(channelname),
             data=STREAM_LIST[channelname]).trigger()
+        del STREAM_LIST[channelname]
+
     # update the existing STREAM_LIST with the new streams
-    STREAM_LIST = new_streamlist
+    for channelname in new_streamlist:
+        STREAM_LIST[channelname] = new_streamlist[channelname]
     return True
