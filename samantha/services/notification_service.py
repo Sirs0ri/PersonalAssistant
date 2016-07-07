@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -65,3 +65,20 @@ def notify_system_event(key, data):
     """Notify the user about a system-wide event."""
     message = "logging=:=Samantha=:=New system-wide event: " + key
     return _send_ar_message(message)
+
+
+@subscribe_to("media.twitch.*")
+def notify_twitch(key, data):
+    if "online" in key:
+        status = "online"
+    else:
+        status = "offline"
+    message = \
+        "twitch=:={status}=:={c_name}=:={c_game}=:={c_status}=:={c_url}" \
+        .format(status=status,
+                c_name=data["channel"]["display_name"],
+                c_game=data["channel"]["game"],
+                c_status=data["channel"]["status"],
+                c_url=data["channel"]["url"])
+    files = [data["channel"]["logo"], data["channel"]["video_banner"]]
+    return _send_ar_message(message, files)
