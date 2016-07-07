@@ -20,7 +20,7 @@ import services
 import tools
 
 
-__version__ = "1.4.8"
+__version__ = "1.4.9"
 
 
 if "--debug" in sys.argv or "-D" in sys.argv:
@@ -34,9 +34,8 @@ logger.initialize(DEBUG)
 LOGGER = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    LOGGER.info("Initializing...")
     LOGGER.debug("-"*47)
-    LOGGER.fatal("Samantha started.")
+    LOGGER.info("Initializing...")
     LOGGER.debug("-"*47)
 
     INPUT = Queue.PriorityQueue()
@@ -68,5 +67,5 @@ if __name__ == "__main__":
     services.stop()
     tools.stop()
     LOGGER.debug("-"*47)
-    LOGGER.fatal("Shutdown complete.")
+    LOGGER.info("Shutdown complete.")
     LOGGER.debug("-"*47)

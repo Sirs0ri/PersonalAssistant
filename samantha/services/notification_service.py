@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 
 # Initialize the logger
@@ -58,3 +58,10 @@ def _send_ar_message(message=None, files=None):
         LOGGER.exception("Exception while connecting to AutoRemote:\n%s",
                          traceback.format_exc())
         return False
+
+
+@subscribe_to("system.*")
+def notify_system_event(key, data):
+    """Notify the user about a system-wide event."""
+    message = "logging=:=Samantha=:=New system-wide event: " + key
+    return _send_ar_message(message)
