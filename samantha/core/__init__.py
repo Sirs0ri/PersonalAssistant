@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.11"
+__version__ = "1.3.12"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -179,18 +179,19 @@ def worker():
             LOGGER.debug("%s", FUNC_KEYWORDS.keys())
 
         results = [False]
-        if event.keyword in FUNC_KEYWORDS:
-            for func in FUNC_KEYWORDS[event.keyword]:
-                try:
-                    LOGGER.debug("Executing '%s.%s'.",
-                                 func.__module__,
-                                 func.__name__)
-                    res = func(key=event.keyword,
-                               data=event.data)
-                    results.append(res)
-                except Exception:
-                    LOGGER.exception("Exception in user code:\n%s",
-                                     traceback.format_exc())
+        for key_substring in event.parsed_kw_list:
+            if key_substring in FUNC_KEYWORDS:
+                for func in FUNC_KEYWORDS[key_substring]:
+                    try:
+                        LOGGER.debug("Executing '%s.%s'.",
+                                     func.__module__,
+                                     func.__name__)
+                        res = func(key=event.keyword,  # Send the original key
+                                   data=event.data)
+                        results.append(res)
+                    except Exception:
+                        LOGGER.exception("Exception in user code:\n%s",
+                                         traceback.format_exc())
         results = [x for x in results if x]
 
         if results:
