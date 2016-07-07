@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.6"
+__version__ = "1.2.7"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -63,10 +63,12 @@ def check_followed_streams(key, data):
         # If so, streams are available
         data = data["streams"]
         for item in data:
+            # Get the account name (unique!) for the current item
             channelname = item["channel"]["name"]
+            # save the stream's data in a new list
             new_streamlist[channelname] = item
             if channelname not in STREAM_LIST:
-                # That means the stream came online since the last check
+                # The stream came online since the last check
                 LOGGER.debug("'%s' is now online.", channelname)
                 eventbuilder.Event(
                     sender_id=SERVICE.name,
@@ -78,15 +80,15 @@ def check_followed_streams(key, data):
                 # The stream is online and already was at the last check
                 del STREAM_LIST[channelname]
 
-    for channelname in STREAM_LIST:
-        # STREAM_LIST now contains all those streams that were online
+    while len(STREAM_LIST) > 0:
+        # STREAM_LIST now contains only those streams that were online
         # during the last check but have gone offline since.
+        channelname, channeldata = STREAM_LIST.popitem()
         LOGGER.debug("'%s' is now offline.", channelname)
         eventbuilder.Event(
             sender_id=SERVICE.name,
             keyword="media.twitch.offline.{}".format(channelname),
-            data=STREAM_LIST[channelname]).trigger()
-        del STREAM_LIST[channelname]
+            data=channeldata).trigger()
 
     # update the existing STREAM_LIST with the new streams
     for channelname in new_streamlist:
