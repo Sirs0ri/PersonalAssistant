@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 
 # Initialize the logger
@@ -69,7 +69,7 @@ def notify_system_event(key, data):
 
 @subscribe_to("media.twitch.*")
 def notify_twitch(key, data):
-    if "online" in key:
+    if "online" in key or "gamechange" in key:
         status = "online"
     else:
         status = "offline"
