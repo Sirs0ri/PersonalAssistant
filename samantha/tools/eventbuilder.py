@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
@@ -33,6 +33,26 @@ FUNC_KEYWORDS = {}
 EVENT_ID = 0
 
 LOGGER.debug("I was imported.")
+
+
+def _parse_keyword(keyword):
+    """Parse a keyword into substrings.
+
+    e.g.: "system.onstart" gets parsed into:
+    * "system.*"
+    * "*.onstart" and
+    * "system.onstart".
+    This allows plugins to register to wildcards, for example every message
+    that begins with "system".
+    """
+    result = []
+    words = keyword.split(".")
+    for i in range(len(words)):
+        for j in range(i+1, len(words)+1):
+            pre = "" if i == 0 else "*."
+            post = "" if j == len(words) else ".*"
+            result.append(pre + ".".join(words[i:j]) + post)
+    return result
 
 
 class Event(object):
@@ -52,6 +72,7 @@ class Event(object):
         EVENT_ID += 1
         self.sender_id = sender_id
         self.keyword = keyword
+        self.parsed_kw_list = _parse_keyword(self.keyword)
         if event_type in ["trigger", "request"]:
             self.event_type = event_type
         else:
@@ -64,7 +85,12 @@ class Event(object):
 
     def trigger(self):
         """Put the current event into the input queue."""
-        if self.keyword in FUNC_KEYWORDS:
+        kw_in_use = False
+        for kw in self.parsed_kw_list:
+            if kw in FUNC_KEYWORDS:
+                kw_in_use = True
+                break
+        if kw_in_use:
             INPUT.put(self)
         else:
             LOGGER.debug("Skipping event '%s' from %s because the keyword is "

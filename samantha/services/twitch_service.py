@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.7"
+__version__ = "1.2.8"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -65,19 +65,32 @@ def check_followed_streams(key, data):
         for item in data:
             # Get the account name (unique!) for the current item
             channelname = item["channel"]["name"]
+            current_game = item["channel"]["game"]
             # save the stream's data in a new list
             new_streamlist[channelname] = item
             if channelname not in STREAM_LIST:
                 # The stream came online since the last check
-                LOGGER.debug("'%s' is now online.", channelname)
+                LOGGER.debug("'%s' is now online. Playing '%s'",
+                             channelname, current_game)
                 eventbuilder.Event(
                     sender_id=SERVICE.name,
-                    keyword="media.twitch.online.{}".format(
-                        item["channel"]["name"]),
+                    keyword="media.twitch.online.{}".format(channelname),
                     data=item).trigger()
             else:
-                LOGGER.debug("'%s' is still online.", channelname)
-                # The stream is online and already was at the last check
+                # The channel was already online at the last check
+                if current_game == STREAM_LIST[channelname]["channel"]["game"]:
+                    LOGGER.debug("'%s' is still playing '%s'.",
+                                 channelname, current_game)
+                else:
+                    LOGGER.debug("'%s' is now playing '%s'",
+                                 channelname, current_game)
+                    eventbuilder.Event(
+                        sender_id=SERVICE.name,
+                        keyword="media.twitch.gamechange.{}".format(
+                            channelname),
+                        data=item).trigger()
+                # remove the channel from STREAM_LIST so that it can be
+                # refilled with the new data
                 del STREAM_LIST[channelname]
 
     while len(STREAM_LIST) > 0:
