@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.8"
+__version__ = "1.2.9"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -64,13 +64,15 @@ def check_followed_streams(key, data):
         data = data["streams"]
         for item in data:
             # Get the account name (unique!) for the current item
-            channelname = item["channel"]["name"]
-            current_game = item["channel"]["game"]
+            channelname = item["channel"]["name"] \
+                .encode("utf-8").decode("utf-8")
+            current_game = item["channel"]["game"] \
+                .encode("utf-8").decode("utf-8")
             # save the stream's data in a new list
             new_streamlist[channelname] = item
             if channelname not in STREAM_LIST:
                 # The stream came online since the last check
-                LOGGER.debug("'%s' is now online. Playing '%s'",
+                LOGGER.debug(u"'%s' is now online. Playing '%s'",
                              channelname, current_game)
                 eventbuilder.Event(
                     sender_id=SERVICE.name,

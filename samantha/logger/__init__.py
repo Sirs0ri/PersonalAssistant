@@ -29,7 +29,7 @@ import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.9"
+__version__ = "1.5.10"
 
 
 # Initialize the logger
@@ -52,17 +52,19 @@ def _init(debug):
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
 
+    logging._defaultFormatter = logging.Formatter(u"%(message)s")
+
     # Create the formatters. They'll be used throughout the application.
     # "hh:mm:ss,xxx LEVEL___ MODNAME_____ MESSAGE"
     nice_formatter = logging.Formatter(
-        "%(asctime)-8s,%(msecs)-3d %(levelname)-8s %(name)-12s\t%(message)s",
+        u"%(asctime)-8s,%(msecs)-3d %(levelname)-8s %(name)-12s\t%(message)s",
         "%X")
     # "yyyy-mm-dd hh:mm:ss,xxx LEVEL___ MODNAME_____ MESSAGE"
     full_formatter = logging.Formatter(
-        "%(asctime)-23s %(levelname)-8s %(name)-12s %(message)s")
+        u"%(asctime)-23s %(levelname)-8s %(name)-12s %(message)s")
     # "hh:mm:ss LEVEL MODNAME MESSAGE"
     practical_formatter = logging.Formatter(
-        "%(asctime)s %(levelname)s %(name)s %(message)s", "%X")
+        u"%(asctime)s %(levelname)s %(name)s %(message)s", "%X")
 
     # Create and add a handler to store the log in a textfile.
     # Level = DEBUG

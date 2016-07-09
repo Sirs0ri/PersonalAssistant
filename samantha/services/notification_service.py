@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.6"
+__version__ = "1.2.7"
 
 
 # Initialize the logger
@@ -74,7 +74,7 @@ def notify_twitch(key, data):
     else:
         status = "offline"
     message = \
-        "twitch=:={status}=:={c_name}=:={c_game}=:={c_status}=:={c_url}" \
+        u"twitch=:={status}=:={c_name}=:={c_game}=:={c_status}=:={c_url}" \
         .format(status=status,
                 c_name=data["channel"]["display_name"],
                 c_game=data["channel"]["game"],
