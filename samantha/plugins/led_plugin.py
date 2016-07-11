@@ -1,4 +1,4 @@
-"""A device to test loading devices. It doesn't do anything."""
+"""A plugin to control LEDs connected to another RasPi."""
 
 ###############################################################################
 #
@@ -21,11 +21,11 @@ except ImportError:
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from devices.device import BaseClass
+from plugins.plugin import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.3"
+__version__ = "1.2.0"
 
 
 # Initialize the logger
@@ -46,7 +46,7 @@ if PI.connected:
 else:
     LOGGER.error("Could not connect to the RasPi at 192.168.178.56.")
 
-DEVICE = BaseClass("LED", PI.connected, LOGGER, __file__)
+PLUGIN = BaseClass("LED", PI.connected, LOGGER, __file__, plugin_type="d")
 
 
 def _set_pins(red=-1, green=-1, blue=-1):

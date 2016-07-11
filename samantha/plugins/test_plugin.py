@@ -1,4 +1,4 @@
-"""A device to test loading devices. It doesn't do anything."""
+"""A plugin to test loading plugins. It doesn't do anything."""
 
 ###############################################################################
 #
@@ -15,17 +15,17 @@ import logging
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from devices.device import BaseClass
+from plugins.plugin import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.2.5"
+__version__ = "1.3.0"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-DEVICE = BaseClass("Test", True, LOGGER, __file__)
+PLUGIN = BaseClass("Test", True, LOGGER, __file__)
 
 
 @subscribe_to("system.onstart")
@@ -35,7 +35,7 @@ def start_func(key, data):
     return True
 
 
-@subscribe_to(["test", "test.1", "test.device"])
+@subscribe_to(["test", "test.1", "test.plugin"])
 def test1(key, data):
     """Test various events."""
     LOGGER.warn("Test1 successful!\n%s - %s", key, data)

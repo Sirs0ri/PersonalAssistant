@@ -25,7 +25,7 @@ import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 
 # Initialize the logger
@@ -154,7 +154,7 @@ def run():
 
 
 def send_message(message):
-    """Send a message to one of the connected devices."""
+    """Send a message to one of the connected clients."""
     if message["sender_id"] in INDEX:
         INDEX[message["sender_id"]].sendMessage(
             message["result"].encode('utf8'), False)

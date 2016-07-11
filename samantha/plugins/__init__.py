@@ -1,7 +1,7 @@
-"""Samantha's devices module.
+"""Samantha's plugins module.
 
-- forwards commands to devices (like set property COLOR of LED to GREEN)
-- fires events into the INPUT queue when an device's status changes
+- forwards commands to plugins (like set property COLOR of LED to GREEN)
+- fires events into the INPUT queue when an plugin's status changes
   (e.g. if it becomes un-/available)
 """
 
@@ -27,7 +27,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.1.4"
+__version__ = "1.2.0"
 
 
 # Initialize the logger
@@ -45,7 +45,7 @@ LOGGER.debug("I was imported.")
 
 
 def get_uid():
-    """Generate an incrementing UID for each device."""
+    """Generate an incrementing UID for each plugin."""
     global UID
     uid = "d_{0:04d}".format(UID)
     UID += 1
@@ -60,44 +60,44 @@ def _init(queue_in, queue_out):
     INPUT = queue_in
     OUTPUT = queue_out
 
-    # initialize all devices
-    LOGGER.debug("Searching for devices...")
+    # initialize all plugins
+    LOGGER.debug("Searching for plugins...")
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
-    files = glob.glob("{}/*_device.py".format(this_dir))
-    LOGGER.debug("%d possible devices found.", len(files))
+    files = glob.glob("{}/*_plugin.py".format(this_dir))
+    LOGGER.debug("%d possible plugins found.", len(files))
 
-    device_str = ""
+    plugin_str = ""
     count = 0
 
-    for device_file in files:
-        LOGGER.debug("Trying to import %s...", device_file)
+    for plugin_file in files:
+        LOGGER.debug("Trying to import %s...", plugin_file)
 
         try:
-            name = device_file.replace("samantha/", "") \
+            name = plugin_file.replace("samantha/", "") \
                               .replace("/", ".") \
-                              .replace("_device.py", "")
-            device_source = imp.load_source(name, device_file)
-            LOGGER.debug("Successfully imported %s", device_file)
-            if hasattr(device_source, "DEVICE"):
-                if device_source.DEVICE.is_active:
+                              .replace("_plugin.py", "")
+            plugin_source = imp.load_source(name, plugin_file)
+            LOGGER.debug("Successfully imported %s", plugin_file)
+            if hasattr(plugin_source, "PLUGIN"):
+                if plugin_source.PLUGIN.is_active:
                     count += 1
-                    device_str += "\n\t%r" % (device_source.DEVICE)
-                    LOGGER.debug("%s is a valid Device.", device_file)
+                    plugin_str += "\n\t%r" % (plugin_source.PLUGIN)
+                    LOGGER.debug("%s is a valid plugin.", plugin_file)
                 else:
-                    LOGGER.debug("%s is marked as inactive.", device_file)
+                    LOGGER.debug("%s is marked as inactive.", plugin_file)
             else:
-                LOGGER.warn("%s is missing the Device-class!", device_file)
+                LOGGER.warn("%s is missing the plugin-class!", plugin_file)
         except ImportError:
-            LOGGER.warn("%s couldn't be imported successfully!", device_file)
+            LOGGER.warn("%s couldn't be imported successfully!", plugin_file)
 
     LOGGER.info("Initialisation complete.")
 
-    LOGGER.debug("Imported %d Devices: %s", count, device_str)
+    LOGGER.debug("Imported %d plugins: %s", count, plugin_str)
     return True
 
 
 def stop():
-    """Stop the module and all associated devices."""
+    """Stop the module and all associated plugins."""
     global INITIALIZED
 
     LOGGER.info("Exiting...")

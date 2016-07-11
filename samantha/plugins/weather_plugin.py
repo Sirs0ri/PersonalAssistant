@@ -17,7 +17,7 @@ import requests
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from services.service import BaseClass
+from plugins.plugin import BaseClass
 from tools import eventbuilder
 try:
     import variables_private
@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.6"
+__version__ = "1.3.0"
 
 
 # Initialize the logger
@@ -43,7 +43,7 @@ if API_KEY is None:
 if LOCATION is None:
     LOGGER.exception("Couldn't access the Location.")
 
-SERVICE = BaseClass("Weather", True, LOGGER, __file__)
+PLUGIN = BaseClass("Weather", True, LOGGER, __file__)
 
 
 @subscribe_to(["system.onstart", "time.schedule.hour"])
@@ -57,7 +57,7 @@ def check_weather(key, data):
             key="appid=" + API_KEY),
                            timeout=15)
         if req.status_code == 200:
-            eventbuilder.Event(sender_id=SERVICE.name,
+            eventbuilder.Event(sender_id=PLUGIN.name,
                                keyword="weather.update",
                                data=req.json()).trigger()
             return True

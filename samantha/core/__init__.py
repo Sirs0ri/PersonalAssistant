@@ -2,7 +2,7 @@
 
 - Reads the global INPUT queue
 - Parses the incoming messages
-- Forwards them to services and/or devices
+- Forwards them to plugins
 - puts results back into the OUTPUT queue
 
 - Reads the global OUTOUT queue
@@ -36,13 +36,12 @@ import traceback
 
 # application specific imports
 # pylint: disable=import-error
-import devices
-import services
+import plugins
 import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.13"
+__version__ = "1.3.14"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -58,16 +57,18 @@ OUTPUT = None
 
 FUNC_KEYWORDS = {}
 
-UID = 0
+UIDS = {}
 
 LOGGER.debug("I was imported.")
 
 
-def get_uid():
+def get_uid(prefix):
     """Generate an incrementing UID for unknown plugins."""
-    global UID
-    uid = "u_{0:04d}".format(UID)
-    UID += 1
+    if prefix in UIDS:
+        UIDS[prefix] += 1
+    else:
+        UIDS[prefix] = 0
+    uid = "{}_{:04}".format(prefix, UIDS[prefix])
     return uid
 
 
@@ -99,22 +100,14 @@ def subscribe_to(keyword):
 
         # Initialize the module
         mod = __import__(func.__module__, {}, {}, ('*', ))
-        if hasattr(mod, "DEVICE"):
-            if mod.DEVICE.is_active:
-                if mod.DEVICE.uid == "NO_UID":
-                    LOGGER.debug("This is a new device.")
-                    uid = devices.get_uid()
-                    mod.DEVICE.uid = uid
+        if hasattr(mod, "PLUGIN"):
+            if mod.PLUGIN.is_active:
+                if mod.PLUGIN.uid == "NO_UID":
+                    LOGGER.debug("This is a new plugin..")
+                    uid = get_uid(mod.PLUGIN.plugin_type)
+                    mod.PLUGIN.uid = uid
                 else:
-                    LOGGER.debug("This is an existing device.")
-        elif hasattr(mod, "SERVICE"):
-            if mod.SERVICE.is_active:
-                if mod.SERVICE.uid == "NO_UID":
-                    LOGGER.debug("This is a new service.")
-                    uid = services.get_uid()
-                    mod.SERVICE.uid = uid
-                else:
-                    LOGGER.debug("This is an existing service.")
+                    LOGGER.debug("This is an existing plugin.")
         else:
             LOGGER.debug("This is not a valid plugin")
 
@@ -206,7 +199,7 @@ def worker():
                          event.keyword,
                          results)
         else:
-            event.result = "No matching plugin/device found"
+            event.result = "No matching plugin found"
             logger.debug("[UID: %s] Processing of '%s' unsuccessful.",
                          event.sender_id,
                          event.keyword)
@@ -246,10 +239,10 @@ def sender():
                              message.result, message.sender_id)
                 tools.server.send_message(message)
             elif message.sender_id[0] == "d":
-                # Original message came from a device
+                # Original message came from a device-plugin
                 LOGGER.debug("Sending results to devices isn't possible yet.")
             elif message.sender_id[0] == "s":
-                # Original message came from a service
+                # Original message came from a service-plugin
                 LOGGER.debug("Sending results to services isn't possible yet.")
             else:
                 LOGGER.warn("Invalid UID: %s", message.sender_id)

@@ -28,12 +28,12 @@ import traceback
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from devices.device import BaseClass
+from plugins.plugin import BaseClass
 from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.5.9"
+__version__ = "1.6.0"
 
 
 # Initialize the logger
@@ -140,12 +140,12 @@ def turn_off_with_delay():
 WORKER = None
 SLEEPER = None
 
-DEVICE = BaseClass("AVR", True, LOGGER, __file__)
+PLUGIN = BaseClass("AVR", True, LOGGER, __file__, plugin_type="d")
 
 
 @subscribe_to("system.onstart")
 def onstart(key, data):
-    """Set up the device by starting the worker-thread."""
+    """Set up the plugin by starting the worker-thread."""
     global WORKER
     LOGGER.debug("Starting the worker")
     WORKER = threading.Thread(target=worker, name="worker")
