@@ -25,7 +25,7 @@ from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 
 # Initialize the logger
@@ -159,8 +159,15 @@ def test_interpolators(key, data):
     return True
 
 
-@subscribe_to("system.onexit")
-def stop_func(key, data):
-    """Test the 'onstart' event."""
-    _crossfade(red=0, green=0, blue=0, speed=0.2)
+@subscribe_to("turn_on.led")
+def turn_on(key, data):
+    """Turn on all lights."""
+    _crossfade(255, 85, 17, 0.2)
+    return True
+
+
+@subscribe_to(["system.onexit", "turn_off.led"])
+def turn_off(key, data):
+    """Turn off all lights."""
+    _crossfade(0, 0, 0, 0.2)
     return True
