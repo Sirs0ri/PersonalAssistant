@@ -34,7 +34,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -62,14 +62,19 @@ class AutoRemoteHandler(logging.Handler):
         payload = {'key': variables_private.ar_key,
                    'message': "logging=:=Samantha=:=" + message}
         try:
-            if not record.name == "logger.handlers":
+            if (not record.name == "logger.handlers" or
+                (record.name == "pychromecast.socket_client" and
+                 "Failed to connect, retrying in" in message)):
+                # skip messages that were caused by this very function and by
+                # pychromecast's socket_client that throws errors for
+                # unimportant events
                 LOGGER.debug("Sending '%s(...)' via AutoRemote",
                              message.split("\n")[0])
-                # skip messages that were caused by this very function.
-                requests.post(url, payload, timeout=3)
+                requests.post(url, payload, timeout=15)
             else:
-                LOGGER.info("This error was cause by this class, won't be sent"
-                            " via AutoRemote.")
+                LOGGER.warn("This error was either caused by this class or by "
+                            "a short DC from the Chromecast, it won't be sent "
+                            "via AutoRemote.")
         except Exception:
             LOGGER.exception("Exception while connecting to AutoRemote:\n%s",
                              traceback.format_exc())

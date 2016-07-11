@@ -65,6 +65,7 @@ def _init(queue_in, queue_out):
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
     files = glob.glob("{}/*_device.py".format(this_dir))
     LOGGER.debug("%d possible devices found.", len(files))
+
     device_str = ""
     count = 0
 

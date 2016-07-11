@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.6"
+__version__ = "1.2.9"
 
 
 # Initialize the logger
@@ -52,7 +52,7 @@ def _send_ar_message(message=None, files=None):
         LOGGER.debug("Sending '%s(...)' via AutoRemote",
                      message.split("\n")[0])
         # skip messages that were caused by this very function.
-        requests.post(url, payload, timeout=3)
+        requests.post(url, payload, timeout=15)
         return True
     except Exception:
         LOGGER.exception("Exception while connecting to AutoRemote:\n%s",
@@ -74,7 +74,7 @@ def notify_twitch(key, data):
     else:
         status = "offline"
     message = \
-        "twitch=:={status}=:={c_name}=:={c_game}=:={c_status}=:={c_url}" \
+        u"twitch=:={status}=:={c_name}=:={c_game}=:={c_status}=:={c_url}" \
         .format(status=status,
                 c_name=data["channel"]["display_name"],
                 c_game=data["channel"]["game"],
@@ -82,3 +82,16 @@ def notify_twitch(key, data):
                 c_url=data["channel"]["url"])
     files = [data["channel"]["logo"], data["channel"]["video_banner"]]
     return _send_ar_message(message, files)
+
+
+@subscribe_to("time.time_of_day.*")
+def notify_timeofday(key, data):
+    """Notifiy the user about the sunset/rise for debugging purposes."""
+    if ".day" in key:
+        time_of_day = "day"
+    elif ".night" in key:
+        time_of_day = "night"
+    else:
+        time_of_day = "NaN"
+    message = u"logging=:=Samantha=:=It is now {}time.".format(time_of_day)
+    return _send_ar_message(message)

@@ -42,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.12"
+__version__ = "1.3.13"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -107,12 +107,12 @@ def subscribe_to(keyword):
                     mod.DEVICE.uid = uid
                 else:
                     LOGGER.debug("This is an existing device.")
-        elif hasattr(mod, "service"):
-            if mod.service.is_active:
-                if mod.service.uid == "NO_UID":
+        elif hasattr(mod, "SERVICE"):
+            if mod.SERVICE.is_active:
+                if mod.SERVICE.uid == "NO_UID":
                     LOGGER.debug("This is a new service.")
                     uid = services.get_uid()
-                    mod.service.uid = uid
+                    mod.SERVICE.uid = uid
                 else:
                     LOGGER.debug("This is an existing service.")
         else:
