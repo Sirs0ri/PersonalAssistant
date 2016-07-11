@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.7"
+__version__ = "1.2.8"
 
 
 # Initialize the logger
@@ -82,3 +82,16 @@ def notify_twitch(key, data):
                 c_url=data["channel"]["url"])
     files = [data["channel"]["logo"], data["channel"]["video_banner"]]
     return _send_ar_message(message, files)
+
+
+@subscribe_to("time.time_of_day.*")
+def notify_timeofday(key, data):
+    """Notifiy the user about the sunset/rise for debugging purposes."""
+    if ".day" in key:
+        time_of_day = "day"
+    elif ".night" in key:
+        time_of_day = "night"
+    else:
+        time_of_day = "NaN"
+    message = u"logging=:=Samantha=:=It is now {}time.".format(time_of_day)
+    return _send_ar_message(message)
