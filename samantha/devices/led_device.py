@@ -25,7 +25,7 @@ from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 
 # Initialize the logger
@@ -61,13 +61,13 @@ def _set_pins(red=-1, green=-1, blue=-1):
             PI.set_PWM_dutycycle(pin, blue)
 
 
-def _spread(steps, length=255, interpolator=None):
+def _spread(steps, length=256, interpolator=None):
     """Spread an amount of 'steps' evenly in a list with 'length' items."""
 
     if length == 0:
         return []
     if steps == 0:
-        return [0] * steps
+        return [0] * length
 
     # Convert the args to floats
     length = float(length)
@@ -101,7 +101,7 @@ def _spread(steps, length=255, interpolator=None):
     return result
 
 
-def _crossfade(red=-1, green=-1, blue=-1, speed=1.0, interpolator="linear"):
+def _crossfade(red=-1, green=-1, blue=-1, speed=1.0, interpolator=None):
     steps = int(256 * speed)
     if 0 <= red <= 255:
         red_is = PI.get_PWM_dutycycle(RED_PINS[0])
@@ -138,23 +138,23 @@ def start_func(key, data):
 def test_interpolators(key, data):
     """Test the different interpolators."""
     _crossfade(0, 0, 0, 0.2)
-    _crossfade(red=255, green=0, blue=0, interpolator="sqrt")
+    _crossfade(255, 0, 0, interpolator="sqrt")
     _set_pins(0, 0, 0)
     time.sleep(0.5)
     _set_pins(255, 0, 0)
-    _crossfade(red=0, green=0, blue=0, interpolator="sqrt")
+    _crossfade(0, 0, 0, interpolator="sqrt")
     time.sleep(0.5)
-    _crossfade(red=0, green=255, blue=0, interpolator="linear")
+    _crossfade(0, 255, 0, interpolator="linear")
     _set_pins(0, 0, 0)
     time.sleep(0.5)
     _set_pins(0, 255, 0)
-    _crossfade(red=0, green=0, blue=0, interpolator="linear")
+    _crossfade(0, 0, 0, interpolator="linear")
     time.sleep(0.5)
-    _crossfade(red=0, green=0, blue=255, interpolator="squared")
+    _crossfade(0, 0, 255, interpolator="squared")
     _set_pins(0, 0, 0)
     time.sleep(0.5)
     _set_pins(0, 0, 255)
-    _crossfade(red=0, green=0, blue=0, interpolator="squared")
+    _crossfade(0, 0, 0, interpolator="squared")
     # _crossfade(255, 85, 17)
     return True
 
