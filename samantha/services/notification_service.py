@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.9"
+__version__ = "1.2.10"
 
 
 # Initialize the logger
@@ -51,7 +51,6 @@ def _send_ar_message(message=None, files=None):
     try:
         LOGGER.debug("Sending '%s(...)' via AutoRemote",
                      message.split("\n")[0])
-        # skip messages that were caused by this very function.
         requests.post(url, payload, timeout=15)
         return True
     except Exception:
@@ -93,5 +92,5 @@ def notify_timeofday(key, data):
         time_of_day = "night"
     else:
         time_of_day = "NaN"
-    message = u"logging=:=Samantha=:=It is now {}time.".format(time_of_day)
+    message = "logging=:=Samantha=:=It is now {}time.".format(time_of_day)
     return _send_ar_message(message)
