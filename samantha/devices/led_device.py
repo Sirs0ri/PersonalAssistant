@@ -25,7 +25,7 @@ from devices.device import BaseClass
 # pylint: enable=import-error
 
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 
 # Initialize the logger
@@ -102,6 +102,7 @@ def _spread(steps, length=256, interpolator=None):
 
 
 def _crossfade(red=-1, green=-1, blue=-1, speed=1.0, interpolator=None):
+    """Fade from the current color to another one."""
     steps = int(256 * speed)
     if 0 <= red <= 255:
         red_is = PI.get_PWM_dutycycle(RED_PINS[0])
@@ -124,7 +125,7 @@ def _crossfade(red=-1, green=-1, blue=-1, speed=1.0, interpolator=None):
 
 @subscribe_to("system.onstart")
 def start_func(key, data):
-    """Test the 'onstart' event."""
+    """Test the LEDs during the 'onstart' event."""
     _set_pins(0, 0, 0)
     _crossfade(red=255, green=0, blue=0, speed=0.2)
     _crossfade(red=0, green=255, blue=0, speed=0.2)
