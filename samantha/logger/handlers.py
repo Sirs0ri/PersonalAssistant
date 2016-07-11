@@ -34,7 +34,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 
 # Initialize the logger
@@ -66,7 +66,7 @@ class AutoRemoteHandler(logging.Handler):
                 LOGGER.debug("Sending '%s(...)' via AutoRemote",
                              message.split("\n")[0])
                 # skip messages that were caused by this very function.
-                requests.post(url, payload, timeout=3)
+                requests.post(url, payload, timeout=15)
             else:
                 LOGGER.info("This error was cause by this class, won't be sent"
                             " via AutoRemote.")

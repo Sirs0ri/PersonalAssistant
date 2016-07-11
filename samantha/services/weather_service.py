@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 
 
 # Initialize the logger
@@ -55,7 +55,7 @@ def check_weather(key, data):
             baseurl="http://api.openweathermap.org/data/2.5/weather",
             location="id=" + LOCATION,
             key="appid=" + API_KEY),
-                           timeout=3)
+                           timeout=15)
         if req.status_code == 200:
             eventbuilder.Event(sender_id=SERVICE.name,
                                keyword="weather.update",
