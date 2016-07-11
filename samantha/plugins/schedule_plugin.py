@@ -30,12 +30,12 @@ import time
 # pylint: disable=import-error
 from core import subscribe_to
 import logging
-from services.service import BaseClass
+from plugins.plugin import BaseClass
 from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.2.6"
+__version__ = "1.3.0"
 
 
 # Initialize the logger
@@ -46,7 +46,7 @@ IS_NIGHTTIME = False
 SUNRISE = datetime.datetime.fromtimestamp(0)
 SUNSET = datetime.datetime.fromtimestamp(0)
 
-SERVICE = BaseClass("Schedule", True, LOGGER, __file__)
+PLUGIN = BaseClass("Schedule", True, LOGGER, __file__)
 
 
 def worker():
@@ -129,7 +129,7 @@ def worker():
 
 @subscribe_to("system.onstart")
 def start_thread(key, data):
-    """Set up the service by starting the worker-thread."""
+    """Set up the plugin by starting the worker-thread."""
     thread = threading.Thread(target=worker)
     thread.daemon = True
     thread.start()

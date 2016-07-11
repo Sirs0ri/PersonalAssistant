@@ -20,12 +20,12 @@ import pychromecast
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from devices.device import BaseClass
+from plugins.plugin import BaseClass
 import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.2.5"
+__version__ = "1.3.0"
 
 
 # Initialize the logger
@@ -65,7 +65,7 @@ class Listener(object):
                                  data=status.__dict__).trigger()
 
 
-DEVICE = BaseClass("Chromecast", True, LOGGER, __file__)
+PLUGIN = BaseClass("Chromecast", True, LOGGER, __file__)
 
 
 @subscribe_to("system.onstart")
@@ -76,7 +76,7 @@ def onstart(key, data):
         cast = pychromecast.Chromecast("192.168.178.45")
         cast.wait()  # Wait until the connection is ready.
         mediacontroller = cast.media_controller
-        listener = Listener(DEVICE.name)
+        listener = Listener(PLUGIN.name)
         # Register the listener to the Chromecast's status and media-status
         # events.
         mediacontroller.register_status_listener(listener)

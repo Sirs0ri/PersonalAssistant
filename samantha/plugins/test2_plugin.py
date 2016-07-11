@@ -1,4 +1,4 @@
-"""A service to test loading services. It doesn't do anything."""
+"""A plugin to test loading devices. It doesn't do anything."""
 
 ###############################################################################
 #
@@ -15,17 +15,17 @@ import logging
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from services.service import BaseClass
+from plugins.plugin import BaseClass
 from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.3.5"
+__version__ = "1.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-SERVICE = BaseClass("Test", True, LOGGER, __file__)
+PLUGIN = BaseClass("Test", True, LOGGER, __file__, plugin_type="d")
 
 
 @subscribe_to("system.onstart")

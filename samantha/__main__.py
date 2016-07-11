@@ -14,13 +14,12 @@ import sys
 # TODO import only what's necessary
 import context
 import core
-import devices
+import plugins
 import logger
-import services
 import tools
 
 
-__version__ = "1.4.9"
+__version__ = "1.4.10"
 
 
 if "--debug" in sys.argv or "-D" in sys.argv:
@@ -43,8 +42,7 @@ if __name__ == "__main__":
 
     context.initialize(INPUT, OUTPUT)
     core.initialize(INPUT, OUTPUT)
-    devices.initialize(INPUT, OUTPUT)
-    services.initialize(INPUT, OUTPUT)
+    plugins.initialize(INPUT, OUTPUT)
     tools.initialize(INPUT, OUTPUT)
 
     # TODO load the context
@@ -63,8 +61,7 @@ if __name__ == "__main__":
     OUTPUT.join()
     core.stop()
     context.stop()
-    devices.stop()
-    services.stop()
+    plugins.stop()
     tools.stop()
     LOGGER.debug("-"*47)
     LOGGER.info("Shutdown complete.")
