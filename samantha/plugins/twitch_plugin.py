@@ -17,7 +17,7 @@ import requests
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from services.service import BaseClass
+from plugins.plugin import BaseClass
 from tools import eventbuilder
 try:
     import variables_private
@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.9"
+__version__ = "1.3.0"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ if variables_private is None:
 if SECRETS is None:
     LOGGER.exception("Couldn't access the API-Key and/or client-ID.")
 
-SERVICE = BaseClass("Twitch", SECRETS is not None, LOGGER, __file__)
+PLUGIN = BaseClass("Twitch", SECRETS is not None, LOGGER, __file__)
 
 STREAM_LIST = {}
 
@@ -75,7 +75,7 @@ def check_followed_streams(key, data):
                 LOGGER.debug(u"'%s' is now online. Playing '%s'",
                              channelname, current_game)
                 eventbuilder.Event(
-                    sender_id=SERVICE.name,
+                    sender_id=PLUGIN.name,
                     keyword="media.twitch.online.{}".format(channelname),
                     data=item).trigger()
             else:
@@ -87,7 +87,7 @@ def check_followed_streams(key, data):
                     LOGGER.debug("'%s' is now playing '%s'",
                                  channelname, current_game)
                     eventbuilder.Event(
-                        sender_id=SERVICE.name,
+                        sender_id=PLUGIN.name,
                         keyword="media.twitch.gamechange.{}".format(
                             channelname),
                         data=item).trigger()
@@ -101,7 +101,7 @@ def check_followed_streams(key, data):
         channelname, channeldata = STREAM_LIST.popitem()
         LOGGER.debug("'%s' is now offline.", channelname)
         eventbuilder.Event(
-            sender_id=SERVICE.name,
+            sender_id=PLUGIN.name,
             keyword="media.twitch.offline.{}".format(channelname),
             data=channeldata).trigger()
 

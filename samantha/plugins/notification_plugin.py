@@ -1,4 +1,4 @@
-"""Another test device to test loading devices."""
+"""A plugin to send notifications to the user."""
 
 ###############################################################################
 #
@@ -18,7 +18,7 @@ import requests
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from services.service import BaseClass
+from plugins.plugin import BaseClass
 try:
     import variables_private
     KEY = variables_private.ar_key
@@ -28,13 +28,13 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.2.10"
+__version__ = "1.3.0"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-SERVICE = BaseClass("Notification", KEY is not None, LOGGER, __file__)
+PLUGIN = BaseClass("Notification", KEY is not None, LOGGER, __file__)
 
 
 def _send_ar_message(message=None, files=None):
