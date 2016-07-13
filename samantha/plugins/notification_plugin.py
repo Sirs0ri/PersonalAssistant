@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
@@ -45,6 +45,7 @@ def _send_ar_message(message=None, files=None):
         payload["message"] = message
     if files:
         if not isinstance(files, str) and isinstance(files, Iterable):
+            files = [str(x) for x in files]
             payload["files"] = ",".join(files)
         else:
             payload["files"] = files
