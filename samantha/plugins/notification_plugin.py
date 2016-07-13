@@ -18,7 +18,7 @@ import requests
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from plugins.plugin import BaseClass
+from plugins.plugin import Plugin
 try:
     import variables_private
     KEY = variables_private.ar_key
@@ -28,13 +28,13 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-PLUGIN = BaseClass("Notification", KEY is not None, LOGGER, __file__)
+PLUGIN = Plugin("Notification", KEY is not None, LOGGER, __file__)
 
 
 def _send_ar_message(message=None, files=None):
@@ -45,6 +45,7 @@ def _send_ar_message(message=None, files=None):
         payload["message"] = message
     if files:
         if not isinstance(files, str) and isinstance(files, Iterable):
+            files = [str(x) for x in files]
             payload["files"] = ",".join(files)
         else:
             payload["files"] = files
