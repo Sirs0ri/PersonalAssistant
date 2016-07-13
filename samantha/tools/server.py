@@ -13,6 +13,9 @@ Open a websocket on port 19113 to communicate with remote clients.
 
 # standard library imports
 import logging
+import socket
+import threading
+import time
 
 # related third party imports
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
@@ -25,7 +28,7 @@ import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.4.0"
 
 
 # Initialize the logger
@@ -38,6 +41,7 @@ INPUT = None
 OUTPUT = None
 
 FACTORY = None
+UDP_THREAD = None
 
 INDEX = {}
 
@@ -78,6 +82,54 @@ def parse(message):
                 keyword += "."
             keyword += word
     return keyword, data
+
+
+class UDP_Thread(threading.Thread):
+    """Thread class with a stop() method. The thread sleeps for 'delay'
+    seconds, then runs the target-function."""
+
+    def __init__(self, *args, **kwargs):
+        """Basically the original __init__(), but expanded by the delay, as well
+        as a logger."""
+        super(UDP_Thread, self).__init__(*args, **kwargs)
+        self._stop = threading.Event()
+        self.logger = logging.getLogger(__name__ + "." + self.name)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.socket.settimeout(5)
+        self.logger.debug("Initialisation complete.")
+
+    def run(self):
+        """Sleep for DELAY seconds, then run the original threading.Thread's
+        run() function."""
+        print("Started the thread.")
+
+        server_address = ('255.255.255.255', 10000)
+        message = 'sam.ip.broadcast:19113'
+
+        try:
+            while not self.stopped():
+
+                # Send data
+                self.logger.debug("Sending '%s'", message)
+                self.socket.sendto(message, server_address)
+                time.sleep(5)
+        finally:
+            self.logger.debug("Closing the socket.")
+            self.socket.close()
+
+        if self.stopped():
+            self.logger.debug("Exited.")
+
+    def stop(self):
+        """Stop the delay. This won't stop the thread once the target-function
+        is started!"""
+        self.logger.debug("Exiting...")
+        self._stop.set()
+
+    def stopped(self):
+        return self._stop.isSet()
 
 
 class Server(WebSocketServerProtocol):
@@ -132,7 +184,7 @@ class Server(WebSocketServerProtocol):
 
 def _init(queue_in, queue_out):
     """Initialize the module."""
-    global INPUT, OUTPUT, FACTORY
+    global INPUT, OUTPUT, FACTORY, UDP_THREAD
 
     LOGGER.info("Initializing...")
     INPUT = queue_in
@@ -143,6 +195,8 @@ def _init(queue_in, queue_out):
 
     reactor.listenTCP(19113, FACTORY)
 
+    UDP_THREAD = UDP_Thread(name="udp_thread")
+
     LOGGER.info("Initialisation complete.")
     return True
 
@@ -150,6 +204,7 @@ def _init(queue_in, queue_out):
 def run():
     """Open the Websocket."""
     LOGGER.info("Opening the Websocket.")
+    UDP_THREAD.start()
     reactor.run()
 
 
@@ -167,6 +222,8 @@ def stop():
     global INITIALIZED
 
     LOGGER.info("Exiting...")
+    UDP_THREAD.stop()
+    UDP_THREAD.join()
     INITIALIZED = False
     LOGGER.info("Exited.")
     return True
