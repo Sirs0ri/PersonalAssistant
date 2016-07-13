@@ -17,7 +17,7 @@ import requests
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from plugins.plugin import BaseClass
+from plugins.plugin import Plugin
 from tools import eventbuilder
 try:
     import variables_private
@@ -25,12 +25,12 @@ try:
     LOCATION = variables_private.owm_location
 except (ImportError, AttributeError):
     variables_private = None
-    API_KEY = None
-    LOCATION = None
+    API_KEY = ""
+    LOCATION = ""
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 
 # Initialize the logger
@@ -38,12 +38,12 @@ LOGGER = logging.getLogger(__name__)
 
 if variables_private is None:
     LOGGER.exception("Couldn't access the private variables.")
-if API_KEY is None:
+if API_KEY is "":
     LOGGER.exception("Couldn't access the API-Key.")
-if LOCATION is None:
+if LOCATION is "":
     LOGGER.exception("Couldn't access the Location.")
 
-PLUGIN = BaseClass("Weather", True, LOGGER, __file__)
+PLUGIN = Plugin("Weather", True, LOGGER, __file__)
 
 
 @subscribe_to(["system.onstart", "time.schedule.hour"])
@@ -53,8 +53,8 @@ def check_weather(key, data):
     try:
         req = requests.get("{baseurl}?{location}&{key}".format(
             baseurl="http://api.openweathermap.org/data/2.5/weather",
-            location="id=" + LOCATION,
-            key="appid=" + API_KEY),
+            location="id={}".format(LOCATION),
+            key="appid={}".format(API_KEY)),
                            timeout=15)
         if req.status_code == 200:
             eventbuilder.Event(sender_id=PLUGIN.name,

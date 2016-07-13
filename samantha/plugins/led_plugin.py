@@ -21,11 +21,11 @@ except ImportError:
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from plugins.plugin import BaseClass
+from plugins.plugin import Device
 # pylint: enable=import-error
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # Initialize the logger
@@ -34,19 +34,23 @@ LOGGER = logging.getLogger(__name__)
 if pigpio:
     PI = pigpio.pi("192.168.178.56")
 else:
+    PI = None
     LOGGER.exception(
         "Could not import pigpio. Please follow the instructions on %s to "
         "install it manually.",
         "https://github.com/joan2937/pigpio/blob/master/README#L103")
 
-if PI.connected:
+if PI is not None and PI.connected:
     RED_PINS = [12, 25]
     GREEN_PINS = [20, 23]
     BLUE_PINS = [21, 18]
 else:
+    RED_PINS = []
+    GREEN_PINS = []
+    BLUE_PINS = []
     LOGGER.error("Could not connect to the RasPi at 192.168.178.56.")
 
-PLUGIN = BaseClass("LED", PI.connected, LOGGER, __file__, plugin_type="d")
+PLUGIN = Device("LED", PI.connected, LOGGER, __file__)
 
 
 def _set_pins(red=-1, green=-1, blue=-1):
@@ -135,6 +139,7 @@ def start_func(key, data):
     return True
 
 
+@PLUGIN.turn_on
 @subscribe_to("test.led")
 def test_interpolators(key, data):
     """Test the different interpolators."""

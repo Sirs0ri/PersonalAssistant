@@ -30,12 +30,12 @@ import time
 # pylint: disable=import-error
 from core import subscribe_to
 import logging
-from plugins.plugin import BaseClass
+from plugins.plugin import Plugin
 from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 
 # Initialize the logger
@@ -46,7 +46,7 @@ IS_NIGHTTIME = False
 SUNRISE = datetime.datetime.fromtimestamp(0)
 SUNSET = datetime.datetime.fromtimestamp(0)
 
-PLUGIN = BaseClass("Schedule", True, LOGGER, __file__)
+PLUGIN = Plugin("Schedule", True, LOGGER, __file__)
 
 
 def worker():

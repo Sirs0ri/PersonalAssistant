@@ -17,7 +17,7 @@ import requests
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from plugins.plugin import BaseClass
+from plugins.plugin import Plugin
 from tools import eventbuilder
 try:
     import variables_private
@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ if variables_private is None:
 if SECRETS is None:
     LOGGER.exception("Couldn't access the API-Key and/or client-ID.")
 
-PLUGIN = BaseClass("Twitch", SECRETS is not None, LOGGER, __file__)
+PLUGIN = Plugin("Twitch", SECRETS is not None, LOGGER, __file__)
 
 STREAM_LIST = {}
 

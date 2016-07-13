@@ -15,17 +15,17 @@ import logging
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from plugins.plugin import BaseClass
+from plugins.plugin import Plugin
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-PLUGIN = BaseClass("Test", True, LOGGER, __file__)
+PLUGIN = Plugin("Test", True, LOGGER, __file__)
 
 
 @subscribe_to("system.onstart")

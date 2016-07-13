@@ -20,12 +20,12 @@ import pychromecast
 # application specific imports
 # pylint: disable=import-error
 from core import subscribe_to
-from plugins.plugin import BaseClass
+from plugins.plugin import Plugin
 import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 
 # Initialize the logger
@@ -65,7 +65,7 @@ class Listener(object):
                                  data=status.__dict__).trigger()
 
 
-PLUGIN = BaseClass("Chromecast", True, LOGGER, __file__)
+PLUGIN = Plugin("Chromecast", True, LOGGER, __file__)
 
 
 @subscribe_to("system.onstart")
