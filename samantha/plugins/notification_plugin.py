@@ -29,7 +29,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 
 # Initialize the logger
@@ -84,6 +84,25 @@ def notify_twitch(key, data):
                 c_url=data["channel"]["url"])
     files = [data["channel"]["logo"], data["channel"]["video_banner"]]
     return _send_ar_message(message, files)
+
+
+@subscribe_to("*.fritzbox.availability.*")
+def notify_fritz_availability(key, data):
+    if "online" in key:
+        status = "online"
+    else:
+        status = "offline"
+    message = u"logging=:=Network=:={} {} is now {}.".format(
+        datetime.now().strftime("%H:%M"), data["name"], status)
+    return _send_ar_message(message)
+
+
+@subscribe_to("*.fritzbox.newdevice.*")
+def notify_fritz_newdevice(key, data):
+    """Notifiy the user about new devices in the network."""
+    message = "logging=:=Samantha=:={} {} joined the network.".format(
+        datetime.now().strftime("%H:%M"), data["name"])
+    return _send_ar_message(message)
 
 
 @subscribe_to("time.time_of_day.*")
