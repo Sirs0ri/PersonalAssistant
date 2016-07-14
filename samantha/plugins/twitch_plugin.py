@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -76,7 +76,8 @@ def check_followed_streams(key, data):
                              channelname, current_game)
                 eventbuilder.Event(
                     sender_id=PLUGIN.name,
-                    keyword="media.twitch.online.{}".format(channelname),
+                    keyword="media.twitch.availability.online.{}".format(
+                        channelname),
                     data=item).trigger()
             else:
                 # The channel was already online at the last check
@@ -102,7 +103,7 @@ def check_followed_streams(key, data):
         LOGGER.debug("'%s' is now offline.", channelname)
         eventbuilder.Event(
             sender_id=PLUGIN.name,
-            keyword="media.twitch.offline.{}".format(channelname),
+            keyword="media.twitch.availability.offline.{}".format(channelname),
             data=channeldata).trigger()
 
     # update the existing STREAM_LIST with the new streams

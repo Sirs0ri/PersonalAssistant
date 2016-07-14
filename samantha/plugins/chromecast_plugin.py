@@ -25,12 +25,15 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 logging.getLogger("pychromecast").setLevel(logging.INFO)
+
+
+PLUGIN = Plugin("Chromecast", True, LOGGER, __file__)
 
 
 class Listener(object):
@@ -63,9 +66,6 @@ class Listener(object):
         tools.eventbuilder.Event(sender_id=self.name,
                                  keyword="chromecast.connection_change",
                                  data=status.__dict__).trigger()
-
-
-PLUGIN = Plugin("Chromecast", True, LOGGER, __file__)
 
 
 @subscribe_to("system.onstart")
