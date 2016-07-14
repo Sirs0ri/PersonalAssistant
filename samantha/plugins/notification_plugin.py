@@ -9,6 +9,7 @@
 
 # standard library imports
 from collections import Iterable
+from datetime import datetime
 import logging
 import traceback
 
@@ -28,7 +29,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 
 # Initialize the logger
@@ -63,7 +64,8 @@ def _send_ar_message(message=None, files=None):
 @subscribe_to("system.*")
 def notify_system_event(key, data):
     """Notify the user about a system-wide event."""
-    message = "logging=:=Samantha=:=New system-wide event: " + key
+    message = "logging=:=Samantha=:={} New system-wide event: {}".format(
+        datetime.now().strftime("%H:%M"), key)
     return _send_ar_message(message)
 
 
@@ -93,5 +95,6 @@ def notify_timeofday(key, data):
         time_of_day = "night"
     else:
         time_of_day = "NaN"
-    message = "logging=:=Samantha=:=It is now {}time.".format(time_of_day)
+    message = "logging=:=Samantha=:={} It is now {}time.".format(
+        datetime.now().strftime("%H:%M"), time_of_day)
     return _send_ar_message(message)
