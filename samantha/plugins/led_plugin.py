@@ -25,7 +25,7 @@ from plugins.plugin import Device
 # pylint: enable=import-error
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 
 # Initialize the logger
@@ -172,7 +172,8 @@ def turn_on(key, data):
     return True
 
 
-@subscribe_to(["system.onexit", "turn_off.led"])
+@PLUGIN.turn_off
+@subscribe_to("system.onexit")
 def turn_off(key, data):
     """Turn off all lights."""
     _crossfade(0, 0, 0, 0.2)
