@@ -41,7 +41,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.17"
+__version__ = "1.3.18"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -168,43 +168,50 @@ def worker():
                      event.keyword,
                      event.sender_id)
 
-        if event.keyword == "onstart":
-            logger.info("The index now has %d entries.", len(FUNC_KEYWORDS))
-            logger.debug("%s", FUNC_KEYWORDS.keys())
-
-        results = [False]
-        for key_substring in event.parsed_kw_list:
-            if key_substring in FUNC_KEYWORDS:
-                for func in FUNC_KEYWORDS[key_substring]:
-                    try:
-                        logger.debug("[UID: %s] Executing '%s.%s'.",
-                                     event.uid,
-                                     func.__module__,
-                                     func.__name__)
-                        res = func(key=event.keyword,  # Send the original key
-                                   data=event.data)
-                        results.append(res)
-                    except Exception:
-                        logger.exception("Exception in user code:\n%s",
-                                         traceback.format_exc())
-        results = [x for x in results if x]
-
-        if results:
-            event.result = results
-            logger.info("[UID: %s] Processing of '%s' successful. "
-                        "%d result%s: %s",
-                        event.uid,
-                        event.keyword,
-                        len(results),
-                        ("s" if len(results) > 1 else ""),
-                        results)
+        if event.expired:
+            logger.warn("[UID: %s] The event is expired and will be skipped.",
+                        event.uid)
+            event.result = "The event expired and was skipped."
         else:
-            event.result = "No matching plugin found"
-            logger.debug("[UID: %s] Processing of '%s' unsuccessful.",
-                         event.uid,
-                         event.keyword)
 
-        # Put the result back into the OUTPUT queue, the incoming comm for now
+            if event.keyword == "onstart":
+                logger.info("The index now has %d entries.",
+                            len(FUNC_KEYWORDS))
+                logger.debug("%s", FUNC_KEYWORDS.keys())
+
+            results = [False]
+            for key_substring in event.parsed_kw_list:
+                if key_substring in FUNC_KEYWORDS:
+                    for func in FUNC_KEYWORDS[key_substring]:
+                        try:
+                            logger.debug("[UID: %s] Executing '%s.%s'.",
+                                         event.uid,
+                                         func.__module__,
+                                         func.__name__)
+                            res = func(key=event.keyword,
+                                       data=event.data)
+                            results.append(res)
+                        except Exception:
+                            logger.exception("Exception in user code:\n%s",
+                                             traceback.format_exc())
+            results = [x for x in results if x]
+
+            if results:
+                event.result = results
+                logger.info("[UID: %s] Processing of '%s' successful. "
+                            "%d result%s: %s",
+                            event.uid,
+                            event.keyword,
+                            len(results),
+                            ("s" if len(results) > 1 else ""),
+                            results)
+            else:
+                event.result = "No matching plugin found"
+                logger.debug("[UID: %s] Processing of '%s' unsuccessful.",
+                             event.uid,
+                             event.keyword)
+
+        # Put the result back into the OUTPUT queue
         if event.event_type == "request":
             OUTPUT.put(event)
 

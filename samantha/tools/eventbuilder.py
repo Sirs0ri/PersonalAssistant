@@ -9,6 +9,7 @@
 
 
 # standard library imports
+import datetime
 import logging
 
 # related third party imports
@@ -16,7 +17,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 
 # Initialize the logger
@@ -62,7 +63,8 @@ class Event(object):
     of course a keyword + optional data.
     """
 
-    def __init__(self, sender_id, keyword, event_type="trigger", data=None):
+    def __init__(self, sender_id, keyword, event_type="trigger",
+                 data=None, ttl=0):
         """Initialize a new event."""
         global EVENT_ID
 
@@ -71,6 +73,12 @@ class Event(object):
         self.sender_id = sender_id
         self.keyword = keyword
         self.parsed_kw_list = _parse_keyword(self.keyword)
+        self.creation_time = datetime.datetime.now()
+        if int(ttl) > 0:
+            self.expiration_time = (self.creation_time +
+                                    datetime.timedelta(0, int(ttl)))
+        else:
+            self.expiration_time = None
         LOGGER.debug("[UID: %s] Building new event (%s): '%s' from %s",
                      self.uid, event_type, keyword, sender_id)
         if event_type in ["trigger", "request"]:
@@ -83,6 +91,13 @@ class Event(object):
         self.data = data
         self.result = None
 
+    @property
+    def expired(self):
+        if self.expiration_time is None:
+            return False
+        else:
+            return self.expiration_time < datetime.datetime.now()
+
     def trigger(self):
         """Put the current event into the input queue."""
         kw_in_use = False
@@ -93,6 +108,9 @@ class Event(object):
         if kw_in_use:
             if INITIALIZED:
                 INPUT.put(self)
+                LOGGER.warn("[UID: %s] Added the event to the queue. INPUT "
+                            "currently holds %d items.",
+                            self.uid, INPUT.qsize())
             else:
                 LOGGER.warn("This module is not initialized correctly. This "
                             "means that booting wasn't successful, or that "

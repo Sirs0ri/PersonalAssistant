@@ -35,7 +35,7 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 
 # Initialize the logger
@@ -75,12 +75,14 @@ def worker():
         if timelist[5] in [0, 10, 20, 30, 40, 50]:
             eventbuilder.Event(sender_id=name,
                                keyword="time.schedule.10s",
-                               data=timelist).trigger()
+                               data=timelist,
+                               ttl=5).trigger()
             if timelist[5] == 0:
                 # Seconds = 0 -> New Minute
                 eventbuilder.Event(sender_id=name,
                                    keyword="time.schedule.min",
-                                   data=timelist).trigger()
+                                   data=timelist,
+                                   ttl=55).trigger()
                 # Check for a change in the time of day
                 if (SUNSET < SUNRISE < datetime_obj or
                         SUNRISE < datetime_obj < SUNSET or
@@ -112,7 +114,8 @@ def worker():
                     # Minutes = 0 -> New Hour
                     eventbuilder.Event(sender_id=name,
                                        keyword="time.schedule.hour",
-                                       data=timelist).trigger()
+                                       data=timelist,
+                                       ttl=3300).trigger()
                     if timelist[3] == 0:
                         # Hours = 0 -> New Day
                         eventbuilder.Event(sender_id=name,
