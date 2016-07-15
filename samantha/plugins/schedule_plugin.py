@@ -35,7 +35,7 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
@@ -82,26 +82,32 @@ def worker():
                                    keyword="time.schedule.min",
                                    data=timelist).trigger()
                 # Check for a change in the time of day
-                if (not IS_DAYTIME and
-                    (SUNRISE < datetime_obj < SUNSET or
-                     datetime_obj < SUNSET < SUNRISE)):
+                if (SUNSET < SUNRISE < datetime_obj or
+                        SUNRISE < datetime_obj < SUNSET or
+                        datetime_obj < SUNSET < SUNRISE):
                     # The sun has risen.
-                    IS_DAYTIME = True
-                    IS_NIGHTTIME = False
-                    LOGGER.debug("It's now daytime")
-                    eventbuilder.Event(sender_id=name,
-                                       keyword="time.time_of_day.day",
-                                       data=timelist).trigger()
-                if (not IS_NIGHTTIME and
-                    (SUNSET < datetime_obj < SUNRISE or
-                     datetime_obj < SUNRISE < SUNSET)):
+                    if not IS_DAYTIME:
+                        IS_DAYTIME = True
+                        IS_NIGHTTIME = False
+                        LOGGER.debug("It's now daytime.")
+                        eventbuilder.Event(sender_id=name,
+                                           keyword="time.time_of_day.day",
+                                           data=timelist).trigger()
+                    else:
+                        LOGGER.debug("It's still daytime.")
+                if (SUNRISE < SUNSET < datetime_obj or
+                        SUNSET < datetime_obj < SUNRISE or
+                        datetime_obj < SUNRISE < SUNSET):
                     # The sun has set.
-                    IS_NIGHTTIME = True
-                    IS_DAYTIME = False
-                    LOGGER.debug("It's now nighttime")
-                    eventbuilder.Event(sender_id=name,
-                                       keyword="time.time_of_day.night",
-                                       data=timelist).trigger()
+                    if not IS_NIGHTTIME:
+                        IS_NIGHTTIME = True
+                        IS_DAYTIME = False
+                        LOGGER.debug("It's now nighttime.")
+                        eventbuilder.Event(sender_id=name,
+                                           keyword="time.time_of_day.night",
+                                           data=timelist).trigger()
+                    else:
+                        LOGGER.debug("It's still nighttime.")
                 if timelist[4] == 0:
                     # Minutes = 0 -> New Hour
                     eventbuilder.Event(sender_id=name,
