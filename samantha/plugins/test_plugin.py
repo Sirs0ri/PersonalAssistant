@@ -16,10 +16,11 @@ import logging
 # pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Plugin
+from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
@@ -38,6 +39,9 @@ def start_func(key, data):
 @subscribe_to(["test", "test.1", "test.plugin"])
 def test1(key, data):
     """Test various events."""
+    for i in range(50):
+        eventbuilder.Event(sender_id=PLUGIN.name,
+                           keyword="wait").trigger()
     LOGGER.warn("Test1 successful!\n%s - %s", key, data)
     return True
 
