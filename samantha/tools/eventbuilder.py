@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 
 # Initialize the logger
@@ -66,13 +66,13 @@ class Event(object):
         """Initialize a new event."""
         global EVENT_ID
 
-        LOGGER.debug("Building new event (#%d): %s (%s) from %s",
-                     EVENT_ID, event_type, keyword, sender_id)
-        self.event_id = EVENT_ID
+        self.uid = "e_{:04}".format(EVENT_ID)
         EVENT_ID += 1
         self.sender_id = sender_id
         self.keyword = keyword
         self.parsed_kw_list = _parse_keyword(self.keyword)
+        LOGGER.debug("[UID: %s] Building new event (%s): '%s' from %s",
+                     self.uid, event_type, keyword, sender_id)
         if event_type in ["trigger", "request"]:
             self.event_type = event_type
         else:

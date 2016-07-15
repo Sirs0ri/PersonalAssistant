@@ -28,7 +28,7 @@ import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 
 # Initialize the logger
@@ -214,7 +214,7 @@ def send_message(message):
         INDEX[message["sender_id"]].sendMessage(
             message["result"].encode('utf8'), False)
     else:
-        LOGGER.warn("There is no client with the ID %s!", message["sender_id"])
+        LOGGER.warn("There is no client with the UID %s!", message["sender_id"])
 
 
 def stop():
