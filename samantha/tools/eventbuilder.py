@@ -16,7 +16,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 
 # Initialize the logger
@@ -91,7 +91,12 @@ class Event(object):
                 kw_in_use = True
                 break
         if kw_in_use:
-            INPUT.put(self)
+            if INITIALIZED:
+                INPUT.put(self)
+            else:
+                LOGGER.warn("This module is not initialized correctly. This "
+                            "means that booting wasn't successful, or that "
+                            "the Server is about to stop.")
         else:
             LOGGER.debug("Skipping event '%s' from %s because the keyword is "
                          "not in use.", self.keyword, self.sender_id)

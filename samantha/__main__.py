@@ -19,7 +19,7 @@ import logger
 import tools
 
 
-__version__ = "1.4.10"
+__version__ = "1.4.11"
 
 
 if "--debug" in sys.argv or "-D" in sys.argv:
@@ -57,12 +57,12 @@ if __name__ == "__main__":
                              keyword="system.onexit").trigger()
 
     LOGGER.info("Exiting...")
-    INPUT.join()
-    OUTPUT.join()
+    # INPUT.join()
+    # OUTPUT.join()
+    tools.stop()
     core.stop()
     context.stop()
     plugins.stop()
-    tools.stop()
     LOGGER.debug("-"*47)
     LOGGER.info("Shutdown complete.")
     LOGGER.debug("-"*47)
