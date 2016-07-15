@@ -25,7 +25,7 @@ from plugins.plugin import Device
 # pylint: enable=import-error
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 
 # Initialize the logger
@@ -50,7 +50,7 @@ else:
     BLUE_PINS = []
     LOGGER.error("Could not connect to the RasPi at 192.168.178.56.")
 
-PLUGIN = Device("LED", PI.connected, LOGGER, __file__)
+PLUGIN = Device("LED", PI.connected, LOGGER, __file__, "light")
 
 
 def _set_pins(red=-1, green=-1, blue=-1):
