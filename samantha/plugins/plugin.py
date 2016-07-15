@@ -8,6 +8,8 @@
 
 
 # standard library imports
+from collections import Iterable
+from functools import wraps
 import logging
 
 # related third party imports
@@ -18,7 +20,7 @@ from core import subscribe_to
 # pylint: enable=import-error
 
 
-__version__ = "1.4.0"
+__version__ = "1.4.2"
 
 
 # Initialize the logger
@@ -65,15 +67,35 @@ class Device(Plugin):
     """Baseclass, that holds the mandatory methods a device must support."""
 
     def __init__(self, name="Device", active=False,
-                 logger=None, file_path=None):
+                 logger=None, file_path=None, group=None):
         """Set the plugin's attributes, if they're not set already."""
         super(Device, self).__init__(name, active, logger, file_path, "d")
         self.name = name
         self.is_available = None
+        self.group = group
         self.logger.info("Initialisation complete")
+        self.power_on_keywords = [self.name.lower() + ".power.on"]
+        self.power_off_keywords = [self.name.lower() + ".power.off"]
+        if group:
+            if not isinstance(group, str) and isinstance(group, Iterable):
+                for key in group:
+                    self.power_on_keywords.append(key.lower() + ".power.on")
+                    self.power_off_keywords.append(key.lower() + ".power.off")
+            else:
+                self.power_on_keywords.append(group.lower() + ".power.on")
+                self.power_off_keywords.append(group.lower() + ".power.off")
 
     def turn_on(self, func):
-        @subscribe_to(self.name + "power.on")
+        @subscribe_to(self.power_on_keywords)
+        @wraps(func)
+        def function(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        return function
+
+    def turn_off(self, func):
+        @subscribe_to(self.power_off_keywords)
+        @wraps(func)
         def function(*args, **kwargs):
             return func(*args, **kwargs)
 

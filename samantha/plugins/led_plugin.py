@@ -25,7 +25,7 @@ from plugins.plugin import Device
 # pylint: enable=import-error
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.4"
 
 
 # Initialize the logger
@@ -50,7 +50,7 @@ else:
     BLUE_PINS = []
     LOGGER.error("Could not connect to the RasPi at 192.168.178.56.")
 
-PLUGIN = Device("LED", PI.connected, LOGGER, __file__)
+PLUGIN = Device("LED", PI.connected, LOGGER, __file__, "light")
 
 
 def _set_pins(red=-1, green=-1, blue=-1):
@@ -139,7 +139,6 @@ def start_func(key, data):
     return True
 
 
-@PLUGIN.turn_on
 @subscribe_to("test.led")
 def test_interpolators(key, data):
     """Test the different interpolators."""
@@ -165,6 +164,7 @@ def test_interpolators(key, data):
     return True
 
 
+@PLUGIN.turn_on
 @subscribe_to("turn_on.led")
 def turn_on(key, data):
     """Turn on all lights."""
@@ -172,7 +172,8 @@ def turn_on(key, data):
     return True
 
 
-@subscribe_to(["system.onexit", "turn_off.led"])
+@PLUGIN.turn_off
+@subscribe_to("system.onexit")
 def turn_off(key, data):
     """Turn off all lights."""
     _crossfade(0, 0, 0, 0.2)

@@ -41,7 +41,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.14"
+__version__ = "1.3.17"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -163,45 +163,45 @@ def worker():
         logger.debug("Waiting for an item.")
         event = INPUT.get()
 
-        logger.debug("[UID: %s] Now processing '%s'",
-                     event.sender_id,
-                     event.keyword)
+        logger.debug("[UID: %s] Now processing '%s' from %s",
+                     event.uid,
+                     event.keyword,
+                     event.sender_id)
 
         if event.keyword == "onstart":
-            LOGGER.info("The index now has %d entries.", len(FUNC_KEYWORDS))
-            LOGGER.debug("%s", FUNC_KEYWORDS.keys())
+            logger.info("The index now has %d entries.", len(FUNC_KEYWORDS))
+            logger.debug("%s", FUNC_KEYWORDS.keys())
 
         results = [False]
         for key_substring in event.parsed_kw_list:
             if key_substring in FUNC_KEYWORDS:
                 for func in FUNC_KEYWORDS[key_substring]:
                     try:
-                        LOGGER.debug("Executing '%s.%s'.",
+                        logger.debug("[UID: %s] Executing '%s.%s'.",
+                                     event.uid,
                                      func.__module__,
                                      func.__name__)
                         res = func(key=event.keyword,  # Send the original key
                                    data=event.data)
                         results.append(res)
                     except Exception:
-                        LOGGER.exception("Exception in user code:\n%s",
+                        logger.exception("Exception in user code:\n%s",
                                          traceback.format_exc())
         results = [x for x in results if x]
 
         if results:
             event.result = results
             logger.info("[UID: %s] Processing of '%s' successful. "
-                        "%d result%s.",
-                        event.sender_id,
+                        "%d result%s: %s",
+                        event.uid,
                         event.keyword,
                         len(results),
-                        ("s" if len(results) > 1 else ""))
-            logger.debug("Keyword: %s Result: %s",
-                         event.keyword,
-                         results)
+                        ("s" if len(results) > 1 else ""),
+                        results)
         else:
             event.result = "No matching plugin found"
             logger.debug("[UID: %s] Processing of '%s' unsuccessful.",
-                         event.sender_id,
+                         event.uid,
                          event.keyword)
 
         # Put the result back into the OUTPUT queue, the incoming comm for now
@@ -225,33 +225,33 @@ def sender():
         message = OUTPUT.get()
 
         logger.debug("[UID: %s] Got the Item '%s'",
-                     message.sender_id,
+                     message.uid,
                      message.keyword)
 
         # If the message was a request...
         if message.event_type == "request":
             # ...send it's result back to where it came from
-            LOGGER.debug("[UID: %s] Sending the result back",
-                         message.sender_id)
+            logger.debug("[UID: %s] Sending the result back",
+                         message.uid)
             if message.sender_id[0] == "c":
                 # Original message came from a client via the server
-                LOGGER.debug("Sending the result '%s' back to client %s",
+                logger.debug("Sending the result '%s' back to client %s",
                              message.result, message.sender_id)
                 tools.server.send_message(message)
             elif message.sender_id[0] == "d":
                 # Original message came from a device-plugin
-                LOGGER.debug("Sending results to devices isn't possible yet.")
+                logger.debug("Sending results to devices isn't possible yet.")
             elif message.sender_id[0] == "s":
                 # Original message came from a service-plugin
-                LOGGER.debug("Sending results to services isn't possible yet.")
+                logger.debug("Sending results to services isn't possible yet.")
             else:
-                LOGGER.warn("Invalid UID: %s", message.sender_id)
+                logger.warn("Invalid UID: %s", message.sender_id)
         else:
-            LOGGER.debug("[UID: %s] Not sending the result back since the "
-                         "event was a trigger.", message.sender_id)
+            logger.debug("[UID: %s] Not sending the result back since the "
+                         "event was a trigger.", message.uid)
 
         logger.info("[UID: %s] Processing of '%s' completed.",
-                    message.sender_id,
+                    message.uid,
                     message.keyword)
 
         # Let the queue know that processing is complete
@@ -309,6 +309,10 @@ def stop():
     global INITIALIZED
 
     LOGGER.info("Exiting...")
+    LOGGER.warn("Waiting for the queues to be emptied. INPUT currently holds "
+                "%d items.", INPUT.qsize())
+    INPUT.join()
+    OUTPUT.join()
 
     INITIALIZED = False
     LOGGER.info("Exited.")
