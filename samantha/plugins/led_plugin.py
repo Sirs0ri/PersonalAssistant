@@ -25,7 +25,7 @@ from plugins.plugin import Device
 # pylint: enable=import-error
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 
 # Initialize the logger
@@ -139,7 +139,6 @@ def start_func(key, data):
     return True
 
 
-@PLUGIN.turn_on
 @subscribe_to("test.led")
 def test_interpolators(key, data):
     """Test the different interpolators."""
@@ -165,6 +164,7 @@ def test_interpolators(key, data):
     return True
 
 
+@PLUGIN.turn_on
 @subscribe_to("turn_on.led")
 def turn_on(key, data):
     """Turn on all lights."""
