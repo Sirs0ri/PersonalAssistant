@@ -18,7 +18,7 @@ from core import subscribe_to
 # pylint: enable=import-error
 
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 
 # Initialize the logger
@@ -65,11 +65,12 @@ class Device(Plugin):
     """Baseclass, that holds the mandatory methods a device must support."""
 
     def __init__(self, name="Device", active=False,
-                 logger=None, file_path=None):
+                 logger=None, file_path=None, group=None):
         """Set the plugin's attributes, if they're not set already."""
         super(Device, self).__init__(name, active, logger, file_path, "d")
         self.name = name
         self.is_available = None
+        self.group = group
         self.logger.info("Initialisation complete")
 
     def turn_on(self, func):
