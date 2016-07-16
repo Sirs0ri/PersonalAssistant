@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -51,8 +51,10 @@ def check_followed_streams(key, data):
     # Make the http-request
     url = "https://api.twitch.tv/kraken/streams/followed"
     req = requests.get(url, params=SECRETS)
+    # Replace null-fields with "null"-strings
+    text = req.text.replace('null', '"null"')
     try:
-        data = json.loads(req.text)
+        data = json.loads(text)
     except ValueError:
         # Thrown by json if parsing a string fails due to an invalid format.
         data = {}
