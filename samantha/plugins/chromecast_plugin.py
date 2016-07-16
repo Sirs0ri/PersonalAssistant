@@ -21,7 +21,7 @@ import pychromecast
 # pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Plugin
-import tools
+from tools import eventbuilder
 # pylint: enable=import-error
 
 
@@ -54,18 +54,21 @@ class Listener(object):
         if not status.content_type == self.content_type:
             self.content_type = status.content_type
             LOGGER.debug("New content_type: %s", self.content_type)
-        tools.eventbuilder.Event(sender_id=self.name,
-                                 keyword="chromecast.playstate_change",
-                                 data=status.__dict__).trigger()
+            eventbuilder.Event(sender_id=self.name,
+                               keyword="chromecast.playstate_change",
+                               data=status.__dict__).trigger()
 
     def new_cast_status(self, status):
         """React to the "new_cast_status" event."""
-        if not status.display_name == self.display_name:
-            self.display_name = status.display_name
-            LOGGER.debug("New app connected: %s", self.display_name)
-        tools.eventbuilder.Event(sender_id=self.name,
-                                 keyword="chromecast.connection_change",
-                                 data=status.__dict__).trigger()
+        if status.display_name:
+            # Skip the event if the displayed name is None. That happens
+            # sometimes for a short moment if a new app connects.
+            if not status.display_name == self.display_name:
+                self.display_name = status.display_name
+                LOGGER.debug("New app connected: %s", self.display_name)
+                eventbuilder.Event(sender_id=self.name,
+                                   keyword="chromecast.connection_change",
+                                   data=status.__dict__).trigger()
 
 
 @subscribe_to("system.onstart")
