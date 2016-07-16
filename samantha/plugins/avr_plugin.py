@@ -33,7 +33,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.6.1"
+__version__ = "1.6.2"
 
 
 # Initialize the logger
@@ -168,7 +168,8 @@ def chromecast_connection_change(key, data):
 
     # Check if the Chromecast is connected to an app
     if data["display_name"] in [None, "Backdrop"]:  # not connected
-        LOGGER.debug("No app connected to the Chromecast.")
+        LOGGER.debug("No app connected to the Chromecast. (%s)",
+                     data["display_name"])
         # Run the sleeper that turns off the AVR after 3 minutes
         SLEEPER = SleeperThread(target=turn_off_with_delay,
                                 delay=120,
