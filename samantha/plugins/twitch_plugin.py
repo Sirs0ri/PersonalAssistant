@@ -10,6 +10,7 @@
 # standard library imports
 import json
 import logging
+import time
 
 # related third party imports
 import requests
@@ -30,7 +31,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -50,7 +51,21 @@ def check_followed_streams(key, data):
     """Check for new online streams on twitch.tv."""
     # Make the http-request
     url = "https://api.twitch.tv/kraken/streams/followed"
-    req = requests.get(url, params=SECRETS)
+    req = None
+    retries = 1
+    while retries <= 3 and req is None:
+        try:
+            req = requests.get(url, params=SECRETS)
+        except requests.ConnectionError:
+            retries += 1
+            LOGGER.warn("Connecting to Twitch failed on attempt %d. "
+                        "Retrying in two seconds.", retries)
+            time.sleep(2)
+
+    if req is None:
+        LOGGER.exception("Connecting to Twitch failed three times in a row.")
+        return False
+
     # Replace null-fields with "null"-strings
     text = req.text.replace('null', '"null"')
     try:
