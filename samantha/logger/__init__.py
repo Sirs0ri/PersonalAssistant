@@ -23,13 +23,14 @@ import os.path
 import time
 
 # related third party imports
+import requests
 
 # application specific imports
 import handlers
 from handlers import variables_private
 
 
-__version__ = "1.5.10"
+__version__ = "1.5.11"
 
 
 # Initialize the logger
@@ -48,6 +49,14 @@ def _init(debug):
     a custom AutoRemoteHandler. The latter one will be added only, if an API-
     Key is defined inside the file 'variables_private.py'.
     """
+
+    # STFU urllib3. For more info, see:
+    # https://github.com/pypa/pip/issues/2681#issuecomment-92541888
+    requests.packages.urllib3.disable_warnings(
+        requests.packages.urllib3.exceptions.SNIMissingWarning)
+    requests.packages.urllib3.disable_warnings(
+        requests.packages.urllib3.exceptions.InsecurePlatformWarning)
+
     # Create the root-logger
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)

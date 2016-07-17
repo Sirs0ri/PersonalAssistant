@@ -17,7 +17,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 
 # Initialize the logger
@@ -108,9 +108,9 @@ class Event(object):
         if kw_in_use:
             if INITIALIZED:
                 INPUT.put(self)
-                LOGGER.warn("[UID: %s] Added the event to the queue. INPUT "
-                            "currently holds %d items.",
-                            self.uid, INPUT.qsize())
+                LOGGER.debug("[UID: %s] Added the event to the queue. INPUT "
+                             "currently holds %d items.",
+                             self.uid, INPUT.qsize())
             else:
                 LOGGER.warn("This module is not initialized correctly. This "
                             "means that booting wasn't successful, or that "

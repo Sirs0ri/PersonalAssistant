@@ -33,7 +33,7 @@ from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.6.2"
+__version__ = "1.6.3"
 
 
 # Initialize the logger
@@ -206,3 +206,4 @@ def stop(key, data):
         SLEEPER.stop()
         SLEEPER.join()
     COMM_QUEUE.join()
+    LOGGER.info("Exited.")

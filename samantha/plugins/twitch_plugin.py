@@ -31,7 +31,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -56,10 +56,11 @@ def check_followed_streams(key, data):
     while retries <= 3 and req is None:
         try:
             req = requests.get(url, params=SECRETS)
-        except requests.ConnectionError:
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.SSLError), e:
             retries += 1
             LOGGER.warn("Connecting to Twitch failed on attempt %d. "
-                        "Retrying in two seconds.", retries)
+                        "Retrying in two seconds. Error: %s", retries, e)
             time.sleep(2)
 
     if req is None:
