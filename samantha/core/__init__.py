@@ -41,7 +41,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.18"
+__version__ = "1.3.19"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -316,9 +316,11 @@ def stop():
     global INITIALIZED
 
     LOGGER.info("Exiting...")
-    LOGGER.warn("Waiting for the queues to be emptied. INPUT currently holds "
+    LOGGER.warn("Waiting for INPUT to be emptied. It currently holds "
                 "%d items.", INPUT.qsize())
     INPUT.join()
+    LOGGER.warn("Waiting for OUTPUT to be emptied. It currently holds "
+                "%d items.", OUTPUT.qsize())
     OUTPUT.join()
 
     INITIALIZED = False
