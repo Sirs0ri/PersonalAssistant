@@ -31,7 +31,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -52,15 +52,16 @@ def check_followed_streams(key, data):
     # Make the http-request
     url = "https://api.twitch.tv/kraken/streams/followed"
     req = None
-    retries = 1
-    while retries <= 3 and req is None:
+    tries = 0
+    while tries <= 3 and req is None:
         try:
-            req = requests.get(url, params=SECRETS)
+            tries += 1
+            req = requests.get(url, params=SECRETS, timeout=15)
         except (requests.exceptions.ConnectionError,
-                requests.exceptions.SSLError), e:
-            retries += 1
+                requests.exceptions.SSLError,
+                requests.exceptions.Timeout), e:
             LOGGER.warn("Connecting to Twitch failed on attempt %d. "
-                        "Retrying in two seconds. Error: %s", retries, e)
+                        "Retrying in two seconds. Error: %s", tries, e)
             time.sleep(2)
 
     if req is None:
@@ -113,6 +114,8 @@ def check_followed_streams(key, data):
                 # remove the channel from STREAM_LIST so that it can be
                 # refilled with the new data
                 del STREAM_LIST[channelname]
+    else:
+        LOGGER.warn("The data didn't include the 'streams' field.")
 
     while len(STREAM_LIST) > 0:
         # STREAM_LIST now contains only those streams that were online
