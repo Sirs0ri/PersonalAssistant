@@ -19,6 +19,7 @@ except ImportError:
 
 # application specific imports
 # pylint: disable=import-error
+import context
 from core import subscribe_to
 from plugins.plugin import Device
 from tools import eventbuilder
@@ -31,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 # Initialize the logger
@@ -72,8 +73,8 @@ if FritzHosts:
 
 PLUGIN = Device("FritzBox", authenticated, LOGGER, __file__)
 
-DEVICES_DICT = {}
-DEVICES_DICT_CACHE = {}
+DEVICES_DICT = context.get_property("network.devices", default={})
+DEVICES_DICT_CACHE = context.get_property("network.devices", default={})
 
 
 def _status_update(device):
@@ -84,6 +85,8 @@ def _status_update(device):
             status, device["name"]),
         data=device).trigger()
     DEVICES_DICT[device["mac"]] = device
+    context.set_property("network.devices.{}".format(device["mac"]), device)
+    context.set_property("network.devices", DEVICES_DICT)
 
 
 @subscribe_to(["system.onstart", "time.schedule.10s"])
