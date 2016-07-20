@@ -35,7 +35,7 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 
 # Initialize the logger
@@ -148,13 +148,18 @@ def start_thread(key, data):
 def sun_times(key, data):
     """Update the times for sunset and -rise."""
     global SUNRISE, SUNSET
-    sunrise = datetime.datetime.fromtimestamp(data["sys"]["sunrise"])
-    sunset = datetime.datetime.fromtimestamp(data["sys"]["sunset"])
-    if SUNRISE is not sunrise:
-        SUNRISE = sunrise
-        LOGGER.debug("Updated Sunrise to %s",
-                     SUNRISE.strftime('%Y-%m-%d %H:%M:%S'))
-    if SUNSET is not sunset:
-        SUNSET = sunset
-        LOGGER.debug("Updated Sunset to %s",
-                     SUNSET.strftime('%Y-%m-%d %H:%M:%S'))
+    success = False
+    if "sys" in data:
+        sunrise = datetime.datetime.fromtimestamp(data["sys"]["sunrise"])
+        sunset = datetime.datetime.fromtimestamp(data["sys"]["sunset"])
+        if SUNRISE is not sunrise:
+            SUNRISE = sunrise
+            LOGGER.debug("Updated Sunrise to %s",
+                         SUNRISE.strftime('%Y-%m-%d %H:%M:%S'))
+            success = True
+        if SUNSET is not sunset:
+            SUNSET = sunset
+            LOGGER.debug("Updated Sunset to %s",
+                         SUNSET.strftime('%Y-%m-%d %H:%M:%S'))
+            success = True
+    return success

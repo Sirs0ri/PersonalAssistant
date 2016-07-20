@@ -3,7 +3,7 @@
 #################
 
 # My own stuff
-*_private.py
+*_private.*
 samantha.log.*
 
 #################

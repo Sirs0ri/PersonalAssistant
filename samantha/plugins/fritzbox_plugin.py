@@ -19,6 +19,7 @@ except ImportError:
 
 # application specific imports
 # pylint: disable=import-error
+import context
 from core import subscribe_to
 from plugins.plugin import Device
 from tools import eventbuilder
@@ -31,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.3"
 
 
 # Initialize the logger
@@ -72,7 +73,8 @@ if FritzHosts:
 
 PLUGIN = Device("FritzBox", authenticated, LOGGER, __file__)
 
-DEVICES_DICT = {}
+DEVICES_DICT = context.get_property("network.devices", default={})
+DEVICES_DICT_CACHE = context.get_property("network.devices", default={})
 
 
 def _status_update(device):
@@ -82,12 +84,15 @@ def _status_update(device):
         keyword="network.fritzbox.availability.{}.{}".format(
             status, device["name"]),
         data=device).trigger()
+    DEVICES_DICT[device["mac"]] = device
+    context.set_property("network.devices.{}".format(device["mac"]), device)
+    context.set_property("network.devices", DEVICES_DICT)
 
 
 @subscribe_to(["system.onstart", "time.schedule.10s"])
 def update_devices(key, data):
     """Check for updated device-info."""
-    ignored_macs = ["00:80:77:F2:71:23"]
+    ignored_macs = ["00:80:77:F2:71:23", None]
     # this list holds the mac-addresses of ignored devices. They won't be able
     # to trigger events such as coming on/offline or registering. The 1st
     # listed address is for example my printer which dis- and reconnects every
@@ -110,9 +115,11 @@ def update_devices(key, data):
                         device["name"]),
                     data=device).trigger()
                 _status_update(device)
-            elif device["status"] is not DEVICES_DICT[device["mac"]]["status"]:
+            elif (device["status"]
+                  is DEVICES_DICT_CACHE[device["mac"]]["status"]
+                  is not DEVICES_DICT[device["mac"]]["status"]):
                 _status_update(device)
 
-            DEVICES_DICT[device["mac"]] = device
+            DEVICES_DICT_CACHE[device["mac"]] = device
 
     return True
