@@ -16,7 +16,7 @@
 # TODO: [ ]         Compares Context and rules
 # TODO: [ ] finish stop()
 # TODO: [ ]     Store the current context as JSON
-# TODO: [ ] def import_from_file(path="data/context.json"):
+# TODO: [ ] def import_from_file(path="data/context_private.json"):
 # TODO: [ ]     Load a previous context from JSON, then:
 # TODO: [ ]     Compare the property's TTLs to the current time and load only
 #               valide ones
@@ -28,14 +28,17 @@
 
 
 # standard library imports
+import datetime
+import json
 import logging
+import os
 
 # related third party imports
 
 # application specific imports
 
 
-__version__ = "0.4.5"
+__version__ = "1.0.0"
 
 
 # Initialize the logger
@@ -47,16 +50,74 @@ INITIALIZED = False
 INPUT = None
 OUTPUT = None
 
+CONTEXT = {"_": None, "_ttl": None}
+
 LOGGER.debug("I was imported.")
+
+
+def set_property(attribute, value, default=None, ttl=None):
+    """Set an attribute inside the context to the given value."""
+    path = attribute.split(".")
+    data = CONTEXT
+    current_path = ""
+    for step in path:
+        if step:
+            if current_path:
+                current_path += "."
+            current_path += step
+            if step not in data:
+                LOGGER.debug("Creating field %s", current_path)
+                data[step] = {"_": None, "_ttl": None}
+            data = data[step]
+
+    LOGGER.debug("Saving %s, TTL: %s, Default: %s at %s.",
+                 value,
+                 ttl,
+                 default,
+                 attribute)
+    data["_"] = value
+    data["_default"] = default
+    data["_ttl"] = ttl
+
+
+def get_property(attribute, default=None):
+    """Read an attributes value from the context."""
+    path = attribute.split(".")
+    data = CONTEXT
+    for step in path:
+        if step:
+            if step in data:
+                data = data[step]
+            else:
+                LOGGER.error("Illegal path %s. The item %s wasn't found.",
+                             attribute, step)
+                data = None
+                break
+    if data:
+        if data["_ttl"]:
+            if data["_ttl"] < datetime.datetime.now():
+                LOGGER.warn("This attribute is expired")
+                return data["_default"]
+        LOGGER.debug("Returning %s.", data["_"])
+        return data["_"]
+    else:
+        return default
 
 
 def _init(queue_in, queue_out):
     """Initialize the module."""
-    global INPUT, OUTPUT
+    global INPUT, OUTPUT, CONTEXT
 
     LOGGER.info("Initializing...")
     INPUT = queue_in
     OUTPUT = queue_out
+    try:
+        this_dir = os.path.split(__file__)[0]
+        with open("{}/context_private.json".format(this_dir)) as data_file:
+            CONTEXT = json.load(data_file)
+        LOGGER.debug("Loaded the context successfully.")
+    except IOError:
+        LOGGER.error("The context could not be found at %s", this_dir)
 
     LOGGER.info("Initialisation complete.")
     return True
@@ -67,6 +128,10 @@ def stop():
     global INITIALIZED
 
     LOGGER.info("Exiting...")
+    this_dir = os.path.split(__file__)[0]
+    with open("{}/context_private.json".format(this_dir), "w+") as data_file:
+        json.dump(CONTEXT, data_file, sort_keys=True, indent=4)
+        LOGGER.debug("Saved the context successfully.")
     INITIALIZED = False
     LOGGER.info("Exited.")
     return True
