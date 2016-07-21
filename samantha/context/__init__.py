@@ -39,7 +39,7 @@ import os
 # application specific imports
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 # Initialize the logger
@@ -83,11 +83,7 @@ def set_property(attribute, value, default=None, ttl=None):
                 data[step] = {"_": None, "_ttl": None}
             data = data[step]
 
-    LOGGER.debug("Saving %s, TTL: %s, Default: %s at %s.",
-                 value,
-                 ttl,
-                 default,
-                 attribute)
+    LOGGER.debug("Saving '%s'.", attribute)
     data["_"] = value
     data["_default"] = default
     data["_ttl"] = ttl
