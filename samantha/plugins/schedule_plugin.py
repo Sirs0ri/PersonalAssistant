@@ -36,14 +36,12 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-IS_DAYTIME = context.get_value("time.time_of_day.day", False)
-IS_NIGHTTIME = context.get_value("time.time_of_day.night", False)
 SUNRISE = datetime.datetime.fromtimestamp(0)
 SUNSET = datetime.datetime.fromtimestamp(0)
 
@@ -52,10 +50,30 @@ PLUGIN = Plugin("Schedule", True, LOGGER, __file__)
 
 def worker():
     """Check if events should be triggered, sleep 1sec, repeat."""
-    global IS_DAYTIME, IS_NIGHTTIME
     name = __name__ + ".Thread"
     logger = logging.getLogger(name)
     logger.debug("Started.")
+
+    def _check_daytime(datetime_obj, timelist):
+        if (SUNSET < SUNRISE < datetime_obj or
+                SUNRISE < datetime_obj < SUNSET or
+                datetime_obj < SUNSET < SUNRISE):
+            # The sun has risen.
+            time_of_day = "day"
+        else:
+            # The sun hasn't risen yet.
+            time_of_day = "night"
+
+        if time_of_day == context.get_value("time.time_of_day", None):
+            logger.debug("It's still %stime.", time_of_day)
+        else:
+            logger.debug("It's now %stime.", time_of_day)
+            context.set_property("time.time_of_day", time_of_day)
+            keyword = "time.time_of_day.{}".format(time_of_day)
+            eventbuilder.Event(sender_id=name,
+                               keyword=keyword,
+                               data=timelist).trigger()
+
     # Initialisation
     while True:
         datetime_obj = datetime.datetime.now()
@@ -85,36 +103,7 @@ def worker():
                                    data=timelist,
                                    ttl=55).trigger()
                 # Check for a change in the time of day
-                if (SUNSET < SUNRISE < datetime_obj or
-                        SUNRISE < datetime_obj < SUNSET or
-                        datetime_obj < SUNSET < SUNRISE):
-                    # The sun has risen.
-                    if not IS_DAYTIME:
-                        IS_DAYTIME = True
-                        IS_NIGHTTIME = False
-                        context.set_property("time.time_of_day.day", True)
-                        context.set_property("time.time_of_day.night", False)
-                        LOGGER.debug("It's now daytime.")
-                        eventbuilder.Event(sender_id=name,
-                                           keyword="time.time_of_day.day",
-                                           data=timelist).trigger()
-                    else:
-                        LOGGER.debug("It's still daytime.")
-                if (SUNRISE < SUNSET < datetime_obj or
-                        SUNSET < datetime_obj < SUNRISE or
-                        datetime_obj < SUNRISE < SUNSET):
-                    # The sun has set.
-                    if not IS_NIGHTTIME:
-                        IS_NIGHTTIME = True
-                        IS_DAYTIME = False
-                        context.set_property("time.time_of_day.night", True)
-                        context.set_property("time.time_of_day.day", False)
-                        LOGGER.debug("It's now nighttime.")
-                        eventbuilder.Event(sender_id=name,
-                                           keyword="time.time_of_day.night",
-                                           data=timelist).trigger()
-                    else:
-                        LOGGER.debug("It's still nighttime.")
+                _check_daytime(datetime_obj, timelist)
                 if timelist[4] == 0:
                     # Minutes = 0 -> New Hour
                     eventbuilder.Event(sender_id=name,
