@@ -113,7 +113,7 @@ def check_followed_streams(key, data):
                             channelname),
                         data=item).trigger()
                     context.set_property("media.twitch.{}".format(channelname),
-                                         new_streamlist[channelname])
+                                         item)
                 # remove the channel from STREAM_LIST so that it can be
                 # refilled with the new data
                 del STREAM_LIST[channelname]
@@ -130,7 +130,7 @@ def check_followed_streams(key, data):
             keyword="media.twitch.availability.offline.{}".format(channelname),
             data=channeldata).trigger()
         context.set_property("media.twitch.{}".format(channelname),
-                             new_streamlist[channelname])
+                             channeldata)
 
     # update the existing STREAM_LIST with the new streams
     for channelname in new_streamlist:
