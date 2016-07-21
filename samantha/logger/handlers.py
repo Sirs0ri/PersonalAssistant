@@ -34,7 +34,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.6"
+__version__ = "1.2.7"
 
 
 # Initialize the logger
@@ -73,7 +73,7 @@ class AutoRemoteHandler(logging.Handler):
                             "via AutoRemote.")
             else:
                 LOGGER.debug("Sending '%s(...)' via AutoRemote",
-                             message.split("\n")[0])
+                             message[:42])
                 requests.post(url, payload, timeout=15)
         except Exception:
             LOGGER.exception("Exception while connecting to AutoRemote:\n%s",
