@@ -28,7 +28,7 @@ import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 
 # Initialize the logger
@@ -84,14 +84,14 @@ def parse(message):
     return keyword, data
 
 
-class UDP_Thread(threading.Thread):
+class UDPThread(threading.Thread):
     """Thread class with a stop() method. The thread sleeps for 'delay'
     seconds, then runs the target-function."""
 
     def __init__(self, *args, **kwargs):
-        """Basically the original __init__(), but expanded by the delay, as well
-        as a logger."""
-        super(UDP_Thread, self).__init__(*args, **kwargs)
+        """Basically the original __init__(), but expanded by the delay, as
+        well as a logger."""
+        super(UDPThread, self).__init__(*args, **kwargs)
         self._stop = threading.Event()
         self.logger = logging.getLogger(__name__ + "." + self.name)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -129,6 +129,7 @@ class UDP_Thread(threading.Thread):
         self._stop.set()
 
     def stopped(self):
+        """Return whether the Thread should still be running or not."""
         return self._stop.isSet()
 
 
@@ -195,7 +196,7 @@ def _init(queue_in, queue_out):
 
     reactor.listenTCP(19113, FACTORY)
 
-    UDP_THREAD = UDP_Thread(name="udp_thread")
+    UDP_THREAD = UDPThread(name="udp_thread")
 
     LOGGER.info("Initialisation complete.")
     return True
@@ -214,7 +215,8 @@ def send_message(message):
         INDEX[message["sender_id"]].sendMessage(
             message["result"].encode('utf8'), False)
     else:
-        LOGGER.warn("There is no client with the UID %s!", message["sender_id"])
+        LOGGER.warn("There is no client with the UID %s!",
+                    message["sender_id"])
 
 
 def stop():
