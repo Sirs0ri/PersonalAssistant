@@ -32,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 
 # Initialize the logger
@@ -79,6 +79,7 @@ DEVICES_DICT_CACHE = context.get_children("network.devices", default={})
 
 def _status_update(device):
     status = "online" if int(device["status"]) else "offline"
+    LOGGER.debug("Updating device %s", device["mac"])
     eventbuilder.Event(
         sender_id=PLUGIN.name,
         keyword="network.fritzbox.availability.{}.{}".format(
@@ -97,6 +98,9 @@ def update_devices(key, data):
     # listed address is for example my printer which dis- and reconnects every
     # few minutes and only spams my logs.
 
+    # LOGGER.debug("The INDEXES hold %d (%d) devices.",
+    #             len(DEVICES_DICT), len(DEVICES_DICT_CACHE))
+
     # Update data from the FritzBox
     devices_list = _get_hosts_info()
 
@@ -108,6 +112,7 @@ def update_devices(key, data):
                          device["name"])
         else:
             if device["mac"] not in DEVICES_DICT:
+                # LOGGER.debug("%s is a new device.", device["mac"])
                 eventbuilder.Event(
                     sender_id=PLUGIN.name,
                     keyword="network.fritzbox.newdevice.{}".format(
@@ -115,6 +120,7 @@ def update_devices(key, data):
                     data=device).trigger()
                 _status_update(device)
             else:
+                # LOGGER.debug("%s is a known device.", device["mac"])
                 if (int(device["status"])
                         is int(DEVICES_DICT_CACHE[device["mac"]]["status"])
                         is not int(DEVICES_DICT[device["mac"]]["status"])):
