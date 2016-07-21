@@ -28,6 +28,7 @@ import time
 
 # application specific imports
 # pylint: disable=import-error
+import context
 from core import subscribe_to
 import logging
 from plugins.plugin import Plugin
@@ -35,14 +36,14 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-IS_DAYTIME = False
-IS_NIGHTTIME = False
+IS_DAYTIME = context.get_value("time.time_of_day.day", False)
+IS_NIGHTTIME = context.get_value("time.time_of_day.night", False)
 SUNRISE = datetime.datetime.fromtimestamp(0)
 SUNSET = datetime.datetime.fromtimestamp(0)
 
@@ -91,6 +92,8 @@ def worker():
                     if not IS_DAYTIME:
                         IS_DAYTIME = True
                         IS_NIGHTTIME = False
+                        context.set_property("time.time_of_day.day", True)
+                        context.set_property("time.time_of_day.night", False)
                         LOGGER.debug("It's now daytime.")
                         eventbuilder.Event(sender_id=name,
                                            keyword="time.time_of_day.day",
@@ -104,6 +107,8 @@ def worker():
                     if not IS_NIGHTTIME:
                         IS_NIGHTTIME = True
                         IS_DAYTIME = False
+                        context.set_property("time.time_of_day.night", True)
+                        context.set_property("time.time_of_day.day", False)
                         LOGGER.debug("It's now nighttime.")
                         eventbuilder.Event(sender_id=name,
                                            keyword="time.time_of_day.night",
