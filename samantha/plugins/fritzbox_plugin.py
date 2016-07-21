@@ -32,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.0.6"
+__version__ = "1.0.7"
 
 
 # Initialize the logger
@@ -105,7 +105,7 @@ def update_devices(key, data):
                           key=lambda item: item["name"].lower())
     for device in devices_list:
         if device["mac"] in ignored_macs:
-            LOGGER.debug("Ignoring '%s' as requested from the user.",
+            LOGGER.debug("Ignoring '%s' as requested by the user.",
                          device["name"])
         else:
             c_device = context.get_value(
