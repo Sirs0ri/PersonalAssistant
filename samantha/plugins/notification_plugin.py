@@ -29,7 +29,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 
 # Initialize the logger
@@ -51,8 +51,8 @@ def _send_ar_message(message=None, files=None):
         else:
             payload["files"] = files
     try:
-        LOGGER.debug("Sending '%s(...)' via AutoRemote",
-                     message[:42])
+        LOGGER.debug("Sending '%s(...)' via AR",
+                     message[:50])
         requests.post(url, payload, timeout=15)
         return True
     except Exception:
