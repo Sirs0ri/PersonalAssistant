@@ -32,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 
 # Initialize the logger
@@ -73,8 +73,8 @@ if FritzHosts:
 
 PLUGIN = Device("FritzBox", authenticated, LOGGER, __file__)
 
-DEVICES_DICT = context.get_property("network.devices", default={})
-DEVICES_DICT_CACHE = context.get_property("network.devices", default={})
+DEVICES_DICT = context.get_children("network.devices", default={})
+DEVICES_DICT_CACHE = context.get_children("network.devices", default={})
 
 
 def _status_update(device):
@@ -86,7 +86,6 @@ def _status_update(device):
         data=device).trigger()
     DEVICES_DICT[device["mac"]] = device
     context.set_property("network.devices.{}".format(device["mac"]), device)
-    context.set_property("network.devices", DEVICES_DICT)
 
 
 @subscribe_to(["system.onstart", "time.schedule.10s"])
@@ -115,10 +114,11 @@ def update_devices(key, data):
                         device["name"]),
                     data=device).trigger()
                 _status_update(device)
-            elif (device["status"]
-                  is DEVICES_DICT_CACHE[device["mac"]]["status"]
-                  is not DEVICES_DICT[device["mac"]]["status"]):
-                _status_update(device)
+            else:
+                if (int(device["status"])
+                        is int(DEVICES_DICT_CACHE[device["mac"]]["status"])
+                        is not int(DEVICES_DICT[device["mac"]]["status"])):
+                    _status_update(device)
 
             DEVICES_DICT_CACHE[device["mac"]] = device
 
