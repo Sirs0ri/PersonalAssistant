@@ -28,7 +28,7 @@ import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 
 # Initialize the logger
@@ -103,7 +103,7 @@ class UDP_Thread(threading.Thread):
     def run(self):
         """Sleep for DELAY seconds, then run the original threading.Thread's
         run() function."""
-        print("Started the thread.")
+        self.logger.debug("Started the thread.")
 
         server_address = ('255.255.255.255', 10000)
         message = 'sam.ip.broadcast:19113'
