@@ -28,6 +28,7 @@
 
 
 # standard library imports
+from copy import copy
 import datetime
 import json
 import logging
@@ -55,6 +56,18 @@ CONTEXT = {"_": None, "_ttl": None}
 LOGGER.debug("I was imported.")
 
 
+def _has_children(obj):
+    """Check if an object from the context has children."""
+    obj = copy(obj)
+    if "_" in obj:
+        del obj["_"]
+    if "_ttl" in obj:
+        del obj["_ttl"]
+    if "_default" in obj:
+        del obj["_default"]
+    return len(obj) > 0
+
+
 def set_property(attribute, value, default=None, ttl=None):
     """Set an attribute inside the context to the given value."""
     path = attribute.split(".")
@@ -80,7 +93,7 @@ def set_property(attribute, value, default=None, ttl=None):
     data["_ttl"] = ttl
 
 
-def get_property(attribute, default=None):
+def get_value(attribute, default=None):
     """Read an attributes value from the context."""
     path = attribute.split(".")
     data = CONTEXT
@@ -98,8 +111,42 @@ def get_property(attribute, default=None):
             if data["_ttl"] < datetime.datetime.now():
                 LOGGER.warn("This attribute is expired")
                 return data["_default"]
-        LOGGER.debug("Returning %s.", data["_"])
+        # LOGGER.debug("Returning %s.", data["_"])
         return data["_"]
+    else:
+        return default
+
+
+def get_children(attribute, default=None):
+    """Read an attributes value from the context."""
+    # print "getting children for {}".format(attribute)
+    path = attribute.split(".")
+    data = CONTEXT
+    # Follow the desired path into the context
+    current_path = ""
+    for step in path:
+        if step:
+            if step in data:
+                if current_path:
+                    current_path += "."
+                current_path += step
+                data = data[step]
+            else:
+                LOGGER.error("Illegal path %s. The item %s wasn't found.",
+                             attribute, step)
+                data = None
+                break
+    if data:
+        results = {}
+        if _has_children(data):
+            for child in data:
+                if child not in ["_", "_ttl", "_default"]:
+                    results[child] = get_children("{}.{}".format(current_path,
+                                                                 child))
+        else:
+            return get_value(current_path)
+        # LOGGER.debug("Returning %s.", results)
+        return results
     else:
         return default
 
