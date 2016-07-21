@@ -17,6 +17,7 @@ import requests
 
 # application specific imports
 # pylint: disable=import-error
+import context
 from core import subscribe_to
 from plugins.plugin import Plugin
 from tools import eventbuilder
@@ -31,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.9"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ if SECRETS is None:
 
 PLUGIN = Plugin("Twitch", SECRETS is not None, LOGGER, __file__)
 
-STREAM_LIST = {}
+STREAM_LIST = context.get_children("media.twitch", default={})
 
 
 @subscribe_to(["system.onstart", "time.schedule.min"])
@@ -89,7 +90,8 @@ def check_followed_streams(key, data):
                 .encode("utf-8").decode("utf-8")
             # save the stream's data in a new list
             new_streamlist[channelname] = item
-            if channelname not in STREAM_LIST:
+            if (channelname not in STREAM_LIST or
+                STREAM_LIST[channelname] is None):
                 # The stream came online since the last check
                 LOGGER.debug(u"'%s' is now online. Playing '%s'",
                              channelname, current_game)
@@ -98,12 +100,20 @@ def check_followed_streams(key, data):
                     keyword="media.twitch.availability.online.{}".format(
                         channelname),
                     data=item).trigger()
+                context.set_property(
+                    "media.twitch.{}".format(channelname), item)
+                if channelname in STREAM_LIST:
+                    # remove the channel from STREAM_LIST so that it can be
+                    # refilled with the new data
+                    del STREAM_LIST[channelname]
             else:
                 # The channel was already online at the last check
                 if current_game == STREAM_LIST[channelname]["channel"]["game"]:
+                    # The game hasn't changed
                     LOGGER.debug("'%s' is still playing '%s'.",
                                  channelname, current_game)
                 else:
+                    # The game changed
                     LOGGER.debug("'%s' is now playing '%s'",
                                  channelname, current_game)
                     eventbuilder.Event(
@@ -111,6 +121,8 @@ def check_followed_streams(key, data):
                         keyword="media.twitch.gamechange.{}".format(
                             channelname),
                         data=item).trigger()
+                    context.set_property(
+                        "media.twitch.{}".format(channelname), item)
                 # remove the channel from STREAM_LIST so that it can be
                 # refilled with the new data
                 del STREAM_LIST[channelname]
@@ -121,11 +133,14 @@ def check_followed_streams(key, data):
         # STREAM_LIST now contains only those streams that were online
         # during the last check but have gone offline since.
         channelname, channeldata = STREAM_LIST.popitem()
-        LOGGER.debug("'%s' is now offline.", channelname)
-        eventbuilder.Event(
-            sender_id=PLUGIN.name,
-            keyword="media.twitch.availability.offline.{}".format(channelname),
-            data=channeldata).trigger()
+        if channeldata is not None:
+            LOGGER.debug("'%s' is now offline.", channelname)
+            key = "media.twitch.availability.offline.{}".format(channelname)
+            eventbuilder.Event(sender_id=PLUGIN.name,
+                               keyword=key,
+                               data=channeldata).trigger()
+            context.set_property(
+                "media.twitch.{}".format(channelname), None)
 
     # update the existing STREAM_LIST with the new streams
     for channelname in new_streamlist:
