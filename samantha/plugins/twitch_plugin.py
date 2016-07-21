@@ -17,6 +17,7 @@ import requests
 
 # application specific imports
 # pylint: disable=import-error
+import context
 from core import subscribe_to
 from plugins.plugin import Plugin
 from tools import eventbuilder
@@ -31,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ if SECRETS is None:
 
 PLUGIN = Plugin("Twitch", SECRETS is not None, LOGGER, __file__)
 
-STREAM_LIST = {}
+STREAM_LIST = context.get_children("media.twitch", default={})
 
 
 @subscribe_to(["system.onstart", "time.schedule.min"])
@@ -111,6 +112,8 @@ def check_followed_streams(key, data):
                         keyword="media.twitch.gamechange.{}".format(
                             channelname),
                         data=item).trigger()
+                    context.set_property("media.twitch.{}".format(channelname),
+                                         new_streamlist[channelname])
                 # remove the channel from STREAM_LIST so that it can be
                 # refilled with the new data
                 del STREAM_LIST[channelname]
@@ -126,6 +129,8 @@ def check_followed_streams(key, data):
             sender_id=PLUGIN.name,
             keyword="media.twitch.availability.offline.{}".format(channelname),
             data=channeldata).trigger()
+        context.set_property("media.twitch.{}".format(channelname),
+                             new_streamlist[channelname])
 
     # update the existing STREAM_LIST with the new streams
     for channelname in new_streamlist:
