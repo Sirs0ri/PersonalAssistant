@@ -26,7 +26,7 @@ from plugins.plugin import Device
 # pylint: enable=import-error
 
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 
 # Initialize the logger
@@ -219,7 +219,6 @@ def test_interpolators(key, data):
 
 
 @PLUGIN.turn_on
-@subscribe_to("turn_on.led")
 def turn_on(key, data):
     """Turn on all lights."""
     _stop_previous_command()
@@ -228,6 +227,17 @@ def turn_on(key, data):
     return True
 
 
+@subscribe_to(["turn.on.ambient.led", "turn.on.ambient.light"])
+def ambient(key, data):
+    """Turn on light at 50% brightness."""
+    _stop_previous_command()
+    _crossfade(51, 17, 3, 0.2)
+    IDLE.set()
+    return True
+
+
+@subscribe_to(["turn.off.ambient.led", "turn.off.ambient.light",
+               "time.time_of_day.day"])
 @PLUGIN.turn_off
 @subscribe_to("system.onexit")
 def turn_off(key, data):
