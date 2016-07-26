@@ -20,7 +20,7 @@ from core import subscribe_to
 # pylint: enable=import-error
 
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 
 # Initialize the logger
@@ -74,16 +74,16 @@ class Device(Plugin):
         self.is_available = None
         self.group = group
         self.logger.info("Initialisation complete")
-        self.power_on_keywords = [self.name.lower() + ".power.on"]
-        self.power_off_keywords = [self.name.lower() + ".power.off"]
+        self.power_on_keywords = ["turn.on." + self.name.lower()]
+        self.power_off_keywords = ["turn.off." + self.name.lower()]
         if group:
             if not isinstance(group, str) and isinstance(group, Iterable):
                 for key in group:
-                    self.power_on_keywords.append(key.lower() + ".power.on")
-                    self.power_off_keywords.append(key.lower() + ".power.off")
+                    self.power_on_keywords.append("turn.on." + key.lower())
+                    self.power_off_keywords.append("turn.off." + key.lower())
             else:
-                self.power_on_keywords.append(group.lower() + ".power.on")
-                self.power_off_keywords.append(group.lower() + ".power.off")
+                self.power_on_keywords.append("turn.on." + group.lower())
+                self.power_off_keywords.append("turn.off." + group.lower())
 
     def turn_on(self, func):
         @subscribe_to(self.power_on_keywords)
