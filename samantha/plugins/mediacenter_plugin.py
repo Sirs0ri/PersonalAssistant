@@ -21,7 +21,7 @@ from plugins.plugin import Plugin
 # pylint: enable=import-error
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ PLUGIN = Plugin("Mediacenter", True, LOGGER, __file__)
 def chromecast_connection_change(key, data):
     """React to a change of the Chromecast's connection."""
     # Check if the Chromecast is connected to an app
-    if context.get_value("time.time_of_day") is "night":
+    if context.get_value("time.time_of_day") == "night":
         if data["display_name"] in [None, "Backdrop"]:  # not connected
             eventbuilder.Event(sender_id=PLUGIN.name,
                                keyword="turn.off.ambient.433").trigger()
