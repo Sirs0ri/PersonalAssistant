@@ -26,7 +26,7 @@ from plugins.plugin import Device
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
@@ -137,15 +137,17 @@ def _crossfade(red=-1, green=-1, blue=-1, speed=1.0, interpolator=None):
             blue_is = PI.get_PWM_dutycycle(BLUE_PINS[0])
             blue_list = _spread((blue - blue_is), steps, interpolator)
         i = 0
-        while i < steps and not NEW_COMMAND.is_set():
-            if red_list[i] is not 0:
-                red_is += red_list[i]
-            if green_list[i] is not 0:
-                green_is += green_list[i]
-            if blue_list[i] is not 0:
-                blue_is += blue_list[i]
-            _set_pins(red_is, green_is, blue_is)
-            i += 1
+        if not (red_is == red and blue_is == blue and green_is == green):
+            # don't crossfade if none of the colors would change
+            while i < steps and not NEW_COMMAND.is_set():
+                if red_list[i] is not 0:
+                    red_is += red_list[i]
+                if green_list[i] is not 0:
+                    green_is += green_list[i]
+                if blue_list[i] is not 0:
+                    blue_is += blue_list[i]
+                _set_pins(red_is, green_is, blue_is)
+                i += 1
 
 
 @subscribe_to("system.onstart")
