@@ -3,6 +3,7 @@
 ###############################################################################
 #
 # TODO: [ ] Add a receiver to intercept commands from the remote
+# TODO: [ ] Check Dokumentation
 #
 ###############################################################################
 
@@ -24,7 +25,7 @@ from plugins.plugin import Plugin, Device
 # pylint: enable=import-error
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
