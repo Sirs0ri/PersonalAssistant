@@ -29,7 +29,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 
 
 # Initialize the logger
@@ -110,6 +110,14 @@ def notify_fritz_newdevice(key, data):
     """Notifiy the user about new devices in the network."""
     message = "logging=:=Samantha=:={} {} joined the network.".format(
         datetime.now().strftime("%H:%M"), data["name"])
+    return _send_ar_message(message)
+
+
+@subscribe_to("notify.user")
+def notify_user(key, data):
+    """Notifiy the user about new devices in the network."""
+    message = "logging=:={}=:={}".format(
+        data["title"], data["message"])
     return _send_ar_message(message)
 
 
