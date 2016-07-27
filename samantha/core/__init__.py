@@ -12,11 +12,9 @@
 ###############################################################################
 # pylint: disable=global-statement
 #
+# TODO: [ ] clean up stats_worker
 #           worker()
 # TODO: [ ] parse the message
-# TODO: [ ] allow a hierarchy in commands,
-#           Example: "media.twitch.online.channename" will trigger plugins that
-#           subscribed to "media.*", "*.online.*", "media.twitch.online.*", etc
 #
 ###############################################################################
 
@@ -44,7 +42,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
