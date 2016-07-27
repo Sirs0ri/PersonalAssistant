@@ -28,7 +28,7 @@ import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.4.3"
+__version__ = "1.4.4"
 
 
 # Initialize the logger
@@ -109,17 +109,27 @@ class UDPThread(threading.Thread):
         message = 'sam.ip.broadcast:19113'
 
         try:
-            while not self.stopped():
+            retries = 0
+            while not self.stopped() and retries <= 3:
 
-                # Send data
-                self.logger.debug("Sending '%s'", message)
-                self.socket.sendto(message, server_address)
-                time.sleep(5)
+                try:
+                    # Send data
+                    self.logger.debug("Sending '%s'", message)
+                    self.socket.sendto(message, server_address)
+                    time.sleep(5)
+                    retries = 0
+                except socket.error:
+                    retries += 1
+                    self.logger.warn(
+                        "Sending the message failed. Retrying in 5 sec.")
+            if retries > 3:
+                self.logger.fatal("The socket couldn't establish a "
+                                  "connection repeatedly.")
+            elif self.stopped():
+                self.logger.info("The socket was asked to shut down.")
         finally:
             self.logger.debug("Closing the socket.")
             self.socket.close()
-
-        if self.stopped():
             self.logger.debug("Exited.")
 
     def stop(self):
@@ -173,7 +183,7 @@ class Server(WebSocketServerProtocol):
                 LOGGER.fatal(
                     "[UID: %s] Received the request to close the server",
                     self.uid)
-                self.sendClose()
+                self.sendClose(code=1000, reason="Shutting down the server!")
                 # TODO: Exit all conections cleanly
                 reactor.stop()
             else:

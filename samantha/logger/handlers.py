@@ -14,7 +14,7 @@ readability or an AutoRemote-Handler that sends log messages to my phone.
 # standard library imports
 import logging
 import logging.handlers
-import traceback
+import time
 
 # related third party imports
 import requests
@@ -34,7 +34,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.7"
+__version__ = "1.2.8"
 
 
 # Initialize the logger
@@ -61,23 +61,31 @@ class AutoRemoteHandler(logging.Handler):
         url = "https://autoremotejoaomgcd.appspot.com/sendmessage"
         payload = {'key': variables_private.ar_key,
                    'message': "logging=:=Samantha=:=" + message}
-        try:
-            if (record.name == "logger.handlers" or
-                (record.name == "pychromecast.socket_client" and
-                 "Failed to connect, retrying in" in message)):
-                # skip messages that were caused by this very function and by
-                # pychromecast's socket_client that throws errors for
-                # unimportant events
-                LOGGER.warn("This error was either caused by this class or by "
-                            "a short DC from the Chromecast, it won't be sent "
-                            "via AutoRemote.")
-            else:
-                LOGGER.debug("Sending '%s(...)' via AutoRemote",
-                             message[:42])
-                requests.post(url, payload, timeout=15)
-        except Exception:
-            LOGGER.exception("Exception while connecting to AutoRemote:\n%s",
-                             traceback.format_exc())
+        req = None
+        tries = 0
+        if (record.name == "logger.handlers" or
+            (record.name == "pychromecast.socket_client" and
+             "Failed to connect, retrying in" in message)):
+            # skip messages that were caused by this very function and
+            # by pychromecast's socket_client that throws errors for
+            # unimportant events
+            LOGGER.warn("This error was either caused by this class "
+                        "or by a short DC from the Chromecast, it "
+                        "won't be sent via AutoRemote.")
+        else:
+            while tries <= 3 and req is None:
+                try:
+                    LOGGER.debug("Sending '%s(...)' via AR",
+                                 message)
+                    #  message[:50])
+                    req = requests.post(url, payload, timeout=15, stream=False)
+                except (requests.exceptions.ConnectionError,
+                        requests.exceptions.SSLError,
+                        requests.exceptions.Timeout), e:
+                    tries += 1
+                    LOGGER.warn("Connecting to AutoRemote failed on attempt %d. "
+                                "Retrying in two seconds. Error: %s", tries, e)
+                    time.sleep(2)
 
 
 class ColorStreamHandler(logging.StreamHandler):

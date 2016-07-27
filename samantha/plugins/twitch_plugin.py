@@ -32,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -58,6 +58,7 @@ def check_followed_streams(key, data):
         try:
             tries += 1
             req = requests.get(url, params=SECRETS, timeout=15)
+            tries = 0
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
                 requests.exceptions.Timeout), e:

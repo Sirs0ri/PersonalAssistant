@@ -11,7 +11,7 @@
 from collections import Iterable
 from datetime import datetime
 import logging
-import traceback
+import time
 
 # related third party imports
 import requests
@@ -29,7 +29,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
@@ -50,15 +50,23 @@ def _send_ar_message(message=None, files=None):
             payload["files"] = ",".join(files)
         else:
             payload["files"] = files
-    try:
-        LOGGER.debug("Sending '%s(...)' via AR",
-                     message[:50])
-        requests.post(url, payload, timeout=15)
-        return True
-    except Exception:
-        LOGGER.exception("Exception while connecting to AutoRemote:\n%s",
-                         traceback.format_exc())
-        return False
+    req = None
+    tries = 0
+    while tries <= 3 and req is None:
+        try:
+            LOGGER.debug("Sending '%s(...)' via AR",
+                         message[:50])
+            tries += 1
+            req = requests.post(url, payload, timeout=15, stream=False)
+            tries = 0
+            return True
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.SSLError,
+                requests.exceptions.Timeout), e:
+            LOGGER.warn("Connecting to AutoRemote failed on attempt %d. "
+                        "Retrying in two seconds. Error: %s", tries, e)
+            time.sleep(2)
+    return False
 
 
 @subscribe_to("system.*")

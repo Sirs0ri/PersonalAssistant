@@ -25,7 +25,7 @@ from plugins.plugin import Plugin, Device
 # pylint: enable=import-error
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -154,17 +154,19 @@ else:
 if PI is not None and PI.connected:
     TRANSMITTER_PIN = 17
     TRANSMITTER = Transmitter(PI, gpio=TRANSMITTER_PIN)
+    active = True
 else:
     TRANSMITTER_PIN = None
     TRANSMITTER = None
+    active = False
     LOGGER.error("Could not connect to the RasPi at 192.168.178.56.")
 
-PLUGIN = Plugin("433", PI.connected, LOGGER, __file__)
-READING_LAMP = Device("Readinglamp", PI.connected, LOGGER, __file__,
+PLUGIN = Plugin("433", active, LOGGER, __file__)
+READING_LAMP = Device("Readinglamp", active, LOGGER, __file__,
                       ["light", "433"])
-AMBIENT_LAMP = Device("Ambientlamp", PI.connected, LOGGER, __file__,
+AMBIENT_LAMP = Device("Ambientlamp", active, LOGGER, __file__,
                       ["light", "ambient.", "433"])
-BED_LAMP = Device("Bedlamp", PI.connected, LOGGER, __file__,
+BED_LAMP = Device("Bedlamp", active, LOGGER, __file__,
                       ["light", "ambient.", "433"])
 
 

@@ -32,7 +32,7 @@ except (ImportError, AttributeError):
 # pylint: enable=import-error
 
 
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 
 
 # Initialize the logger
@@ -62,14 +62,17 @@ if PASSWORD is None:
     LOGGER.exception("Couldn't access the password.")
 
 if FritzHosts:
-    FRITZBOX = FritzHosts(address="192.168.178.1",
-                          user="Samantha",
-                          password=PASSWORD)
     try:
+        FRITZBOX = FritzHosts(address="192.168.178.1",
+                              user="Samantha",
+                              password=PASSWORD)
         _get_hosts_info()
         authenticated = True
+    except IOError:
+        LOGGER.exception("Couldn't connect to a fritzbox at the default "
+                         "address '192.168.178.1'!")
     except KeyError:
-        LOGGER.exception("The credentialy are invalid.")
+        LOGGER.exception("The credentials are invalid.")
 
 PLUGIN = Device("FritzBox", authenticated, LOGGER, __file__)
 
