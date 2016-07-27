@@ -41,7 +41,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.20"
+__version__ = "1.3.21"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -109,12 +109,13 @@ def subscribe_to(keyword):
                 else:
                     LOGGER.debug("This is an existing plugin.")
                 _index(keyword, func)
+                LOGGER.debug("'%s.%s' decorated successfully.",
+                             func.__module__,
+                             func.__name__)
+            else:
+                LOGGER.debug("This is an inactive plugin.")
         else:
-            LOGGER.debug("This is not a valid plugin")
-
-        LOGGER.debug("'%s.%s' decorated successfully.",
-                     func.__module__,
-                     func.__name__)
+            LOGGER.debug("This is an invalid plugin.")
 
         @wraps(func)
         def executer(*args, **kwargs):
