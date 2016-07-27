@@ -17,7 +17,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
@@ -106,7 +106,7 @@ class Event(object):
                 kw_in_use = True
                 break
         if kw_in_use:
-            if INITIALIZED:
+            if INITIALIZED or self.sender_id.startswith("core"):
                 INPUT.put(self)
                 LOGGER.debug("[UID: %s] Added the event to the queue. INPUT "
                              "currently holds %d items.",

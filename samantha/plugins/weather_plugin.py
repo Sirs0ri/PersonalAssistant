@@ -9,7 +9,7 @@
 
 # standard library imports
 import logging
-import traceback
+import time
 
 # related third party imports
 import requests
@@ -21,16 +21,15 @@ from plugins.plugin import Plugin
 from tools import eventbuilder
 try:
     import variables_private
-    API_KEY = variables_private.owm_key
-    LOCATION = variables_private.owm_location
+    SECRETS = {"id": variables_private.owm_location,
+              "appid": variables_private.owm_key}
 except (ImportError, AttributeError):
     variables_private = None
-    API_KEY = ""
-    LOCATION = ""
+    SECRETS = None
 # pylint: enable=import-error
 
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 
 # Initialize the logger
@@ -38,30 +37,36 @@ LOGGER = logging.getLogger(__name__)
 
 if variables_private is None:
     LOGGER.exception("Couldn't access the private variables.")
-if API_KEY is "":
-    LOGGER.exception("Couldn't access the API-Key.")
-if LOCATION is "":
-    LOGGER.exception("Couldn't access the Location.")
+if SECRETS is None:
+    LOGGER.exception("Couldn't access the API-Key and/or location.")
 
-PLUGIN = Plugin("Weather", True, LOGGER, __file__)
+PLUGIN = Plugin("Weather", SECRETS is not None, LOGGER, __file__)
 
 
 @subscribe_to(["system.onstart", "time.schedule.hour"])
 def check_weather(key, data):
     """Check the weather."""
     LOGGER.debug("Checking the Weather..")
-    try:
-        req = requests.get("{baseurl}?{location}&{key}".format(
-            baseurl="http://api.openweathermap.org/data/2.5/weather",
-            location="id={}".format(LOCATION),
-            key="appid={}".format(API_KEY)),
-                           timeout=15)
-        if req.status_code == 200:
-            eventbuilder.Event(sender_id=PLUGIN.name,
-                               keyword="weather.update",
-                               data=req.json()).trigger()
-            return True
-    except Exception:
-        LOGGER.exception("Exception while connecting to OWM:\n%s",
-                         traceback.format_exc())
+    url = "http://api.openweathermap.org/data/2.5/weather"
+    req = None
+    tries = 0
+    while tries <= 3 and req is None:
+        try:
+            req = requests.get(url, params=SECRETS, timeout=15)
+            if req.status_code == 200:
+                tries = 0
+                eventbuilder.Event(sender_id=PLUGIN.name,
+                                   keyword="weather.update",
+                                   data=req.json()).trigger()
+                return True
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.SSLError,
+                requests.exceptions.Timeout), e:
+            LOGGER.warn("Connecting to OWM failed on attempt %d. "
+                        "Retrying in two seconds. Error: %s", tries, e)
+            time.sleep(2)
+
+    if req is None:
+        LOGGER.exception("Connecting to OWM failed three times in a row.")
+        return False
     return False
