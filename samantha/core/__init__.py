@@ -44,7 +44,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.4.3"
+__version__ = "1.4.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -231,12 +231,12 @@ def stats_worker():
                       "{:.0f} Triggers, {:.0f} Requests<br>"
                       "Processed commands: {:.0f} ({:.2f}% success)<br>"
                       "Processed functions: {:.0f} ({:.2f}% success)".format(
-                        count_triggers, count_requests, count_commands,
-                        success_rate_commands, count_functions,
-                        success_rate_functions, uptime, count_triggers_total,
-                        count_requests_total, count_commands_total,
-                        success_rate_commands_total, count_functions_total,
-                        success_rate_functions_total))
+                          count_triggers, count_requests, count_commands,
+                          success_rate_commands, count_functions,
+                          success_rate_functions, uptime, count_triggers_total,
+                          count_requests_total, count_commands_total,
+                          success_rate_commands_total, count_functions_total,
+                          success_rate_functions_total))
             tools.eventbuilder.Event(sender_id=name,
                                      keyword="notify.user",
                                      data={"title": "Daily report",
