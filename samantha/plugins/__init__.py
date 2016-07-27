@@ -27,7 +27,7 @@ import core
 # pylint: enable=import-error
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # Initialize the logger
@@ -67,6 +67,7 @@ def _init(queue_in, queue_out):
     LOGGER.debug("%d possible plugins found.", len(files))
 
     plugin_str = ""
+    device_str = ""
     count = 0
 
     for plugin_file in files:
@@ -81,7 +82,10 @@ def _init(queue_in, queue_out):
             if hasattr(plugin_source, "PLUGIN"):
                 if plugin_source.PLUGIN.is_active:
                     count += 1
-                    plugin_str += "\n\t%r" % (plugin_source.PLUGIN)
+                    if plugin_source.PLUGIN.plugin_type == "d":
+                        device_str += "\n\t%r" % (plugin_source.PLUGIN)
+                    else:
+                        plugin_str += "\n\t%r" % (plugin_source.PLUGIN)
                     LOGGER.debug("%s is a valid plugin.", plugin_file)
                 else:
                     LOGGER.debug("%s is marked as inactive.", plugin_file)
@@ -92,7 +96,7 @@ def _init(queue_in, queue_out):
 
     LOGGER.info("Initialisation complete.")
 
-    LOGGER.debug("Imported %d plugins: %s", count, plugin_str)
+    LOGGER.debug("Imported %d plugins: %s%s", count, device_str, plugin_str)
     return True
 
 

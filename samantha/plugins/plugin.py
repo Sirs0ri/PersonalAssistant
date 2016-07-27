@@ -20,7 +20,7 @@ from core import subscribe_to
 # pylint: enable=import-error
 
 
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 
 
 # Initialize the logger
@@ -45,7 +45,13 @@ class Plugin(object):
         else:
             self.path = __file__
         self.plugin_type = plugin_type
-        self.logger.info("Initialisation of the plugin complete.")
+        plugin_type_long = "device" if self.plugin_type is "d" else "plugin"
+        self.logger.info("Initialisation of the %s '%s' complete. "
+                         "The %s is %sactive.",
+                         plugin_type_long,
+                         self.name,
+                         plugin_type_long,
+                         "" if self.is_active else "not ")
 
     def __str__(self):
         """Return a simple string representation of the plugin."""
@@ -69,7 +75,6 @@ class Device(Plugin):
     def __init__(self, name="Device", active=False,
                  logger=None, file_path=None, group=None):
         """Set the plugin's attributes, if they're not set already."""
-        super(Device, self).__init__(name, active, logger, file_path, "d")
         self.name = name
         self.is_available = None
         self.group = group
@@ -95,7 +100,8 @@ class Device(Plugin):
             else:
                 self.power_on_keywords.append("turn.on." + group.lower())
                 self.power_off_keywords.append("turn.off." + group.lower())
-        self.logger.info("Initialisation complete")
+        # self.logger.info("Initialisation complete")
+        super(Device, self).__init__(name, active, logger, file_path, "d")
 
     def turn_on(self, func):
         @subscribe_to(self.power_on_keywords)
