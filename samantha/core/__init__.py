@@ -44,7 +44,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -118,6 +118,9 @@ def subscribe_to(keyword):
                              func.__name__)
             else:
                 LOGGER.debug("This is an inactive plugin.")
+        elif func.__module__ == subscribe_to.__module__:
+            LOGGER.debug("This function is part of the core.")
+            _index(keyword, func)
         else:
             LOGGER.debug("This is an invalid plugin.")
 
