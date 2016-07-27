@@ -6,6 +6,14 @@ It fires events when the playback and the connection changes.
 ###############################################################################
 #
 # TODO: [ ] Read Chromecast IP from config
+# TODO: [ ] Move adding the listeners to the initialisation, catch this:
+#               Traceback (most recent call last):
+#                 File "samantha/plugins/chromecast_plugin.py", line 79, in onstart
+#                   cast = pychromecast.Chromecast("192.168.178.45")
+#                 File "/usr/local/lib/python2.7/dist-packages/pychromecast/__init__.py", line 244, in __init__
+#                   "Could not connect to {}:{}".format(self.host, self.port))
+#               ChromecastConnectionError: Could not connect to 192.168.178.45:8009
+#               Exception AttributeError: "'Chromecast' object has no attribute 'socket_client'" in <bound method Chromecast.__del__ of Chromecast('192.168.178.45', port=8009, device=None)> ignored
 #
 ###############################################################################
 
@@ -25,7 +33,7 @@ from tools import eventbuilder
 # pylint: enable=import-error
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 
 # Initialize the logger
