@@ -44,7 +44,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -189,7 +189,9 @@ def stats_worker():
             count_triggers += 1
         processed = False
         for result in event.result.values():
-            if result is None or (isinstance(result, bool) and result is False) or (not isinstance(result, bool) and "Error: " in result):
+            if (result is None or
+                (isinstance(result, bool) and result is False) or
+                (not isinstance(result, bool) and "Error: " in result)):
                 failed_functions += 1
             else:
                 success_functions += 1
@@ -199,7 +201,7 @@ def stats_worker():
         else:
             failed_commands += 1
 
-        if event.keyword == "time.schedule.day":
+        if event.keyword in ["time.schedule.day", "system.onexit"]:
             logger.debug("Generating the daily report.")
             success_functions_total += success_functions
             success_commands_total += success_commands
@@ -434,6 +436,9 @@ def stop():
     LOGGER.warn("Waiting for OUTPUT to be emptied. It currently holds "
                 "%d items.", OUTPUT.qsize())
     OUTPUT.join()
+    LOGGER.warn("Waiting for STATUS to be emptied. It currently holds "
+                "%d items.", STATUS.qsize())
+    STATUS.join()
 
     INITIALIZED = False
     LOGGER.info("Exited.")
