@@ -24,10 +24,13 @@
 # standard library imports
 from collections import Iterable
 import ConfigParser
+import datetime
 from functools import wraps
 import json
 import logging
+import math
 import os
+import Queue
 import threading
 import time
 import traceback
@@ -41,7 +44,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.3.21"
+__version__ = "1.4.0"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -54,6 +57,7 @@ NUM_SENDER_THREADS = 1
 
 INPUT = None
 OUTPUT = None
+STATUS = Queue.PriorityQueue()
 
 FUNC_KEYWORDS = {}
 
@@ -149,6 +153,98 @@ def change_logger(key, data):
         return True
 
 
+def stats_worker():
+    """Read and process statusupdates from the STATUS queue."""
+    # Used instead of the global LOGGER on purpose inside this function.
+
+    @subscribe_to("time.schedule.day")
+    def dummy(key, data):
+        """Make sure that 'time.schedule.day' is indexed."""
+        return True
+
+    name = __name__ + "." + threading.current_thread().name
+    logger = logging.getLogger(name)
+    boot_time = datetime.datetime.now()
+    success_functions_total = 0.0
+    success_commands_total = 0.0
+    failed_functions_total = 0.0
+    failed_commands_total = 0.0
+    count_requests_total = 0.0
+    count_triggers_total = 0.0
+    success_functions = 0.0
+    success_commands = 0.0
+    failed_functions = 0.0
+    failed_commands = 0.0
+    count_requests = 0.0
+    count_triggers = 0.0
+    while True:
+        logger.debug("Waiting for an item.")
+        event = STATUS.get()
+        if event.event_type == "request":
+            count_requests += 1
+        else:
+            count_triggers += 1
+        processed = False
+        for result in event.result.values():
+            if result is None or (isinstance(result, bool) and result is False) or (not isinstance(result, bool) and "Error: " in result):
+                failed_functions += 1
+            else:
+                success_functions += 1
+                processed = True
+        if processed:
+            success_commands += 1
+        else:
+            failed_commands += 1
+
+        if event.keyword == "time.schedule.day":
+            logger.debug("Generating the daily report.")
+            success_functions_total += success_functions
+            success_commands_total += success_commands
+            failed_functions_total += failed_functions
+            failed_commands_total += failed_commands
+            count_requests_total += count_requests
+            count_triggers_total += count_triggers
+            uptime = str(datetime.datetime.now() - boot_time).split(".")[0]
+            count_commands = success_commands + failed_commands
+            success_rate_commands = success_commands / count_commands * 100.0
+            count_functions = success_functions + failed_functions
+            success_rate_functions = (
+                success_functions / count_functions * 100.0)
+            count_commands_total = (
+                success_commands_total + failed_commands_total)
+            success_rate_commands_total = (
+                success_commands_total / count_commands_total * 100.0)
+            count_functions_total = (
+                success_functions_total + failed_functions_total)
+            success_rate_functions_total = (
+                success_functions_total / count_functions_total * 100.0)
+            report = ("<b>Past 24h:</b><br>"
+                      "{:.0f} Triggers, {:.0f} Requests<br>"
+                      "Processed commands: {:.0f} ({:.2f}% success)<br>"
+                      "Processed functions: {:.0f} ({:.2f}% success)<br><br>"
+                      "<b>All Time (Uptime: {!s}):</b><br>"
+                      "{:.0f} Triggers, {:.0f} Requests<br>"
+                      "Processed commands: {:.0f} ({:.2f}% success)<br>"
+                      "Processed functions: {:.0f} ({:.2f}% success)".format(
+                        count_triggers, count_requests, count_commands,
+                        success_rate_commands, count_functions,
+                        success_rate_functions, uptime, count_triggers_total,
+                        count_requests_total, count_commands_total,
+                        success_rate_commands_total, count_functions_total,
+                        success_rate_functions_total))
+            tools.eventbuilder.Event(sender_id=name,
+                                     keyword="notify.user",
+                                     data={"title": "Daily report",
+                                           "message": report}).trigger()
+            success_functions = 0.0
+            success_commands = 0.0
+            failed_functions = 0.0
+            failed_commands = 0.0
+            count_requests = 0.0
+            count_triggers = 0.0
+        STATUS.task_done()
+
+
 def worker():
     """Read and process commands from the INPUT queue.
 
@@ -156,8 +252,8 @@ def worker():
     """
     # Get a new logger for each thread.
     # Used instead of the global LOGGER on purpose inside this function.
-    logger = logging.getLogger(
-        __name__ + "." + threading.current_thread().name)
+    name = __name__ + "." + threading.current_thread().name
+    logger = logging.getLogger(name)
 
     while True:
         # Wait until an item becomes available in INPUT
@@ -172,7 +268,7 @@ def worker():
         if event.expired:
             logger.warn("[UID: %s] The event is expired and will be skipped.",
                         event.uid)
-            event.result = "The event expired and was skipped."
+            event.result = {name: "Error: The event expired and was skipped."}
         else:
 
             if event.keyword == "onstart":
@@ -180,7 +276,7 @@ def worker():
                             len(FUNC_KEYWORDS))
                 logger.debug("%s", FUNC_KEYWORDS.keys())
 
-            results = [False]
+            results = {}
             for key_substring in event.parsed_kw_list:
                 if key_substring in FUNC_KEYWORDS:
                     for func in FUNC_KEYWORDS[key_substring]:
@@ -191,30 +287,33 @@ def worker():
                                          func.__name__)
                             res = func(key=event.keyword,
                                        data=event.data)
-                            results.append(res)
-                        except Exception:
+                            results["{}.{}".format(
+                                func.__module__, func.__name__)] = res
+                        except Exception as e:
                             logger.exception("Exception in user code:\n%s",
                                              traceback.format_exc())
-            results = [x for x in results if x]
+                            res = "Error: " + str(e)
+                            results["{}.{}".format(
+                                func.__module__, func.__name__)] = res
+            # results = [x for x in results if x]
+            if not results:
+                results[name] = "Error: No matching plugin found."
 
-            if results:
-                event.result = results
-                logger.info("[UID: %s] Processing of '%s' successful. "
-                            "%d result%s: %s",
-                            event.uid,
-                            event.keyword,
-                            len(results),
-                            ("s" if len(results) > 1 else ""),
-                            results)
-            else:
-                event.result = "No matching plugin found"
-                logger.debug("[UID: %s] Processing of '%s' unsuccessful.",
-                             event.uid,
-                             event.keyword)
+            event.result = results
+            logger.info("[UID: %s] Processing of '%s' successful. "
+                        "%d result%s: %s",
+                        event.uid,
+                        event.keyword,
+                        len(results),
+                        ("s" if len(results) > 1 else ""),
+                        results)
 
         # Put the result back into the OUTPUT queue
         if event.event_type == "request":
             OUTPUT.put(event)
+
+        # Put the processed event into STATUS to include it in the statistics
+        STATUS.put(event)
 
         # Let the queue know that processing is complete
         INPUT.task_done()
@@ -290,6 +389,7 @@ def _init(queue_in, queue_out):
     try:
         NUM_WORKER_THREADS = config.getint(__name__, "NUM_WORKER_THREADS")
         NUM_SENDER_THREADS = config.getint(__name__, "NUM_SENDER_THREADS")
+        NUM_STATISTICS_THREADS = int(math.ceil(1.0 * NUM_WORKER_THREADS / 4))
     except Exception:
         LOGGER.exception("Exception while reading the config:\n%s",
                          traceback.format_exc())
@@ -305,6 +405,13 @@ def _init(queue_in, queue_out):
     LOGGER.debug("Starting Sender")
     for i in range(NUM_SENDER_THREADS):
         thread = threading.Thread(target=sender, name="sender%d" % i)
+        thread.daemon = True
+        thread.start()
+
+    # Start the statistics thread to process results
+    LOGGER.debug("Starting Statistics-Thread")
+    for i in range(NUM_STATISTICS_THREADS):
+        thread = threading.Thread(target=stats_worker, name="stats%d" % i)
         thread.daemon = True
         thread.start()
 
