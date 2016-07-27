@@ -44,7 +44,7 @@ import tools
 # pylint: enable=import-error
 
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -390,8 +390,9 @@ def _init(queue_in, queue_out):
     config.read("{path}/samantha.cfg".format(path=path))
 
     try:
+        # This leads to approx. X worker, X/2 sender and X/4 stat-threads.
         NUM_WORKER_THREADS = config.getint(__name__, "NUM_WORKER_THREADS")
-        NUM_SENDER_THREADS = config.getint(__name__, "NUM_SENDER_THREADS")
+        NUM_SENDER_THREADS = int(math.ceil(1.0 * NUM_WORKER_THREADS / 2))
         NUM_STATISTICS_THREADS = int(math.ceil(1.0 * NUM_WORKER_THREADS / 4))
     except Exception:
         LOGGER.exception("Exception while reading the config:\n%s",
