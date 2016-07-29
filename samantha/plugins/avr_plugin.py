@@ -29,11 +29,10 @@ import traceback
 # pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Device
-from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.6.3"
+__version__ = "1.6.4"
 
 
 # Initialize the logger
@@ -137,7 +136,8 @@ def turn_off_with_delay():
     LOGGER.debug("Sending the command to shut down the AVR.")
     COMM_QUEUE.put(["ZMOFF", ["SI?=SIMPLAY", True]])
 
-WORKER = None
+WORKER = threading.Thread(target=worker, name="worker")
+WORKER.daemon = True
 SLEEPER = None
 
 PLUGIN = Device("AVR", True, LOGGER, __file__)
@@ -146,10 +146,7 @@ PLUGIN = Device("AVR", True, LOGGER, __file__)
 @subscribe_to("system.onstart")
 def onstart(key, data):
     """Set up the plugin by starting the worker-thread."""
-    global WORKER
     LOGGER.debug("Starting the worker")
-    WORKER = threading.Thread(target=worker, name="worker")
-    WORKER.daemon = True
     WORKER.start()
     return True
 
@@ -162,7 +159,7 @@ def chromecast_connection_change(key, data):
     if SLEEPER is not None:
         # Stop the sleeper if it's already running
         LOGGER.debug("Stopping the sleeper-thread.")
-        SLEEPER.stop()
+        SLEEPER.cancel()
         SLEEPER.join()
         SLEEPER = None
 
@@ -171,9 +168,9 @@ def chromecast_connection_change(key, data):
         LOGGER.debug("No app connected to the Chromecast. (%s)",
                      data["display_name"])
         # Run the sleeper that turns off the AVR after 3 minutes
-        SLEEPER = SleeperThread(target=turn_off_with_delay,
-                                delay=120,
-                                name=__name__ + ".sleeper")
+        SLEEPER = threading.Timer(target=turn_off_with_delay,
+                                  interval=120.0,
+                                  name=__name__ + ".sleeper")
         SLEEPER.start()
         return True
     else:  # An app is connected to the Chromecast
@@ -203,7 +200,7 @@ def stop(key, data):
     """Exit the device's hadler."""
     LOGGER.info("Exiting...")
     if SLEEPER:
-        SLEEPER.stop()
+        SLEEPER.cancel()
         SLEEPER.join()
     COMM_QUEUE.join()
     LOGGER.info("Exited.")

@@ -9,6 +9,7 @@
 
 # standard library imports
 import logging
+from threading import Timer
 
 # related third party imports
 
@@ -16,11 +17,10 @@ import logging
 # pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Device
-from tools import SleeperThread
 # pylint: enable=import-error
 
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -41,9 +41,10 @@ def test(key, data):
     def function():
         """Print "Heyho!" and a bunch of ~ around."""
         print "~"*30
-        print "Heyho!"
+        print "Heyho! My command was {}".format(key)
+        print data
         print "~"*30
-    thread = SleeperThread(delay=7, target=function)
+    thread = Timer(interval=7.0, target=function)
     thread.start()
     return True
 
