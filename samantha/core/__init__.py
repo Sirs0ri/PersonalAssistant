@@ -38,16 +38,13 @@ import traceback
 import tools
 
 
-__version__ = "1.4.7"
+__version__ = "1.4.8"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
 # Set constants
 INITIALIZED = False
-
-NUM_WORKER_THREADS = 1
-NUM_SENDER_THREADS = 1
 
 INPUT = None
 OUTPUT = None
@@ -366,7 +363,7 @@ def sender():
 
 def _init(queue_in, queue_out):
     """Initialize the module."""
-    global INPUT, OUTPUT, NUM_WORKER_THREADS, NUM_SENDER_THREADS
+    global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
     INPUT = queue_in
@@ -387,30 +384,32 @@ def _init(queue_in, queue_out):
 
     try:
         # This leads to approx. X worker, X/2 sender and X/4 stat-threads.
-        NUM_WORKER_THREADS = config.getint(__name__, "NUM_WORKER_THREADS")
-        NUM_SENDER_THREADS = int(math.ceil(1.0 * NUM_WORKER_THREADS / 2))
-        NUM_STATISTICS_THREADS = int(math.ceil(1.0 * NUM_WORKER_THREADS / 4))
-    except Exception:
+        num_worker_threads = config.getint(__name__, "NUM_WORKER_THREADS")
+    except ConfigParser.Error:
         LOGGER.exception("Exception while reading the config:\n%s",
                          traceback.format_exc())
+        num_worker_threads = 2
+
+    num_sender_threads = int(math.ceil(1.0 * num_worker_threads / 2))
+    num_statistics_threads = int(math.ceil(1.0 * num_worker_threads / 4))
 
     # Start the worker threads to process commands
     LOGGER.debug("Starting Worker")
-    for i in range(NUM_WORKER_THREADS):
+    for i in range(num_worker_threads):
         thread = threading.Thread(target=worker, name="worker%d" % i)
         thread.daemon = True
         thread.start()
 
     # Start the sender threads to process results
     LOGGER.debug("Starting Sender")
-    for i in range(NUM_SENDER_THREADS):
+    for i in range(num_sender_threads):
         thread = threading.Thread(target=sender, name="sender%d" % i)
         thread.daemon = True
         thread.start()
 
     # Start the statistics thread to process results
     LOGGER.debug("Starting Statistics-Thread")
-    for i in range(NUM_STATISTICS_THREADS):
+    for i in range(num_statistics_threads):
         thread = threading.Thread(target=stats_worker, name="stats%d" % i)
         thread.daemon = True
         thread.start()
