@@ -30,7 +30,7 @@ from core import subscribe_to
 from plugins.plugin import Device
 
 
-__version__ = "1.6.5"
+__version__ = "1.6.6"
 
 
 # Initialize the logger
@@ -166,9 +166,9 @@ def chromecast_connection_change(key, data):
         LOGGER.debug("No app connected to the Chromecast. (%s)",
                      data["display_name"])
         # Run the sleeper that turns off the AVR after 3 minutes
-        SLEEPER = threading.Timer(target=turn_off_with_delay,
-                                  interval=120.0,
                                   name=__name__ + ".sleeper")
+        SLEEPER = threading.Timer(120.0,
+                                  turn_off_with_delay,
         SLEEPER.start()
         return True
     else:  # An app is connected to the Chromecast
