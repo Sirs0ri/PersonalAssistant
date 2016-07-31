@@ -23,7 +23,7 @@ from core import subscribe_to
 from plugins.plugin import Plugin, Device
 
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -163,9 +163,9 @@ PLUGIN = Plugin("433", active, LOGGER, __file__)
 READING_LAMP = Device("Readinglamp", active, LOGGER, __file__,
                       ["light", "433"])
 AMBIENT_LAMP = Device("Ambientlamp", active, LOGGER, __file__,
-                      ["light", "ambient.", "433"])
+                      ["light", "433"])
 BED_LAMP = Device("Bedlamp", active, LOGGER, __file__,
-                      ["light", "ambient.", "433"])
+                      ["light", "433"])
 
 
 @READING_LAMP.turn_on
