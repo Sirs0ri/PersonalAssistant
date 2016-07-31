@@ -13,15 +13,13 @@ import logging
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
 import context
 from core import subscribe_to
 from tools import eventbuilder
 from plugins.plugin import Plugin
-# pylint: enable=import-error
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

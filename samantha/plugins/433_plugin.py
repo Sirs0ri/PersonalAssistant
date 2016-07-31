@@ -19,13 +19,11 @@ except ImportError:
     pigpio = None
 
 # application specific imports
-# pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Plugin, Device
-# pylint: enable=import-error
 
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

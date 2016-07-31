@@ -15,7 +15,6 @@ import time
 import requests
 
 # application specific imports
-# pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Plugin
 from tools import eventbuilder
@@ -26,10 +25,9 @@ try:
 except (ImportError, AttributeError):
     variables_private = None
     SECRETS = None
-# pylint: enable=import-error
 
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 
 
 # Initialize the logger

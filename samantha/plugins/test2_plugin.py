@@ -14,13 +14,11 @@ from threading import Timer
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Device
-# pylint: enable=import-error
 
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

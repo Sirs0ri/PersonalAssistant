@@ -26,13 +26,11 @@ import traceback
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Device
-# pylint: enable=import-error
 
 
-__version__ = "1.6.4"
+__version__ = "1.6.5"
 
 
 # Initialize the logger

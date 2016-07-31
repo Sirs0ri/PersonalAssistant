@@ -15,12 +15,10 @@ import logging
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
 from core import subscribe_to
-# pylint: enable=import-error
 
 
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 
 
 # Initialize the logger

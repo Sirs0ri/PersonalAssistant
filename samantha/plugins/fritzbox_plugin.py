@@ -18,7 +18,6 @@ except ImportError:
 
 
 # application specific imports
-# pylint: disable=import-error
 import context
 from core import subscribe_to
 from plugins.plugin import Device
@@ -29,10 +28,9 @@ try:
 except (ImportError, AttributeError):
     variables_private = None
     PASSWORD = None
-# pylint: enable=import-error
 
 
-__version__ = "1.0.8"
+__version__ = "1.0.9"
 
 
 # Initialize the logger

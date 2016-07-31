@@ -26,14 +26,12 @@ import traceback
 import pychromecast
 
 # application specific imports
-# pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Plugin
 from tools import eventbuilder
-# pylint: enable=import-error
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 
 # Initialize the logger

@@ -10,7 +10,6 @@
 """
 
 ###############################################################################
-# pylint: disable=global-statement
 #
 # TODO: [ ] clean up stats_worker
 #           worker()
@@ -36,13 +35,11 @@ import traceback
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
 import plugins
 import tools
-# pylint: enable=import-error
 
 
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

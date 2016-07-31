@@ -27,16 +27,14 @@ import time
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
 import context
 from core import subscribe_to
 import logging
 from plugins.plugin import Plugin
 from tools import eventbuilder
-# pylint: enable=import-error
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
