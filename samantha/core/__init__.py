@@ -38,7 +38,7 @@ import traceback
 import tools
 
 
-__version__ = "1.4.10"
+__version__ = "1.4.11"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -181,8 +181,8 @@ def stats_worker():
         processed = False
         for result in event.result.values():
             if (result is None or
-                (isinstance(result, bool) and result is False) or
-                (not isinstance(result, bool) and "Error: " in result)):
+                    (isinstance(result, bool) and result is False) or
+                    (not isinstance(result, bool) and "Error: " in result)):
                 failed_functions += 1
             else:
                 success_functions += 1
