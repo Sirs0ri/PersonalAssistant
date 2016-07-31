@@ -30,7 +30,7 @@ from core import subscribe_to
 from plugins.plugin import Device
 
 
-__version__ = "1.6.6"
+__version__ = "1.6.7"
 
 
 # Initialize the logger
@@ -129,9 +129,10 @@ def worker(device_ip="192.168.178.48"):
         COMM_QUEUE.task_done()
 
 
-def turn_off_with_delay():
+def turn_off_with_delay(name="sleeper"):
     """Turn the AVR off."""
-    LOGGER.debug("Sending the command to shut down the AVR.")
+    logger = logging.getLogger(name)
+    logger.debug("Sending the command to shut down the AVR.")
     COMM_QUEUE.put(["ZMOFF", ["SI?=SIMPLAY", True]])
 
 WORKER = threading.Thread(target=worker, name="worker")
@@ -160,16 +161,19 @@ def chromecast_connection_change(key, data):
         SLEEPER.cancel()
         SLEEPER.join()
         SLEEPER = None
+        LOGGER.debug("Stopped the sleeper-thread.")
+
 
     # Check if the Chromecast is connected to an app
     if data["display_name"] in [None, "Backdrop"]:  # not connected
         LOGGER.debug("No app connected to the Chromecast. (%s)",
                      data["display_name"])
         # Run the sleeper that turns off the AVR after 3 minutes
-                                  name=__name__ + ".sleeper")
         SLEEPER = threading.Timer(120.0,
                                   turn_off_with_delay,
+                                  [__name__ + ".sleeper"])
         SLEEPER.start()
+        LOGGER.debug("Started the Sleeper with a delay of 120 seconds.")
         return True
     else:  # An app is connected to the Chromecast
         LOGGER.debug("'%s' connected to the Chromecast.",
