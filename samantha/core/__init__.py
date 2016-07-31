@@ -5,7 +5,7 @@
 - Forwards them to plugins
 - puts results back into the OUTPUT queue
 
-- Reads the global OUTOUT queue
+- Reads the global OUTPUT queue
 - Sends outgoing messages back the the clients
 """
 
@@ -38,7 +38,7 @@ import traceback
 import tools
 
 
-__version__ = "1.4.8"
+__version__ = "1.4.9"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -372,7 +372,7 @@ def _init(queue_in, queue_out):
     # Read the number of threads to start from Samantha's config file
     # (/samantha/data/samantha.cfg)
     LOGGER.debug("Reading the config file...")
-    # get the config file's path in realtion to the path of this file
+    # get the config file's path in relation to the path of this file
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
     if this_dir is "":
         path = "../../data"
