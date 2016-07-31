@@ -38,7 +38,7 @@ import traceback
 import tools
 
 
-__version__ = "1.4.11"
+__version__ = "1.5.0"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -251,6 +251,70 @@ def worker():
     name = __name__ + "." + threading.current_thread().name
     logger = logging.getLogger(name)
 
+    def _process(event):
+        input = Queue.PriorityQueue()
+        output = Queue.PriorityQueue()
+        queue_lock = threading.Lock()
+        thread_count = 2
+        thread_list = []
+
+        def _worker():
+            _name = name + "." + threading.current_thread().name
+            _logger = logging.getLogger(_name)
+            while True:
+                queue_lock.acquire()
+                if not input.empty():
+                    _func, _event = input.get()
+                    queue_lock.release()
+                    try:
+                        _logger.debug("[UID: %s] Executing '%s.%s'.",
+                                      _event.uid,
+                                      _func.__module__,
+                                      _func.__name__)
+                        output.put(
+                            ["{}.{}".format(_func.__module__, _func.__name__),
+                             _func(key=_event.keyword, data=_event.data)])
+                    except Exception as e:
+                        _logger.exception(
+                            "[UID: %s] Exception in user code:\n%s",
+                            _event.uid,
+                            traceback.format_exc())
+                        output.put(
+                            ["{}.{}".format(_func.__module__, _func.__name__),
+                             "Error: " + str(e)])
+                else:
+                    queue_lock.release()
+                    _logger.debug("Exiting.")
+                    break
+
+        # results = {}
+        queue_lock.acquire()
+        for key_substring in event.parsed_kw_list:
+            if key_substring in FUNC_KEYWORDS:
+                for func in FUNC_KEYWORDS[key_substring]:
+                    input.put([func, event])
+
+        for i in range(min(thread_count, input.qsize())):
+            t = threading.Thread(target=_worker, name="_worker%d" % i)
+            t.start()
+            thread_list.append(t)
+
+        queue_lock.release()
+
+        for t in thread_list:
+            t.join()
+
+        results = {}
+        while not output.empty():
+            f_name, value = output.get()
+            results[f_name] = value
+
+        # results = [x for x in results if x]
+        if not results:
+            results[name] = "Error: No matching plugin found."
+
+        return results
+
     while True:
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for an item.")
@@ -272,29 +336,7 @@ def worker():
                             len(FUNC_KEYWORDS))
                 logger.debug("%s", FUNC_KEYWORDS.keys())
 
-            results = {}
-            for key_substring in event.parsed_kw_list:
-                if key_substring in FUNC_KEYWORDS:
-                    for func in FUNC_KEYWORDS[key_substring]:
-                        try:
-                            logger.debug("[UID: %s] Executing '%s.%s'.",
-                                         event.uid,
-                                         func.__module__,
-                                         func.__name__)
-                            res = func(key=event.keyword,
-                                       data=event.data)
-                            results["{}.{}".format(
-                                func.__module__, func.__name__)] = res
-                        except Exception as e:
-                            logger.exception("Exception in user code:\n%s",
-                                             traceback.format_exc())
-                            res = "Error: " + str(e)
-                            results["{}.{}".format(
-                                func.__module__, func.__name__)] = res
-            # results = [x for x in results if x]
-            if not results:
-                results[name] = "Error: No matching plugin found."
-
+            results = _process(event)
             event.result = results
             logger.info("[UID: %s] Processing of '%s' successful. "
                         "%d result%s: \n%s",
