@@ -21,10 +21,9 @@ import os.path
 # related third party imports
 
 # application specific imports
-import core
 
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 
 # Initialize the logger
