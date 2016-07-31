@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.11"
+__version__ = "1.3.12"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -66,7 +66,7 @@ def check_followed_streams(key, data):
 
     if req is None:
         LOGGER.exception("Connecting to Twitch failed three times in a row.")
-        return False
+        return "Error: Connecting to Twitch failed three times in a row."
 
     # Replace null-fields with "null"-strings
     text = req.text.replace('null', '"null"')
@@ -74,8 +74,8 @@ def check_followed_streams(key, data):
         data = json.loads(text)
     except ValueError:
         # Thrown by json if parsing a string fails due to an invalid format.
-        data = {}
         LOGGER.exception("The call to Twitch's API returned invalid data.")
+        return "Error: The call to Twitch's API returned invalid data."
     new_streamlist = {}
     # parse the data
     if "streams" in data:
@@ -127,6 +127,7 @@ def check_followed_streams(key, data):
                 del STREAM_LIST[channelname]
     else:
         LOGGER.warn("The data didn't include the 'streams' field.")
+        return "Error: The data didn't include the 'streams' field."
 
     while len(STREAM_LIST) > 0:
         # STREAM_LIST now contains only those streams that were online
@@ -144,4 +145,4 @@ def check_followed_streams(key, data):
     # update the existing STREAM_LIST with the new streams
     for channelname in new_streamlist:
         STREAM_LIST[channelname] = new_streamlist[channelname]
-    return True
+    return "Streams updated successfully."

@@ -30,7 +30,7 @@ from core import subscribe_to
 from plugins.plugin import Device
 
 
-__version__ = "1.6.7"
+__version__ = "1.6.8"
 
 
 # Initialize the logger
@@ -147,7 +147,7 @@ def onstart(key, data):
     """Set up the plugin by starting the worker-thread."""
     LOGGER.debug("Starting the worker")
     WORKER.start()
-    return True
+    return "Worker started successfully."
 
 
 @subscribe_to("chromecast.connection_change")
@@ -174,13 +174,14 @@ def chromecast_connection_change(key, data):
                                   [__name__ + ".sleeper"])
         SLEEPER.start()
         LOGGER.debug("Started the Sleeper with a delay of 120 seconds.")
-        return True
+        return "Started the Sleeper."
     else:  # An app is connected to the Chromecast
         LOGGER.debug("'%s' connected to the Chromecast.",
                      data["display_name"])
         COMM_QUEUE.put(["ZMON", ["ZM?=ZMON", False]])
         COMM_QUEUE.put(["SIMPLAY", ["SI?=SIMPLAY", False]])
-        return True
+        return "Handled connecting of {} to the Chromecast.".format(
+            data["display_name"])
 
 
 @subscribe_to("chromecast.playstate_change")
@@ -194,7 +195,7 @@ def chromecast_playstate_change(key, data):
         # Prefer stereo audio for music, surround for everything else
         condition = "MS?={}".format(command.split(" ")[0])
         COMM_QUEUE.put([command, [condition, False]])
-        return True
+        return "Set he audio mode to {}.".format(command)
 
 
 @subscribe_to("system.onexit")
@@ -204,5 +205,8 @@ def stop(key, data):
     if SLEEPER:
         SLEEPER.cancel()
         SLEEPER.join()
+    LOGGER.warn("Waiting for COMM_QUEUE to be emptied. It currently holds "
+                "%d items.", COMM_QUEUE.qsize())
     COMM_QUEUE.join()
     LOGGER.info("Exited.")
+    return "Exited."

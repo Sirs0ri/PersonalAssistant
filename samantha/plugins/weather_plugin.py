@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 
 # Initialize the logger
@@ -56,7 +56,7 @@ def check_weather(key, data):
                 eventbuilder.Event(sender_id=PLUGIN.name,
                                    keyword="weather.update",
                                    data=req.json()).trigger()
-                return True
+                return "Weather updated successfully."
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
                 requests.exceptions.Timeout), e:
@@ -66,5 +66,4 @@ def check_weather(key, data):
 
     if req is None:
         LOGGER.exception("Connecting to OWM failed three times in a row.")
-        return False
-    return False
+        return "Error: Connecting to OWM failed three times in a row."

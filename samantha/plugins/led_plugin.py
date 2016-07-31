@@ -24,7 +24,7 @@ from core import subscribe_to
 from plugins.plugin import Device
 
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 
 # Initialize the logger
@@ -159,7 +159,7 @@ def start_func(key, data):
     _crossfade(red=0, green=0, blue=0, speed=0.2)
     IDLE.set()
     # _crossfade(255, 85, 17)
-    return True
+    return "Tested the LEDs."
 
 
 @subscribe_to("led.fade")
@@ -172,7 +172,7 @@ def fade_func(key, data):
         _crossfade(red=0, green=255, blue=0)
         _crossfade(red=0, green=0, blue=255)
     IDLE.set()
-    return True
+    return "The LEDs are now fading."
 
 
 @subscribe_to("led.strobe")
@@ -188,7 +188,7 @@ def strobe_func(key, data):
         _set_pins(red=0, green=0, blue=255)
         _sleep(0.1)
     IDLE.set()
-    return True
+    return "The LEDs are now strobing."
 
 
 @subscribe_to("led.test")
@@ -215,7 +215,7 @@ def test_interpolators(key, data):
     _crossfade(0, 0, 0, interpolator="squared")
     IDLE.set()
     # _crossfade(255, 85, 17)
-    return True
+    return "Tested the LEDs."
 
 
 @PLUGIN.turn_on
@@ -224,7 +224,7 @@ def turn_on(key, data):
     _stop_previous_command()
     _crossfade(255, 85, 17, 0.2)
     IDLE.set()
-    return True
+    return "LEDs turned on."
 
 
 @subscribe_to(["turn.on.ambient.led", "turn.on.ambient.light"])
@@ -233,7 +233,7 @@ def ambient(key, data):
     _stop_previous_command()
     _crossfade(51, 17, 3, 0.2)
     IDLE.set()
-    return True
+    return "Set the lights to 20% brightness."
 
 
 @subscribe_to(["turn.off.ambient.led", "turn.off.ambient.light",
@@ -245,4 +245,4 @@ def turn_off(key, data):
     _stop_previous_command()
     _crossfade(0, 0, 0, 0.2)
     IDLE.set()
-    return True
+    return "LEDs turned off."

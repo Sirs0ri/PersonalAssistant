@@ -19,7 +19,7 @@ from tools import eventbuilder
 from plugins.plugin import Plugin
 
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -37,9 +37,9 @@ def chromecast_connection_change(key, data):
                                keyword="turn.off.ambient.433").trigger()
             eventbuilder.Event(sender_id=PLUGIN.name,
                                keyword="turn.on.led").trigger()
-            return True
+            return "Ambient light turned off."
         else:  # An app is connected to the Chromecast
             eventbuilder.Event(sender_id=PLUGIN.name,
                                keyword="turn.on.ambient.light").trigger()
-            return True
-    return False
+            return "Ambient light turned on."
+    return "It's daytime. The light is supposed to stay off."

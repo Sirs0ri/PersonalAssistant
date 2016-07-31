@@ -31,7 +31,7 @@ from plugins.plugin import Plugin
 from tools import eventbuilder
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 
 # Initialize the logger
@@ -92,9 +92,9 @@ def onstart(key, data):
         cast.register_status_listener(listener)
         listener.new_media_status(mediacontroller.status)
         listener.new_cast_status(cast.status)
-        return True
-    except Exception:
+        return "Registered both Listeners successfully."
+    except Exception, e:
         LOGGER.exception(
             "Exception while connecting to the Chromecast:\n%s",
             traceback.format_exc())
-    return False
+    return "Error: {}".format(e)

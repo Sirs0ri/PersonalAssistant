@@ -38,7 +38,7 @@ import traceback
 import tools
 
 
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -130,7 +130,7 @@ def subscribe_to(keyword):
 def wait(key, data):
     """Wait five seconds."""
     time.sleep(5)
-    return True
+    return "Waited for 5 seconds."
 
 
 @subscribe_to(["logger", "logging"])
@@ -140,11 +140,11 @@ def change_logger(key, data):
     if root.handlers[2].level == 10:
         root.handlers[2].setLevel(logging.INFO)
         LOGGER.warn("Logging-Level set to INFO")
-        return True
+        return "Logging-Level set to INFO"
     else:
         root.handlers[2].setLevel(logging.DEBUG)
         LOGGER.warn("Logging-Level set to DEBUG")
-        return True
+        return "Logging-Level set to DEBUG"
 
 
 def stats_worker():
