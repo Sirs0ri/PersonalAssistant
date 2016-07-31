@@ -297,12 +297,12 @@ def worker():
 
             event.result = results
             logger.info("[UID: %s] Processing of '%s' successful. "
-                        "%d result%s: %s",
+                        "%d result%s: \n%s",
                         event.uid,
                         event.keyword,
                         len(results),
                         ("s" if len(results) > 1 else ""),
-                        results)
+                        json.dumps(results, sort_keys=True, indent=4))
 
         # Put the result back into the OUTPUT queue
         if event.event_type == "request":
