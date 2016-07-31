@@ -38,7 +38,7 @@ import traceback
 import tools
 
 
-__version__ = "1.4.9"
+__version__ = "1.4.10"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
