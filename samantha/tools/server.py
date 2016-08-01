@@ -26,7 +26,7 @@ from twisted.internet import reactor
 import eventbuilder
 
 
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 
 
 # Initialize the logger
@@ -44,6 +44,7 @@ UDP_THREAD = None
 INDEX = {}
 
 UID = 0
+STOPPED = threading.Event()
 
 LOGGER.debug("I was imported.")
 
@@ -51,7 +52,7 @@ LOGGER.debug("I was imported.")
 def get_uid():
     """Provide a unique id.
 
-    The UID is used as identifier for the different server-client-connenctions.
+    The UID is used as identifier for the different server-client-connections.
     """
     global UID
     uid = "c_{0:04d}".format(UID)
@@ -80,6 +81,19 @@ def parse(message):
                 keyword += "."
             keyword += word
     return keyword, data
+
+
+def stop_server():
+    STOPPED.set()
+    if len(INDEX) == 0:
+        LOGGER.info(
+            "No client connected, stopping the Server right away.")
+        reactor.stop()
+    else:
+        for client in INDEX.values():
+            client.sendClose(code=1000,
+                             reason=u"Shutting down the server!")
+        # TODO: Exit all connections cleanly
 
 
 class UDPThread(threading.Thread):
@@ -163,11 +177,18 @@ class Server(WebSocketServerProtocol):
 
     def onClose(self, wasClean, code, reason):
         """Handle a closed connection."""
+        super(Server, self).onClose(wasClean, code, reason)
+        # self.sendClose()
         LOGGER.info("[UID: %s] WebSocket connection closed: '%s'",
                     self.uid, reason)
         # remove this server-client-connection from the index
         if self.uid in INDEX:
             del INDEX[self.uid]
+        if len(INDEX) == 0 and STOPPED.is_set():
+            LOGGER.info(
+                "[UID: %s] This was the last client, stopping the Server.",
+                self.uid)
+            reactor.stop()
 
     def onMessage(self, payload, isBinary):
         """Handle a new incoming message."""
@@ -181,9 +202,8 @@ class Server(WebSocketServerProtocol):
                 LOGGER.fatal(
                     "[UID: %s] Received the request to close the server",
                     self.uid)
-                self.sendClose(code=1000, reason="Shutting down the server!")
-                # TODO: Exit all conections cleanly
-                reactor.stop()
+                # self.sendClose(code=1000, reason=u"Shutting down the server!")
+                stop_server()
             else:
                 key, data = parse(payload)
                 eventbuilder.Event(sender_id=self.uid,
