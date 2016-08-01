@@ -26,14 +26,11 @@ import traceback
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Device
-from tools import SleeperThread
-# pylint: enable=import-error
 
 
-__version__ = "1.6.3"
+__version__ = "1.6.8"
 
 
 # Initialize the logger
@@ -132,12 +129,14 @@ def worker(device_ip="192.168.178.48"):
         COMM_QUEUE.task_done()
 
 
-def turn_off_with_delay():
+def turn_off_with_delay(name="sleeper"):
     """Turn the AVR off."""
-    LOGGER.debug("Sending the command to shut down the AVR.")
+    logger = logging.getLogger(name)
+    logger.debug("Sending the command to shut down the AVR.")
     COMM_QUEUE.put(["ZMOFF", ["SI?=SIMPLAY", True]])
 
-WORKER = None
+WORKER = threading.Thread(target=worker, name="worker")
+WORKER.daemon = True
 SLEEPER = None
 
 PLUGIN = Device("AVR", True, LOGGER, __file__)
@@ -146,12 +145,9 @@ PLUGIN = Device("AVR", True, LOGGER, __file__)
 @subscribe_to("system.onstart")
 def onstart(key, data):
     """Set up the plugin by starting the worker-thread."""
-    global WORKER
     LOGGER.debug("Starting the worker")
-    WORKER = threading.Thread(target=worker, name="worker")
-    WORKER.daemon = True
     WORKER.start()
-    return True
+    return "Worker started successfully."
 
 
 @subscribe_to("chromecast.connection_change")
@@ -162,26 +158,30 @@ def chromecast_connection_change(key, data):
     if SLEEPER is not None:
         # Stop the sleeper if it's already running
         LOGGER.debug("Stopping the sleeper-thread.")
-        SLEEPER.stop()
+        SLEEPER.cancel()
         SLEEPER.join()
         SLEEPER = None
+        LOGGER.debug("Stopped the sleeper-thread.")
+
 
     # Check if the Chromecast is connected to an app
     if data["display_name"] in [None, "Backdrop"]:  # not connected
         LOGGER.debug("No app connected to the Chromecast. (%s)",
                      data["display_name"])
         # Run the sleeper that turns off the AVR after 3 minutes
-        SLEEPER = SleeperThread(target=turn_off_with_delay,
-                                delay=120,
-                                name=__name__ + ".sleeper")
+        SLEEPER = threading.Timer(120.0,
+                                  turn_off_with_delay,
+                                  [__name__ + ".sleeper"])
         SLEEPER.start()
-        return True
+        LOGGER.debug("Started the Sleeper with a delay of 120 seconds.")
+        return "Started the Sleeper."
     else:  # An app is connected to the Chromecast
         LOGGER.debug("'%s' connected to the Chromecast.",
                      data["display_name"])
         COMM_QUEUE.put(["ZMON", ["ZM?=ZMON", False]])
         COMM_QUEUE.put(["SIMPLAY", ["SI?=SIMPLAY", False]])
-        return True
+        return "Handled connecting of {} to the Chromecast.".format(
+            data["display_name"])
 
 
 @subscribe_to("chromecast.playstate_change")
@@ -195,7 +195,7 @@ def chromecast_playstate_change(key, data):
         # Prefer stereo audio for music, surround for everything else
         condition = "MS?={}".format(command.split(" ")[0])
         COMM_QUEUE.put([command, [condition, False]])
-        return True
+        return "Set he audio mode to {}.".format(command)
 
 
 @subscribe_to("system.onexit")
@@ -203,7 +203,10 @@ def stop(key, data):
     """Exit the device's hadler."""
     LOGGER.info("Exiting...")
     if SLEEPER:
-        SLEEPER.stop()
+        SLEEPER.cancel()
         SLEEPER.join()
+    LOGGER.warn("Waiting for COMM_QUEUE to be emptied. It currently holds "
+                "%d items.", COMM_QUEUE.qsize())
     COMM_QUEUE.join()
     LOGGER.info("Exited.")
+    return "Exited."

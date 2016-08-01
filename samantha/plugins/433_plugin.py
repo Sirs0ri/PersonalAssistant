@@ -19,13 +19,11 @@ except ImportError:
     pigpio = None
 
 # application specific imports
-# pylint: disable=import-error
 from core import subscribe_to
 from plugins.plugin import Plugin, Device
-# pylint: enable=import-error
 
 
-__version__ = "1.0.2"
+__version__ = "1.0.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -165,16 +163,16 @@ PLUGIN = Plugin("433", active, LOGGER, __file__)
 READING_LAMP = Device("Readinglamp", active, LOGGER, __file__,
                       ["light", "433"])
 AMBIENT_LAMP = Device("Ambientlamp", active, LOGGER, __file__,
-                      ["light", "ambient.", "433"])
+                      ["light", "433"])
 BED_LAMP = Device("Bedlamp", active, LOGGER, __file__,
-                      ["light", "ambient.", "433"])
+                      ["light", "433"])
 
 
 @READING_LAMP.turn_on
 def rl_turn_on(key, data):
     """Turn on the Reading-Lamp."""
     TRANSMITTER.send(1361)
-    return True
+    return "Reading Lamp turned on."
 
 
 @subscribe_to(["system.onexit", "time.time_of_day.day"])
@@ -182,14 +180,14 @@ def rl_turn_on(key, data):
 def rl_turn_off(key, data):
     """Turn off the Reading-Lamp."""
     TRANSMITTER.send(1364)
-    return True
+    return "Reading Lamp turned off."
 
 
 @BED_LAMP.turn_on
 def bl_turn_on(key, data):
     """Turn on the Bed-Lamp."""
     TRANSMITTER.send(4433)
-    return True
+    return "Bed Lamp turned on."
 
 
 @subscribe_to(["system.onexit", "time.time_of_day.day"])
@@ -197,14 +195,14 @@ def bl_turn_on(key, data):
 def bl_turn_off(key, data):
     """Turn off the Bed-Lamp."""
     TRANSMITTER.send(4436)
-    return True
+    return "Bed Lamp turned off."
 
 
 @AMBIENT_LAMP.turn_on
 def al_turn_on(key, data):
     """Turn on the Ambient-Lamp."""
     TRANSMITTER.send(5201)
-    return True
+    return "Ambient Lamp turned on."
 
 
 @subscribe_to(["system.onexit", "time.time_of_day.day"])
@@ -212,7 +210,7 @@ def al_turn_on(key, data):
 def al_turn_off(key, data):
     """Turn off the Ambient-Lamp."""
     TRANSMITTER.send(5204)
-    return True
+    return "Ambient Lamp turned off."
 
 # @subscribe_to("system.onstart")
 # def start_func(key, data):

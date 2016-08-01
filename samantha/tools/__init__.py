@@ -30,7 +30,7 @@ import eventbuilder
 import server
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
@@ -43,41 +43,6 @@ INPUT = None
 OUTPUT = None
 
 LOGGER.debug("I was imported.")
-
-
-class SleeperThread(threading.Thread):
-    """Thread class with a stop() method.
-
-    The thread sleeps for "delay" seconds, then runs the target-function.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """Initialize the thread."""
-        self.delay = kwargs.pop('delay', 0)
-        super(SleeperThread, self).__init__(*args, **kwargs)
-        self.logger = logging.getLogger(self.name)
-        self._stop = threading.Event()
-
-    def run(self):
-        """Run the thread. This'll start the delay, then target()."""
-        self.logger.debug("Started the sleeper-thread.")
-        i = 0
-        while i < self.delay and not self.stopped():
-            time.sleep(1)
-            i += 1
-        if self.stopped():
-            self.logger.debug("Exited.")
-        else:
-            self.logger.debug("Running the delayed function.")
-            super(SleeperThread, self).run()
-
-    def stop(self):
-        """Cancel the thread."""
-        self._stop.set()
-
-    def stopped(self):
-        """Check whether the thread should be stopped."""
-        return self._stop.isSet()
 
 
 def _init(queue_in, queue_out):

@@ -5,12 +5,11 @@
 - Forwards them to plugins
 - puts results back into the OUTPUT queue
 
-- Reads the global OUTOUT queue
+- Reads the global OUTPUT queue
 - Sends outgoing messages back the the clients
 """
 
 ###############################################################################
-# pylint: disable=global-statement
 #
 # TODO: [ ] clean up stats_worker
 #           worker()
@@ -36,22 +35,16 @@ import traceback
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
-import plugins
 import tools
-# pylint: enable=import-error
 
 
-__version__ = "1.4.5"
+__version__ = "1.5.1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
 # Set constants
 INITIALIZED = False
-
-NUM_WORKER_THREADS = 1
-NUM_SENDER_THREADS = 1
 
 INPUT = None
 OUTPUT = None
@@ -137,7 +130,7 @@ def subscribe_to(keyword):
 def wait(key, data):
     """Wait five seconds."""
     time.sleep(5)
-    return True
+    return "Waited for 5 seconds."
 
 
 @subscribe_to(["logger", "logging"])
@@ -147,11 +140,11 @@ def change_logger(key, data):
     if root.handlers[2].level == 10:
         root.handlers[2].setLevel(logging.INFO)
         LOGGER.warn("Logging-Level set to INFO")
-        return True
+        return "Logging-Level set to INFO"
     else:
         root.handlers[2].setLevel(logging.DEBUG)
         LOGGER.warn("Logging-Level set to DEBUG")
-        return True
+        return "Logging-Level set to DEBUG"
 
 
 def stats_worker():
@@ -188,8 +181,8 @@ def stats_worker():
         processed = False
         for result in event.result.values():
             if (result is None or
-                (isinstance(result, bool) and result is False) or
-                (not isinstance(result, bool) and "Error: " in result)):
+                    (isinstance(result, bool) and result is False) or
+                    (not isinstance(result, bool) and "Error: " in result)):
                 failed_functions += 1
             else:
                 success_functions += 1
@@ -258,6 +251,70 @@ def worker():
     name = __name__ + "." + threading.current_thread().name
     logger = logging.getLogger(name)
 
+    def _process(event):
+        input = Queue.PriorityQueue()
+        output = Queue.PriorityQueue()
+        queue_lock = threading.Lock()
+        thread_count = 2
+        thread_list = []
+
+        def _worker():
+            _name = name + "." + threading.current_thread().name
+            _logger = logging.getLogger(_name)
+            while True:
+                queue_lock.acquire()
+                if not input.empty():
+                    _func, _event = input.get()
+                    queue_lock.release()
+                    try:
+                        _logger.debug("[UID: %s] Executing '%s.%s'.",
+                                      _event.uid,
+                                      _func.__module__,
+                                      _func.__name__)
+                        output.put(
+                            ["{}.{}".format(_func.__module__, _func.__name__),
+                             _func(key=_event.keyword, data=_event.data)])
+                    except Exception as e:
+                        _logger.exception(
+                            "[UID: %s] Exception in user code:\n%s",
+                            _event.uid,
+                            traceback.format_exc())
+                        output.put(
+                            ["{}.{}".format(_func.__module__, _func.__name__),
+                             "Error: " + str(e)])
+                else:
+                    queue_lock.release()
+                    _logger.debug("Exiting.")
+                    break
+
+        # results = {}
+        queue_lock.acquire()
+        for key_substring in event.parsed_kw_list:
+            if key_substring in FUNC_KEYWORDS:
+                for func in FUNC_KEYWORDS[key_substring]:
+                    input.put([func, event])
+
+        for i in range(min(thread_count, input.qsize())):
+            t = threading.Thread(target=_worker, name="_worker%d" % i)
+            t.start()
+            thread_list.append(t)
+
+        queue_lock.release()
+
+        for t in thread_list:
+            t.join()
+
+        results = {}
+        while not output.empty():
+            f_name, value = output.get()
+            results[f_name] = value
+
+        # results = [x for x in results if x]
+        if not results:
+            results[name] = "Error: No matching plugin found."
+
+        return results
+
     while True:
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for an item.")
@@ -279,37 +336,15 @@ def worker():
                             len(FUNC_KEYWORDS))
                 logger.debug("%s", FUNC_KEYWORDS.keys())
 
-            results = {}
-            for key_substring in event.parsed_kw_list:
-                if key_substring in FUNC_KEYWORDS:
-                    for func in FUNC_KEYWORDS[key_substring]:
-                        try:
-                            logger.debug("[UID: %s] Executing '%s.%s'.",
-                                         event.uid,
-                                         func.__module__,
-                                         func.__name__)
-                            res = func(key=event.keyword,
-                                       data=event.data)
-                            results["{}.{}".format(
-                                func.__module__, func.__name__)] = res
-                        except Exception as e:
-                            logger.exception("Exception in user code:\n%s",
-                                             traceback.format_exc())
-                            res = "Error: " + str(e)
-                            results["{}.{}".format(
-                                func.__module__, func.__name__)] = res
-            # results = [x for x in results if x]
-            if not results:
-                results[name] = "Error: No matching plugin found."
-
+            results = _process(event)
             event.result = results
             logger.info("[UID: %s] Processing of '%s' successful. "
-                        "%d result%s: %s",
+                        "%d result%s: \n%s",
                         event.uid,
                         event.keyword,
                         len(results),
                         ("s" if len(results) > 1 else ""),
-                        results)
+                        json.dumps(results, sort_keys=True, indent=4))
 
         # Put the result back into the OUTPUT queue
         if event.event_type == "request":
@@ -370,7 +405,7 @@ def sender():
 
 def _init(queue_in, queue_out):
     """Initialize the module."""
-    global INPUT, OUTPUT, NUM_WORKER_THREADS, NUM_SENDER_THREADS
+    global INPUT, OUTPUT
 
     LOGGER.info("Initializing...")
     INPUT = queue_in
@@ -379,7 +414,7 @@ def _init(queue_in, queue_out):
     # Read the number of threads to start from Samantha's config file
     # (/samantha/data/samantha.cfg)
     LOGGER.debug("Reading the config file...")
-    # get the config file's path in realtion to the path of this file
+    # get the config file's path in relation to the path of this file
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
     if this_dir is "":
         path = "../../data"
@@ -391,30 +426,32 @@ def _init(queue_in, queue_out):
 
     try:
         # This leads to approx. X worker, X/2 sender and X/4 stat-threads.
-        NUM_WORKER_THREADS = config.getint(__name__, "NUM_WORKER_THREADS")
-        NUM_SENDER_THREADS = int(math.ceil(1.0 * NUM_WORKER_THREADS / 2))
-        NUM_STATISTICS_THREADS = int(math.ceil(1.0 * NUM_WORKER_THREADS / 4))
-    except Exception:
+        num_worker_threads = config.getint(__name__, "NUM_WORKER_THREADS")
+    except ConfigParser.Error:
         LOGGER.exception("Exception while reading the config:\n%s",
                          traceback.format_exc())
+        num_worker_threads = 2
+
+    num_sender_threads = int(math.ceil(1.0 * num_worker_threads / 2))
+    num_statistics_threads = int(math.ceil(1.0 * num_worker_threads / 4))
 
     # Start the worker threads to process commands
     LOGGER.debug("Starting Worker")
-    for i in range(NUM_WORKER_THREADS):
+    for i in range(num_worker_threads):
         thread = threading.Thread(target=worker, name="worker%d" % i)
         thread.daemon = True
         thread.start()
 
     # Start the sender threads to process results
     LOGGER.debug("Starting Sender")
-    for i in range(NUM_SENDER_THREADS):
+    for i in range(num_sender_threads):
         thread = threading.Thread(target=sender, name="sender%d" % i)
         thread.daemon = True
         thread.start()
 
     # Start the statistics thread to process results
     LOGGER.debug("Starting Statistics-Thread")
-    for i in range(NUM_STATISTICS_THREADS):
+    for i in range(num_statistics_threads):
         thread = threading.Thread(target=stats_worker, name="stats%d" % i)
         thread.daemon = True
         thread.start()

@@ -6,7 +6,6 @@
 """
 
 ###############################################################################
-# pylint: disable=global-statement
 #
 # TODO: [ ] monitor status changes
 #
@@ -22,12 +21,9 @@ import os.path
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
-import core
-# pylint: enable=import-error
 
 
-__version__ = "1.2.1"
+__version__ = "1.2.3"
 
 
 # Initialize the logger

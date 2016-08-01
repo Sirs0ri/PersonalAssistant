@@ -27,16 +27,14 @@ import time
 # related third party imports
 
 # application specific imports
-# pylint: disable=import-error
 import context
 from core import subscribe_to
 import logging
 from plugins.plugin import Plugin
 from tools import eventbuilder
-# pylint: enable=import-error
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.8"
 
 
 # Initialize the logger
@@ -136,13 +134,14 @@ def start_thread(key, data):
     thread = threading.Thread(target=worker)
     thread.daemon = True
     thread.start()
+    return "Worker started successfully."
 
 
 @subscribe_to("weather.update")
 def sun_times(key, data):
     """Update the times for sunset and -rise."""
     global SUNRISE, SUNSET
-    success = False
+    result = ""
     if "sys" in data:
         sunrise = datetime.datetime.fromtimestamp(data["sys"]["sunrise"])
         sunset = datetime.datetime.fromtimestamp(data["sys"]["sunset"])
@@ -150,10 +149,14 @@ def sun_times(key, data):
             SUNRISE = sunrise
             LOGGER.debug("Updated Sunrise to %s",
                          SUNRISE.strftime('%Y-%m-%d %H:%M:%S'))
-            success = True
+            result += "Sunrise updated successfully."
         if SUNSET is not sunset:
             SUNSET = sunset
             LOGGER.debug("Updated Sunset to %s",
                          SUNSET.strftime('%Y-%m-%d %H:%M:%S'))
-            success = True
-    return success
+            result += "Sunset updated successfully."
+        if result == "":
+            result = "Sunrise/-set were already up to date."
+    else:
+        result = "Error: The data does not contain info about sunrise/-set."
+    return result

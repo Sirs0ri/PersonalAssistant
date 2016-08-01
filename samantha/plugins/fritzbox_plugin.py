@@ -18,7 +18,6 @@ except ImportError:
 
 
 # application specific imports
-# pylint: disable=import-error
 import context
 from core import subscribe_to
 from plugins.plugin import Device
@@ -29,10 +28,9 @@ try:
 except (ImportError, AttributeError):
     variables_private = None
     PASSWORD = None
-# pylint: enable=import-error
 
 
-__version__ = "1.0.8"
+__version__ = "1.0.10"
 
 
 # Initialize the logger
@@ -106,14 +104,22 @@ def update_devices(key, data):
 
     devices_list = sorted(devices_list,
                           key=lambda item: item["name"].lower())
+
+    count = 0
+    ignored = 0
+    new = 0
+    updated = 0
     for device in devices_list:
+        count += 1
         if device["mac"] in ignored_macs:
+            ignored += 1
             LOGGER.debug("Ignoring '%s' as requested by the user.",
                          device["name"])
         else:
             c_device = context.get_value(
                 "network.devices.{}".format(device["mac"]), None)
             if c_device is None:
+                new += 1
                 LOGGER.debug("%s is a new device.", device["mac"])
                 eventbuilder.Event(
                     sender_id=PLUGIN.name,
@@ -126,6 +132,7 @@ def update_devices(key, data):
                 if (int(device["status"])
                         is int(DEVICES_DICT[device["mac"]]["status"])
                         is not int(c_device["status"])):
+                    updated += 1
                     LOGGER.debug("Device: %d %s, Cache: %d %s, Context: %d %s",
                                  int(device["status"]), device["status"],
                                  int(DEVICES_DICT[device["mac"]]["status"]),
@@ -139,4 +146,5 @@ def update_devices(key, data):
 
             DEVICES_DICT[device["mac"]] = device
 
-    return True
+    return("Processed {} devices in total, {} of them new. Ignored {} and "
+           "updated {}.".format(count, new, ignored, updated))
