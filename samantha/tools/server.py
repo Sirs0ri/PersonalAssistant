@@ -23,12 +23,10 @@ from autobahn.twisted.websocket import WebSocketServerProtocol, \
 from twisted.internet import reactor
 
 # application specific imports
-# pylint: disable=import-error
 import eventbuilder
-# pylint: enable=import-error
 
 
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 
 
 # Initialize the logger
@@ -160,19 +158,19 @@ class Server(WebSocketServerProtocol):
         """Handle a new open connection."""
         LOGGER.info("[UID: %s] WebSocket connection open.",
                     self.uid)
-        # add this server-client-connenction to the index
+        # add this server-client-connection to the index
         INDEX[self.uid] = self
 
     def onClose(self, wasClean, code, reason):
         """Handle a closed connection."""
         LOGGER.info("[UID: %s] WebSocket connection closed: '%s'",
                     self.uid, reason)
-        # remove this server-client-connenction from the index
+        # remove this server-client-connection from the index
         if self.uid in INDEX:
             del INDEX[self.uid]
 
     def onMessage(self, payload, isBinary):
-        """Handle a new incoming mesage."""
+        """Handle a new incoming message."""
         if isBinary:
             LOGGER.debug("[UID: %s] Binary message received: %d bytes",
                          self.uid, len(payload))
