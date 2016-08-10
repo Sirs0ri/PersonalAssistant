@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     KEY = None
 
 
-__version__ = "1.3.11"
+__version__ = "1.3.12"
 
 
 # Initialize the logger
@@ -89,6 +89,16 @@ def notify_twitch(key, data):
                 c_status=data["channel"]["status"],
                 c_url=data["channel"]["url"])
     files = [data["channel"]["logo"], data["channel"]["video_banner"]]
+    return _send_ar_message(message, files)
+
+
+@subscribe_to("facebook.poked")
+def notify_poke(key, data):
+    message = u"poke=:={status}=:={name}=:={pokeurl}".format(
+        status=data["text"],
+        name=data["name"],
+        pokeurl=data["pokeurl"])
+    files = [data["imgurl"]]
     return _send_ar_message(message, files)
 
 
