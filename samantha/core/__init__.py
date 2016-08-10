@@ -38,7 +38,7 @@ import traceback
 import tools
 
 
-__version__ = "1.5.2"
+__version__ = "1.5.3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ def get_uid(prefix):
 
 def _index(keyword, func):
     """Add a function to the index."""
-    if not isinstance(keyword, str) and isinstance(keyword, Iterable):
+    if not isinstance(keyword, basestring) and isinstance(keyword, Iterable):
         for key in keyword:
             if key not in FUNC_KEYWORDS:
                 FUNC_KEYWORDS[key] = []

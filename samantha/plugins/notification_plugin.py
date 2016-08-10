@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     KEY = None
 
 
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 
 # Initialize the logger
@@ -43,7 +43,7 @@ def _send_ar_message(message=None, files=None):
     if message:
         payload["message"] = message
     if files:
-        if not isinstance(files, str) and isinstance(files, Iterable):
+        if not isinstance(files, basestring) and isinstance(files, Iterable):
             files = [str(x) for x in files]
             payload["files"] = ",".join(files)
         else:

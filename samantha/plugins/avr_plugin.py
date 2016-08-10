@@ -30,7 +30,7 @@ from core import subscribe_to
 from plugins.plugin import Device
 
 
-__version__ = "1.6.8"
+__version__ = "1.6.9"
 
 
 # Initialize the logger
@@ -122,7 +122,7 @@ def worker(device_ip="192.168.178.48"):
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for a command.")
         command = COMM_QUEUE.get()
-        if not isinstance(command, str) and isinstance(command, Iterable):
+        if not isinstance(command, basestring) and isinstance(command, Iterable):
             _send(command[0], device_ip, logger, command[1])
         else:
             _send(command, device_ip, logger)
