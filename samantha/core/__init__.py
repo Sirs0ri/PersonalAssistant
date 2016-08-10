@@ -38,7 +38,7 @@ import traceback
 import tools
 
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -168,6 +168,7 @@ def stats_worker():
     success_functions = 0.0
     success_commands = 0.0
     failed_functions = 0.0
+    failed_func_dict = {}
     failed_commands = 0.0
     count_requests = 0.0
     count_triggers = 0.0
@@ -179,11 +180,12 @@ def stats_worker():
         else:
             count_triggers += 1
         processed = False
-        for result in event.result.values():
+        for func, result in event.result.iteritems():
             if (result is None or
                     (isinstance(result, bool) and result is False) or
                     (not isinstance(result, bool) and "Error: " in result)):
                 failed_functions += 1
+                failed_func_dict[func] = result
             else:
                 success_functions += 1
                 processed = True
@@ -221,13 +223,14 @@ def stats_worker():
                       "<b>All Time (Uptime: {!s}):</b><br>"
                       "{:.0f} Triggers, {:.0f} Requests<br>"
                       "Processed commands: {:.0f} ({:.2f}% success)<br>"
-                      "Processed functions: {:.0f} ({:.2f}% success)".format(
+                      "Processed functions: {:.0f} ({:.2f}% success)<br>"
+                      "<b>Today's fails:</b> {}".format(
                           count_triggers, count_requests, count_commands,
                           success_rate_commands, count_functions,
                           success_rate_functions, uptime, count_triggers_total,
                           count_requests_total, count_commands_total,
                           success_rate_commands_total, count_functions_total,
-                          success_rate_functions_total))
+                          success_rate_functions_total, failed_func_dict))
             tools.eventbuilder.Event(sender_id=name,
                                      keyword="notify.user",
                                      data={"title": "Daily report",
@@ -326,9 +329,12 @@ def worker():
                      event.sender_id)
 
         if event.expired:
-            logger.warn("[UID: %s] The event is expired and will be skipped.",
-                        event.uid)
-            event.result = {name: "Error: The event expired and was skipped."}
+            logger.warn(
+                "[UID: %s] The event '%s' is expired and will be skipped.",
+                    event.uid, event.keyword)
+            event.result = {
+                name: "Error: The event '{}' expired and was skipped.".format(
+                    event.keyword)}
         else:
 
             if event.keyword == "onstart":
