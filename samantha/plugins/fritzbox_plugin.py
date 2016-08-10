@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     PASSWORD = None
 
 
-__version__ = "1.0.10"
+__version__ = "1.0.11"
 
 
 # Initialize the logger
@@ -91,6 +91,10 @@ def _status_update(device):
 @subscribe_to(["system.onstart", "time.schedule.10s"])
 def update_devices(key, data):
     """Check for updated device-info."""
+
+    if key == "time.schedule.10s" and data[5] % 20 is not 0:
+        return "Skipping this check since I'm only refreshing every 20 Sec."
+
     ignored_macs = ["00:80:77:F2:71:23", None]
     # this list holds the mac-addresses of ignored devices. They won't be able
     # to trigger events such as coming on/offline or registering. The 1st

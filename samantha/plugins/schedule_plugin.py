@@ -34,7 +34,7 @@ from plugins.plugin import Plugin
 from tools import eventbuilder
 
 
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 
 # Initialize the logger
@@ -93,7 +93,7 @@ def worker():
             eventbuilder.Event(sender_id=name,
                                keyword="time.schedule.10s",
                                data=timelist,
-                               ttl=5).trigger()
+                               ttl=8).trigger()
             if timelist[5] == 0:
                 # Seconds = 0 -> New Minute
                 eventbuilder.Event(sender_id=name,
