@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     KEY = None
 
 
-__version__ = "1.3.10"
+__version__ = "1.3.12"
 
 
 # Initialize the logger
@@ -43,7 +43,7 @@ def _send_ar_message(message=None, files=None):
     if message:
         payload["message"] = message
     if files:
-        if not isinstance(files, str) and isinstance(files, Iterable):
+        if not isinstance(files, basestring) and isinstance(files, Iterable):
             files = [str(x) for x in files]
             payload["files"] = ",".join(files)
         else:
@@ -89,6 +89,16 @@ def notify_twitch(key, data):
                 c_status=data["channel"]["status"],
                 c_url=data["channel"]["url"])
     files = [data["channel"]["logo"], data["channel"]["video_banner"]]
+    return _send_ar_message(message, files)
+
+
+@subscribe_to("facebook.poked")
+def notify_poke(key, data):
+    message = u"poke=:={status}=:={name}=:={pokeurl}".format(
+        status=data["text"],
+        name=data["name"],
+        pokeurl=data["pokeurl"])
+    files = [data["imgurl"]]
     return _send_ar_message(message, files)
 
 

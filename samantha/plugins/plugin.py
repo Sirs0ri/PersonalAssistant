@@ -18,7 +18,7 @@ import logging
 from core import subscribe_to
 
 
-__version__ = "1.4.6"
+__version__ = "1.4.7"
 
 
 # Initialize the logger
@@ -79,7 +79,7 @@ class Device(Plugin):
         self.power_on_keywords = ["turn.on." + self.name.lower()]
         self.power_off_keywords = ["turn.off." + self.name.lower()]
         if group:
-            if not isinstance(group, str) and isinstance(group, Iterable):
+            if not isinstance(group, basestring) and isinstance(group, Iterable):
                 top_level = []
                 sub_level = []
                 words = []

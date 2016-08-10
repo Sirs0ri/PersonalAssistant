@@ -24,7 +24,7 @@ from core import subscribe_to
 from plugins.plugin import Device
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 
 # Initialize the logger
@@ -94,15 +94,45 @@ def _spread(steps, length=256, interpolator=None):
     steps = float(steps)
 
     def linear(x):
-        """Linear function. linear(0) = 0, linear(length) = steps."""
+        """Linear function. linear(0) = 0, linear(length) = steps.
+        |                   o
+        |                 o  
+        |              o     
+        |            o       
+        |         o          
+        |       o            
+        |    o               
+        |  o                 
+        +-------------------
+        """
         return round(x*(steps/length))
 
     def squared(x):
-        """Squared function. squared(0) = 0, squared(length) = steps."""
+        """Squared function. squared(0) = 0, squared(length) = steps.
+        |                  o
+        |                   
+        |                o  
+        |                   
+        |             o     
+        |           o       
+        |        o          
+        | o o  o            
+        +-------------------
+        """
         return round(x*x*(steps/(length*length)))
 
     def root(x):
-        """Square root function. root(0) = 0, root(length) = steps."""
+        """Square root function. root(0) = 0, root(length) = steps.
+        |                  o
+        |             o     
+        |        o          
+        |      o            
+        |   o               
+        | o                 
+        | o                 
+        | o                 
+        +-------------------
+        """
         return round((steps*math.sqrt(length)*math.sqrt(x))/length)
 
     if interpolator == "linear" or (interpolator is None and steps == 0):
