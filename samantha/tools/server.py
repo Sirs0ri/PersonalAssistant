@@ -26,7 +26,7 @@ from twisted.internet import reactor
 from . import eventbuilder
 
 
-__version__ = "1.4.8"
+__version__ = "1.4.9"
 
 
 # Initialize the logger
@@ -225,6 +225,7 @@ def _init(queue_in, queue_out):
     reactor.listenTCP(19113, FACTORY)
 
     UDP_THREAD = UDPThread(name="udp_thread")
+    UDP_THREAD.daemon = True
 
     LOGGER.info("Initialisation complete.")
     return True
