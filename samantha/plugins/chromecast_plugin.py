@@ -6,21 +6,12 @@ It fires events when the playback and the connection changes.
 ###############################################################################
 #
 # TODO: [ ] Read Chromecast IP from config
-# TODO: [ ] Move adding the listeners to the initialisation, catch this:
-#               Traceback (most recent call last):
-#                 File "samantha/plugins/chromecast_plugin.py", line 79, in onstart
-#                   cast = pychromecast.Chromecast("192.168.178.45")
-#                 File "/usr/local/lib/python2.7/dist-packages/pychromecast/__init__.py", line 244, in __init__
-#                   "Could not connect to {}:{}".format(self.host, self.port))
-#               ChromecastConnectionError: Could not connect to 192.168.178.45:8009
-#               Exception AttributeError: "'Chromecast' object has no attribute 'socket_client'" in <bound method Chromecast.__del__ of Chromecast('192.168.178.45', port=8009, device=None)> ignored
 #
 ###############################################################################
 
 
 # standard library imports
 import logging
-import traceback
 
 # related third party imports
 import pychromecast
@@ -31,15 +22,22 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 logging.getLogger("pychromecast").setLevel(logging.INFO)
 
+try:
+    # Connect to the Chromecast
+    CAST = pychromecast.Chromecast("192.168.178.45")
+    CAST.wait()  # Wait until the connection is ready.
+except pychromecast.ChromecastConnectionError:
+    CAST = None
 
-PLUGIN = Plugin("Chromecast", True, LOGGER, __file__)
+
+PLUGIN = Plugin("Chromecast", CAST is not None, LOGGER, __file__)
 
 
 class Listener(object):
@@ -81,17 +79,14 @@ class Listener(object):
 def onstart(key, data):
     """Set up the Chromecast listener."""
     try:
-        # Connect to the Chromecast
-        cast = pychromecast.Chromecast("192.168.178.45")
-        cast.wait()  # Wait until the connection is ready.
-        mediacontroller = cast.media_controller
+        mediacontroller = CAST.media_controller
         listener = Listener(PLUGIN.name)
         # Register the listener to the Chromecast's status and media-status
         # events.
         mediacontroller.register_status_listener(listener)
-        cast.register_status_listener(listener)
+        CAST.register_status_listener(listener)
         listener.new_media_status(mediacontroller.status)
-        listener.new_cast_status(cast.status)
+        listener.new_cast_status(CAST.status)
         return "Registered both Listeners successfully."
     except pychromecast.ChromecastConnectionError, e:
         LOGGER.error("Could not connect to the ChromeCast. Error: %s", e)
