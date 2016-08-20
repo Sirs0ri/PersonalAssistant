@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 
 # Initialize the logger
@@ -50,9 +50,9 @@ def check_weather(key, data):
     tries = 0
     while tries <= 3 and req is None:
         try:
+            tries += 1
             req = requests.get(url, params=SECRETS, timeout=15)
             if req.status_code == 200:
-                tries = 0
                 new_data = req.json()
                 eventbuilder.eEvent(sender_id=PLUGIN.name,
                                     keyword="weather.update",
@@ -63,11 +63,21 @@ def check_weather(key, data):
                                            category),
                                         data=new_data[category]).trigger()
                 return "Weather updated successfully."
+            else:
+                LOGGER.warn("The request returned the wrong status code: %s "
+                            "Retrying in two seconds.",
+                            req.status_code)
+                req = None
+                time.sleep(2)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
                 requests.exceptions.Timeout), e:
             LOGGER.warn("Connecting to OWM failed on attempt %d. "
                         "Retrying in two seconds. Error: %s", tries, e)
+            time.sleep(2)
+        except ValueError, e:
+            LOGGER.warn("The requested data could not pe processed "
+                        "successfully. Retrying in two seconds. Error: %s", e)
             time.sleep(2)
 
     if req is None:
