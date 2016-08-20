@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     PASSWORD = None
 
 
-__version__ = "1.0.14"
+__version__ = "1.0.15"
 
 
 # Initialize the logger
@@ -40,16 +40,23 @@ LOGGER = logging.getLogger(__name__)
 def _get_hosts_info():
     # Mute requests' logging < WARN while getting data from the FritzBox.
     # It would otherwise produce roughly 150 messages within a second or two.
-    req_logger = logging.getLogger("requests.packages.urllib3.connectionpool")
-    req_logger_originallevel = req_logger.level
-    req_logger.setLevel(logging.WARN)
+    try:
+        req_logger = logging.getLogger("requests.packages.urllib3.connectionpool")
+        req_logger_originallevel = req_logger.level
+        req_logger.setLevel(logging.WARN)
 
-    # Update data from the FritzBox
-    devices_list = FRITZBOX.get_hosts_info()
+        # Update data from the FritzBox
+        devices_list = FRITZBOX.get_hosts_info()
 
-    # Reset requests' logging to its original level.
-    req_logger.setLevel(req_logger_originallevel)
-    return devices_list
+    except KeyError:
+        LOGGER.error("The credentials are invalid.")
+        devices_list = []
+
+    finally:
+
+        # Reset requests' logging to its original level.
+        req_logger.setLevel(req_logger_originallevel)
+        return devices_list
 
 
 authenticated = False
