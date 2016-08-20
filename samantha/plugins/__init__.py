@@ -23,7 +23,7 @@ import os.path
 # application specific imports
 
 
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 
 # Initialize the logger
@@ -70,7 +70,7 @@ def _init(queue_in, queue_out):
         LOGGER.debug("Trying to import %s...", plugin_file)
 
         try:
-            name = plugin_file.replace("samantha/", "") \
+            name = plugin_file.split("PersonalAssistant/")[-1] \
                               .replace("/", ".") \
                               .replace("_plugin.py", "")
             plugin_source = imp.load_source(name, plugin_file)
