@@ -3,7 +3,6 @@
 ###############################################################################
 #
 # TODO: [ ] Add a receiver to intercept commands from the remote
-# TODO: [ ] Check Dokumentation
 #
 ###############################################################################
 
@@ -23,7 +22,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin, Device
 
 
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -32,8 +31,9 @@ LOGGER = logging.getLogger(__name__)
 class Transmitter(object):
     """
     A class to transmit the wireless codes sent by 433 MHz
-    wireless fobs.
+    wireless fobs. This class is taken 1:1 from:
     """
+    # TODO: ADDRESS!
 
     def __init__(self, pi, gpio, repeats=4, bits=24, gap=9000, t0=300, t1=900):
         """

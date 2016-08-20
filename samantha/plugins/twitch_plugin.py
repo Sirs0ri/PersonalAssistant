@@ -2,7 +2,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] Events when streams go offline
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.15"
+__version__ = "1.3.16"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

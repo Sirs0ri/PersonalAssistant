@@ -30,7 +30,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.11"
+__version__ = "1.6.12"
 
 
 # Initialize the logger
@@ -138,7 +138,7 @@ def turn_off_with_delay(name="sleeper"):
 WORKER = threading.Thread(target=worker, name="worker")
 WORKER.daemon = True
 SLEEPER = None
-
+# TODO: Check if the AVR is available
 PLUGIN = Device("AVR", True, LOGGER, __file__)
 
 

@@ -2,7 +2,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] default methods
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -18,7 +18,7 @@ import logging
 from samantha.core import subscribe_to
 
 
-__version__ = "1.4.8"
+__version__ = "1.4.9"
 
 
 # Initialize the logger
