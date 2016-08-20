@@ -15,6 +15,8 @@ Nomnomnom, Cookies!
 import re
 from HTMLParser import HTMLParser
 import logging
+from threading import Event as tEvent
+import time
 
 # related third party imports
 import requests
@@ -34,7 +36,7 @@ except (ImportError, AttributeError):
     CURL = None
 
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 
 # Initialize the logger
@@ -70,6 +72,12 @@ def _parse_curl(curl):
     return url, header_dict
 
 
+# Set as soon as a request to facebook is successful. Cleared if the requests
+# fail 3x in a row. While PLUGIN_IS_ONLINE isn't set the plugin will not retry
+# failed requests. While it is set, the plugin will retry up to 3x to
+# reestablish a connection.
+PLUGIN_IS_ONLINE = tEvent()
+
 # Parse a command formatted for bash's cURL into URL and a dict of headers.
 URL, HEADER_DICT = _parse_curl(CURL)
 
@@ -90,7 +98,47 @@ def check_pokes(key, data):
 
     cache = []
     new_count = 0
-    req = requests.get(url=URL, headers=HEADER_DICT)
+    req = None
+    tries = 0
+    retries = 3 if PLUGIN_IS_ONLINE.is_set() else 1
+    # Give up after one failed attempt if the plugin wasn't able to establish a
+    # connection before. Otherwise try up to 3x.
+    while tries < retries and req is None:
+        try:
+            tries += 1
+            req = requests.get(url=URL, headers=HEADER_DICT, timeout=15)
+            if req.status_code == 200:
+                # Update the flag after a successful connection
+                PLUGIN_IS_ONLINE.set()
+            else:
+                if tries == retries > 1:
+                    m = "Reached the max. amount of retries."
+                elif not PLUGIN_IS_ONLINE.is_set():
+                    m = "Not retrying because the plugin is offline."
+                else:
+                    m = "Retrying in two seconds."
+                LOGGER.warn("The request returned the wrong status code (%s) "
+                            "on attempt %d. %s", req.status_code, tries, m)
+                req = None
+                time.sleep(2)
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.SSLError,
+                requests.exceptions.Timeout), e:
+            if tries == retries > 1:
+                m = "Reached the max. amount of retries."
+            elif not PLUGIN_IS_ONLINE.is_set():
+                m = "Not retrying because the plugin is offline."
+            else:
+                m = "Retrying in two seconds."
+            LOGGER.warn("Connecting to Facebook failed on attempt %d. "
+                        "%s Error: %s", tries, m, e)
+            req = None
+            time.sleep(2)
+
+    if req is None:
+        LOGGER.error("Connecting to Twitch failed.")
+        PLUGIN_IS_ONLINE.clear()
+        return "Error: Connecting to Twitch failed."
     text = req.text
     matches = re.findall(
         r'<article class="_55wr" id="poke_live_item_[\s\S]*?</article>',
