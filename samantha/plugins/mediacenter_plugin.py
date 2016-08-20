@@ -19,7 +19,7 @@ from samantha.tools import eventbuilder
 from samantha.plugins.plugin import Plugin
 
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -33,13 +33,13 @@ def chromecast_connection_change(key, data):
     # Check if the Chromecast is connected to an app
     if context.get_value("time.time_of_day") == "night":
         if data["display_name"] in [None, "Backdrop"]:  # not connected
-            eventbuilder.Event(sender_id=PLUGIN.name,
-                               keyword="turn.off.ambient.433").trigger()
-            eventbuilder.Event(sender_id=PLUGIN.name,
-                               keyword="turn.on.led").trigger()
+            eventbuilder.eEvent(sender_id=PLUGIN.name,
+                                keyword="turn.off.ambient.433").trigger()
+            eventbuilder.eEvent(sender_id=PLUGIN.name,
+                                keyword="turn.on.led").trigger()
             return "Ambient light turned off."
         else:  # An app is connected to the Chromecast
-            eventbuilder.Event(sender_id=PLUGIN.name,
-                               keyword="turn.on.ambient.light").trigger()
+            eventbuilder.eEvent(sender_id=PLUGIN.name,
+                                keyword="turn.on.ambient.light").trigger()
             return "Ambient light turned on."
     return "It's daytime. The light is supposed to stay off."

@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     PASSWORD = None
 
 
-__version__ = "1.0.12"
+__version__ = "1.0.13"
 
 
 # Initialize the logger
@@ -80,7 +80,7 @@ DEVICES_DICT = context.get_children("network.devices", default={})
 def _status_update(device):
     status = "online" if int(device["status"]) else "offline"
     LOGGER.debug("Updating device %s", device["mac"])
-    eventbuilder.Event(
+    eventbuilder.eEvent(
         sender_id=PLUGIN.name,
         keyword="network.fritzbox.availability.{}.{}".format(
             status, device["name"]),
@@ -125,7 +125,7 @@ def update_devices(key, data):
             if c_device is None:
                 new += 1
                 LOGGER.debug("%s is a new device.", device["mac"])
-                eventbuilder.Event(
+                eventbuilder.eEvent(
                     sender_id=PLUGIN.name,
                     keyword="network.fritzbox.newdevice.{}".format(
                         device["name"]),

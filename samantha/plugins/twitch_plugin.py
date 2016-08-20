@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.13"
+__version__ = "1.3.14"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -94,7 +94,7 @@ def check_followed_streams(key, data):
                 # The stream came online since the last check
                 LOGGER.debug(u"'%s' is now online. Playing '%s'",
                              channelname, current_game)
-                eventbuilder.Event(
+                eventbuilder.eEvent(
                     sender_id=PLUGIN.name,
                     keyword="media.twitch.availability.online.{}".format(
                         channelname),
@@ -115,7 +115,7 @@ def check_followed_streams(key, data):
                     # The game changed
                     LOGGER.debug("'%s' is now playing '%s'",
                                  channelname, current_game)
-                    eventbuilder.Event(
+                    eventbuilder.eEvent(
                         sender_id=PLUGIN.name,
                         keyword="media.twitch.gamechange.{}".format(
                             channelname),
@@ -136,9 +136,9 @@ def check_followed_streams(key, data):
         if channeldata is not None:
             LOGGER.debug("'%s' is now offline.", channelname)
             key = "media.twitch.availability.offline.{}".format(channelname)
-            eventbuilder.Event(sender_id=PLUGIN.name,
-                               keyword=key,
-                               data=channeldata).trigger()
+            eventbuilder.eEvent(sender_id=PLUGIN.name,
+                                keyword=key,
+                                data=channeldata).trigger()
             context.set_property(
                 "media.twitch.{}".format(channelname), None)
 

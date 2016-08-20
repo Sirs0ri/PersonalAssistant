@@ -94,9 +94,9 @@ def check_pokes(key, data):
 
             if poke["name"] not in CACHE:
                 LOGGER.warn(poke["text"])
-                Event(sender_id=PLUGIN.name,
-                      keyword="facebook.poked",
-                      data=poke).trigger()
+                eEvent(sender_id=PLUGIN.name,
+                       keyword="facebook.poked",
+                       data=poke).trigger()
                 new_count += 1
             else:
                 LOGGER.warn("This poke by %s is an old one.", poke["name"])

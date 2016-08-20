@@ -34,7 +34,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 
 # Initialize the logger
@@ -68,9 +68,9 @@ def worker():
             logger.debug("It's now %stime.", time_of_day)
             context.set_property("time.time_of_day", time_of_day)
             keyword = "time.time_of_day.{}".format(time_of_day)
-            eventbuilder.Event(sender_id=name,
-                               keyword=keyword,
-                               data=timelist).trigger()
+            eventbuilder.eEvent(sender_id=name,
+                                keyword=keyword,
+                                data=timelist).trigger()
 
     # Initialisation
     while True:
@@ -90,37 +90,37 @@ def worker():
         # ..[8]: tm_isdst = -1
         timelist = list(timetuple)
         if timelist[5] in [0, 10, 20, 30, 40, 50]:
-            eventbuilder.Event(sender_id=name,
-                               keyword="time.schedule.10s",
-                               data=timelist,
-                               ttl=8).trigger()
+            eventbuilder.eEvent(sender_id=name,
+                                keyword="time.schedule.10s",
+                                data=timelist,
+                                ttl=8).trigger()
             if timelist[5] == 0:
                 # Seconds = 0 -> New Minute
-                eventbuilder.Event(sender_id=name,
-                                   keyword="time.schedule.min",
-                                   data=timelist,
-                                   ttl=55).trigger()
+                eventbuilder.eEvent(sender_id=name,
+                                    keyword="time.schedule.min",
+                                    data=timelist,
+                                    ttl=55).trigger()
                 # Check for a change in the time of day
                 _check_daytime(datetime_obj, timelist)
                 if timelist[4] == 0:
                     # Minutes = 0 -> New Hour
-                    eventbuilder.Event(sender_id=name,
-                                       keyword="time.schedule.hour",
-                                       data=timelist,
-                                       ttl=3300).trigger()
+                    eventbuilder.eEvent(sender_id=name,
+                                        keyword="time.schedule.hour",
+                                        data=timelist,
+                                        ttl=3300).trigger()
                     if timelist[3] == 0:
                         # Hours = 0 -> New Day
-                        eventbuilder.Event(sender_id=name,
-                                           keyword="time.schedule.day",
-                                           data=timelist).trigger()
+                        eventbuilder.eEvent(sender_id=name,
+                                            keyword="time.schedule.day",
+                                            data=timelist).trigger()
                         if timelist[2] == 1:
                             # Day of Month = 1 -> New Month
-                            eventbuilder.Event(sender_id=name,
-                                               keyword="time.schedule.mon",
-                                               data=timelist).trigger()
+                            eventbuilder.eEvent(sender_id=name,
+                                                keyword="time.schedule.mon",
+                                                data=timelist).trigger()
                             if timelist[1] == 1:
                                 # Month = 1 -> New Year
-                                eventbuilder.Event(
+                                eventbuilder.eEvent(
                                     sender_id=name,
                                     keyword="time.schedule.year",
                                     data=timelist).trigger()

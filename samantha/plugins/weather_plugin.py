@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 
 # Initialize the logger
@@ -53,9 +53,10 @@ def check_weather(key, data):
             req = requests.get(url, params=SECRETS, timeout=15)
             if req.status_code == 200:
                 tries = 0
-                eventbuilder.Event(sender_id=PLUGIN.name,
-                                   keyword="weather.update",
-                                   data=req.json()).trigger()
+                new_data = req.json()
+                eventbuilder.eEvent(sender_id=PLUGIN.name,
+                                    keyword="weather.update",
+                                    data=new_data).trigger()
                 return "Weather updated successfully."
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,

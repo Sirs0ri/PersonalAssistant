@@ -26,7 +26,7 @@ from twisted.internet import reactor
 from . import eventbuilder
 
 
-__version__ = "1.4.7"
+__version__ = "1.4.8"
 
 
 # Initialize the logger
@@ -206,9 +206,9 @@ class Server(WebSocketServerProtocol):
                 stop_server()
             else:
                 key, data = parse(payload)
-                eventbuilder.Event(sender_id=self.uid,
-                                   keyword=key,
-                                   data=data).trigger()
+                eventbuilder.eEvent(sender_id=self.uid,
+                                    keyword=key,
+                                    data=data).trigger()
 
 
 def _init(queue_in, queue_out):

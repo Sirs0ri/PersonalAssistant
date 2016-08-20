@@ -31,7 +31,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
@@ -60,9 +60,9 @@ class Listener(object):
         if not status.content_type == self.content_type:
             self.content_type = status.content_type
             LOGGER.debug("New content_type: %s", self.content_type)
-            eventbuilder.Event(sender_id=self.name,
-                               keyword="chromecast.playstate_change",
-                               data=status.__dict__).trigger()
+            eventbuilder.eEvent(sender_id=self.name,
+                                keyword="chromecast.playstate_change",
+                                data=status.__dict__).trigger()
 
     def new_cast_status(self, status):
         """React to the "new_cast_status" event."""
@@ -72,9 +72,9 @@ class Listener(object):
             if not status.display_name == self.display_name:
                 self.display_name = status.display_name
                 LOGGER.debug("New app connected: %s", self.display_name)
-                eventbuilder.Event(sender_id=self.name,
-                                   keyword="chromecast.connection_change",
-                                   data=status.__dict__).trigger()
+                eventbuilder.eEvent(sender_id=self.name,
+                                    keyword="chromecast.connection_change",
+                                    data=status.__dict__).trigger()
 
 
 @subscribe_to("system.onstart")

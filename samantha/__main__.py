@@ -19,7 +19,7 @@ from . import logger
 from . import tools
 
 
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 
 
 def run(debug):
@@ -44,12 +44,12 @@ def run(debug):
     # TODO Start updater as part of tools
 
     LOGGER.info("Initialisation complete.")
-    tools.eventbuilder.Event(sender_id="i_main",
-                             keyword="system.onstart").trigger()
+    tools.eventbuilder.eEvent(sender_id="i_main",
+                              keyword="system.onstart").trigger()
     tools.server.run()
 
-    tools.eventbuilder.Event(sender_id="i_main",
-                             keyword="system.onexit").trigger()
+    tools.eventbuilder.eEvent(sender_id="i_main",
+                              keyword="system.onexit").trigger()
 
     LOGGER.info("Exiting...")
     # INPUT.join()

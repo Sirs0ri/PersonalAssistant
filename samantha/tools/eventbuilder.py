@@ -17,7 +17,7 @@ import logging
 # application specific imports
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 
 
 # Initialize the logger
@@ -56,7 +56,7 @@ def _parse_keyword(keyword):
     return result
 
 
-class Event(object):
+class eEvent(object):
     """An event for Samantha.
 
     Each event stores information about who triggered it, what type it is and
