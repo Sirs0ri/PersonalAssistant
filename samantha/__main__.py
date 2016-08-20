@@ -22,17 +22,12 @@ from . import tools
 __version__ = "1.5.0"
 
 
-if "--debug" in sys.argv or "-D" in sys.argv:
-    DEBUG = True
-else:
-    DEBUG = False
+def run(debug):
 
+    # Initialize the logger
+    logger.initialize(debug)
+    LOGGER = logging.getLogger(__name__)
 
-# Initialize the logger
-logger.initialize(DEBUG)
-LOGGER = logging.getLogger(__name__)
-
-if __name__ == "__main__":
     LOGGER.debug("-"*47)
     LOGGER.info("Initializing...")
     LOGGER.debug("-"*47)
@@ -66,3 +61,10 @@ if __name__ == "__main__":
     LOGGER.debug("-"*47)
     LOGGER.info("Shutdown complete.")
     LOGGER.debug("-"*47)
+
+if __name__ == "__main__":
+    if "--debug" in sys.argv or "-D" in sys.argv:
+        DEBUG = True
+    else:
+        DEBUG = False
+    run(DEBUG)

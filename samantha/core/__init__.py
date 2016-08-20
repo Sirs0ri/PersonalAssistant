@@ -35,6 +35,7 @@ import traceback
 # related third party imports
 
 # application specific imports
+import samantha.tools as tools
 
 
 __version__ = "1.5.4"
@@ -232,7 +233,6 @@ def stats_worker():
                           success_rate_functions_total, failed_func_dict))
             tools.eventbuilder.Event(sender_id=name,
                                      keyword="notify.user",
-                                     data={"title": "Daily report",
                                            "message": report}).trigger()
             success_functions = 0.0
             success_commands = 0.0
