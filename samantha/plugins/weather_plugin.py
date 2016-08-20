@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 
 
 # Initialize the logger
@@ -57,6 +57,11 @@ def check_weather(key, data):
                 eventbuilder.eEvent(sender_id=PLUGIN.name,
                                     keyword="weather.update",
                                     data=new_data).trigger()
+                for category in new_data:
+                    eventbuilder.eEvent(sender_id=PLUGIN.name,
+                                        keyword="weather.{}.update".format(
+                                           category),
+                                        data=new_data[category]).trigger()
                 return "Weather updated successfully."
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
