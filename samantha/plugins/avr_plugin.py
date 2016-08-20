@@ -30,7 +30,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.12"
+__version__ = "1.6.13"
 
 
 # Initialize the logger
@@ -138,9 +138,9 @@ def turn_off_with_delay(name="sleeper"):
 WORKER = threading.Thread(target=worker, name="worker")
 WORKER.daemon = True
 SLEEPER = None
-# TODO: Check if the AVR is available
-PLUGIN = Device("AVR", True, LOGGER, __file__)
 
+PLUGIN = Device("AVR", True, LOGGER, __file__)
+# TODO: Check if the AVR is available
 
 @subscribe_to("system.onstart")
 def onstart(key, data):
@@ -174,7 +174,7 @@ def chromecast_connection_change(key, data):
                                   [__name__ + ".sleeper"])
         SLEEPER.start()
         LOGGER.debug("Started the Sleeper with a delay of 120 seconds.")
-        return "Started the Sleeper."
+        return "No app conected, Started the Sleeper."
     else:  # An app is connected to the Chromecast
         LOGGER.debug("'%s' connected to the Chromecast.",
                      data["display_name"])
@@ -196,6 +196,8 @@ def chromecast_playstate_change(key, data):
         condition = "MS?={}".format(command.split(" ")[0])
         COMM_QUEUE.put([command, [condition, False]])
         return "Set he audio mode to {}.".format(command)
+    else:
+        return "Invalid content-type. Looks like no app is currently connected."
 
 
 @subscribe_to("system.onexit")
