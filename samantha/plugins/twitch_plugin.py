@@ -30,15 +30,15 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.14"
+__version__ = "1.3.15"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
 if variables_private is None:
-    LOGGER.exception("Couldn't access the private variables.")
+    LOGGER.error("Couldn't access the private variables.")
 if SECRETS is None:
-    LOGGER.exception("Couldn't access the API-Key and/or client-ID.")
+    LOGGER.error("Couldn't access the API-Key and/or client-ID.")
 
 PLUGIN = Plugin("Twitch", SECRETS is not None, LOGGER, __file__)
 
@@ -65,16 +65,17 @@ def check_followed_streams(key, data):
             time.sleep(2)
 
     if req is None:
-        LOGGER.exception("Connecting to Twitch failed three times in a row.")
+        LOGGER.error("Connecting to Twitch failed three times in a row.")
         return "Error: Connecting to Twitch failed three times in a row."
 
     # Replace null-fields with "null"-strings
     text = req.text.replace('null', '"null"')
     try:
         data = json.loads(text)
-    except ValueError:
+    except ValueError, e:
         # Thrown by json if parsing a string fails due to an invalid format.
-        LOGGER.exception("The call to Twitch's API returned invalid data.")
+        LOGGER.error("The call to Twitch's API returned invalid data. "
+                     "Error: %s Data: %s", e, text)
         return "Error: The call to Twitch's API returned invalid data."
     new_streamlist = {}
     # parse the data

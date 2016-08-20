@@ -38,7 +38,7 @@ import traceback
 import samantha.tools as tools
 
 
-__version__ = "1.5.5"
+__version__ = "1.5.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -434,7 +434,7 @@ def _init(queue_in, queue_out):
         # This leads to approx. X worker, X/2 sender and X/4 stat-threads.
         num_worker_threads = config.getint(__name__, "NUM_WORKER_THREADS")
     except ConfigParser.Error:
-        LOGGER.exception("Exception while reading the config:\n%s",
+        LOGGER.error("Exception while reading the config:\n%s",
                          traceback.format_exc())
         num_worker_threads = 2
 

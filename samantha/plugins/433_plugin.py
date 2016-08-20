@@ -23,7 +23,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin, Device
 
 
-__version__ = "1.0.6"
+__version__ = "1.0.7"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -144,7 +144,7 @@ if pigpio:
     PI = pigpio.pi("192.168.178.56")
 else:
     PI = None
-    LOGGER.exception(
+    LOGGER.error(
         "Could not import pigpio. Please follow the instructions on %s to "
         "install it manually.",
         "https://github.com/joan2937/pigpio/blob/master/README#L103")

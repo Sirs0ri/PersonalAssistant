@@ -27,16 +27,16 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
 if variables_private is None:
-    LOGGER.exception("Couldn't access the private variables.")
+    LOGGER.error("Couldn't access the private variables.")
 if SECRETS is None:
-    LOGGER.exception("Couldn't access the API-Key and/or location.")
+    LOGGER.error("Couldn't access the API-Key and/or location.")
 
 PLUGIN = Plugin("Weather", SECRETS is not None, LOGGER, __file__)
 
@@ -66,5 +66,7 @@ def check_weather(key, data):
             time.sleep(2)
 
     if req is None:
-        LOGGER.exception("Connecting to OWM failed three times in a row.")
-        return "Error: Connecting to OWM failed three times in a row."
+        LOGGER.error("Connecting to OWM didn't return a valid result three "
+                     "times in a row.")
+        return ("Error: Connecting to OWM didn't return a valid result three "
+                "times in a row.")

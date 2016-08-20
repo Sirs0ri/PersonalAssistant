@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     PASSWORD = None
 
 
-__version__ = "1.0.13"
+__version__ = "1.0.14"
 
 
 # Initialize the logger
@@ -55,9 +55,9 @@ def _get_hosts_info():
 authenticated = False
 
 if variables_private is None:
-    LOGGER.exception("Couldn't access the private variables.")
+    LOGGER.error("Couldn't access the private variables.")
 if PASSWORD is None:
-    LOGGER.exception("Couldn't access the password.")
+    LOGGER.error("Couldn't access the password.")
 
 if FritzHosts:
     try:
@@ -67,7 +67,7 @@ if FritzHosts:
         _get_hosts_info()
         authenticated = True
     except IOError:
-        LOGGER.exception("Couldn't connect to a fritzbox at the default "
+        LOGGER.error("Couldn't connect to a fritzbox at the default "
                          "address '192.168.178.1'!")
     except KeyError:
         LOGGER.exception("The credentials are invalid.")

@@ -30,7 +30,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.10"
+__version__ = "1.6.11"
 
 
 # Initialize the logger
@@ -85,7 +85,7 @@ def _send(command, device_ip, logger, condition=None, retries=3):
                 retries -= 1
                 time.sleep(1)
         if telnet is None:
-            logger.exception("AVR refused the connection. Is another "
+            logger.error("AVR refused the connection. Is another "
                              "device using the Telnet connection already?"
                              "\n%s", traceback.format_exc())
         else:

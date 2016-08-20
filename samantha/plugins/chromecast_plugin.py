@@ -31,7 +31,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 
 
 # Initialize the logger
@@ -93,8 +93,6 @@ def onstart(key, data):
         listener.new_media_status(mediacontroller.status)
         listener.new_cast_status(cast.status)
         return "Registered both Listeners successfully."
-    except Exception, e:
-        LOGGER.exception(
-            "Exception while connecting to the Chromecast:\n%s",
-            traceback.format_exc())
-    return "Error: {}".format(e)
+    except pychromecast.ChromecastConnectionError, e:
+        LOGGER.error("Could not connect to the ChromeCast. Error: %s", e)
+        return "Error: {}".format(e)
