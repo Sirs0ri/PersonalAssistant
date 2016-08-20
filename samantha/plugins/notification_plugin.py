@@ -11,6 +11,7 @@
 from collections import Iterable
 from datetime import datetime
 import logging
+import threading
 import time
 
 # related third party imports
@@ -27,7 +28,7 @@ except (ImportError, AttributeError):
     KEY = None
 
 
-__version__ = "1.3.13"
+__version__ = "1.3.14"
 
 
 # Initialize the logger
@@ -39,6 +40,7 @@ PLUGIN = Plugin("Notification", KEY is not None, LOGGER, __file__)
 def _send_ar_message(message=None, files=None):
     """Send a message via AutoRemote."""
     url = "https://autoremotejoaomgcd.appspot.com/sendmessage"
+    success = threading.Event()
     payload = {'key': KEY}
     if message:
         payload["message"] = message
@@ -48,23 +50,50 @@ def _send_ar_message(message=None, files=None):
             payload["files"] = ",".join(files)
         else:
             payload["files"] = files
-    req = None
-    tries = 0
-    while tries <= 3 and req is None:
-        try:
-            LOGGER.debug("Sending '%s(...)' via AR",
-                         message[:50])
-            tries += 1
-            req = requests.post(url, payload, timeout=15, stream=False)
-            tries = 0
-            return "Message sent successfully."
-        except (requests.exceptions.ConnectionError,
-                requests.exceptions.SSLError,
-                requests.exceptions.Timeout), e:
-            LOGGER.warn("Connecting to AutoRemote failed on attempt %d. "
-                        "Retrying in two seconds. Error: %s", tries, e)
-            time.sleep(2)
+
+    def send_message():
+        logger = logging.getLogger(__name__ + ".sender")
+        req = None
+        tries = 0
+        while tries < 3 and req is None:
+            try:
+                logger.debug("Sending '%s(...)' via AR",
+                             # message)
+                             message[:49])
+                req = requests.post(url, payload, timeout=15, stream=False)
+                success.set()
+            except (requests.exceptions.ConnectionError,
+                    requests.exceptions.SSLError,
+                    requests.exceptions.Timeout), e:
+                tries += 1
+                logger.warn("Connecting to AutoRemote failed on attempt %d. "
+                            "Retrying in two seconds. Error: %s", tries, e)
+                time.sleep(2)
+
+    thread = threading.Thread(target=send_message)
+    thread.start()
+    thread.join()
+    if success.is_set():
+        return "Message sent successfully."
     return "Error: Connecting to AutoRemote failed repeatedly."
+
+
+    # req = None
+    # tries = 0
+    # while tries < 3 and req is None:
+    #     try:
+    #         LOGGER.debug("Sending '%s(...)' via AR",
+    #                      message[:50])
+    #         tries += 1
+    #         req = requests.post(url, payload, timeout=15, stream=False)
+    #         tries = 0
+    #         return "Message sent successfully."
+    #     except (requests.exceptions.ConnectionError,
+    #             requests.exceptions.SSLError,
+    #             requests.exceptions.Timeout), e:
+    #         LOGGER.warn("Connecting to AutoRemote failed on attempt %d. "
+    #                     "Retrying in two seconds. Error: %s", tries, e)
+    #         time.sleep(2)
 
 
 @subscribe_to("system.*")

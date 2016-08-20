@@ -14,6 +14,7 @@ readability or an AutoRemote-Handler that sends log messages to my phone.
 # standard library imports
 import logging
 import logging.handlers
+import threading
 import time
 
 # related third party imports
@@ -34,7 +35,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.9"
+__version__ = "1.2.10"
 
 
 # Initialize the logger
@@ -61,8 +62,25 @@ class AutoRemoteHandler(logging.Handler):
         url = "https://autoremotejoaomgcd.appspot.com/sendmessage"
         payload = {'key': variables_private.ar_key,
                    'message': "logging=:=Samantha=:=" + message}
-        req = None
-        tries = 0
+
+        def send_message():
+            logger = logging.getLogger(__name__ + ".sender")
+            req = None
+            tries = 0
+            while tries < 3 and req is None:
+                try:
+                    logger.debug("Sending '%s(...)' via AR",
+                                 # message)
+                                 message[:49])
+                    req = requests.post(url, payload, timeout=15, stream=False)
+                except (requests.exceptions.ConnectionError,
+                        requests.exceptions.SSLError,
+                        requests.exceptions.Timeout), e:
+                    tries += 1
+                    logger.warn("Connecting to AutoRemote failed on attempt %d. "
+                                "Retrying in two seconds. Error: %s", tries, e)
+                    time.sleep(2)
+
         if (record.name == "logger.handlers" or
             (record.name == "pychromecast.socket_client" and
              "Failed to connect, retrying in" in message)):
@@ -73,19 +91,22 @@ class AutoRemoteHandler(logging.Handler):
                         "or by a short DC from the Chromecast, it "
                         "won't be sent via AutoRemote.")
         else:
-            while tries <= 3 and req is None:
-                try:
-                    LOGGER.debug("Sending '%s(...)' via AR",
-                                 message)
-                    #  message[:50])
-                    req = requests.post(url, payload, timeout=15, stream=False)
-                except (requests.exceptions.ConnectionError,
-                        requests.exceptions.SSLError,
-                        requests.exceptions.Timeout), e:
-                    tries += 1
-                    LOGGER.warn("Connecting to AutoRemote failed on attempt %d. "
-                                "Retrying in two seconds. Error: %s", tries, e)
-                    time.sleep(2)
+            thread = threading.Thread(target=send_message)
+            thread.daemon = True
+            thread.start()
+            # while tries <= 3 and req is None:
+            #     try:
+            #         LOGGER.debug("Sending '%s(...)' via AR",
+            #                      # message)
+            #                      message[:50])
+            #         req = requests.post(url, payload, timeout=15, stream=False)
+            #     except (requests.exceptions.ConnectionError,
+            #             requests.exceptions.SSLError,
+            #             requests.exceptions.Timeout), e:
+            #         tries += 1
+            #         LOGGER.warn("Connecting to AutoRemote failed on attempt %d. "
+            #                     "Retrying in two seconds. Error: %s", tries, e)
+            #         time.sleep(2)
 
 
 class ColorStreamHandler(logging.StreamHandler):
