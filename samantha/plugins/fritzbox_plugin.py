@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     PASSWORD = None
 
 
-__version__ = "1.0.15"
+__version__ = "1.0.16"
 
 
 # Initialize the logger
@@ -71,13 +71,16 @@ if FritzHosts:
         FRITZBOX = FritzHosts(address="192.168.178.1",
                               user="Samantha",
                               password=PASSWORD)
-        _get_hosts_info()
-        authenticated = True
+
     except IOError:
         LOGGER.error("Couldn't connect to a fritzbox at the default "
                          "address '192.168.178.1'!")
-    except KeyError:
-        LOGGER.exception("The credentials are invalid.")
+        FRITZBOX = None
+
+    if FRITZBOX is not None:
+        hosts = _get_hosts_info()
+        if hosts is not []:
+            authenticated = True
 
 PLUGIN = Device("FritzBox", authenticated, LOGGER, __file__)
 
