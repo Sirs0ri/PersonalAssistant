@@ -16,12 +16,12 @@ import time
 import requests
 
 # application specific imports
-import context
-from core import subscribe_to
-from plugins.plugin import Plugin
-from tools import eventbuilder
+import samantha.context as context
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin
+from samantha.tools import eventbuilder
 try:
-    import variables_private
+    import samantha.variables_private as variables_private
     SECRETS = {
         "oauth_token": variables_private.twitch_oauth_token,
         "client_id": variables_private.twitch_client_id}
@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.12"
+__version__ = "1.3.13"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

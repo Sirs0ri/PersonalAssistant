@@ -23,10 +23,10 @@ from autobahn.twisted.websocket import WebSocketServerProtocol, \
 from twisted.internet import reactor
 
 # application specific imports
-import eventbuilder
+from . import eventbuilder
 
 
-__version__ = "1.4.6"
+__version__ = "1.4.7"
 
 
 # Initialize the logger

@@ -6,8 +6,7 @@ Calling this via 'python samantha' starts everything else."""
 # standard library imports
 import logging
 import Queue
-import sys
-
+import threading
 # related third party imports
 
 # application specific imports
@@ -22,17 +21,12 @@ from . import tools
 __version__ = "1.5.0"
 
 
-if "--debug" in sys.argv or "-D" in sys.argv:
-    DEBUG = True
-else:
-    DEBUG = False
+def run(debug=True):
 
+    # Initialize the logger
+    logger.initialize(debug)
+    LOGGER = logging.getLogger(__name__)
 
-# Initialize the logger
-logger.initialize(DEBUG)
-LOGGER = logging.getLogger(__name__)
-
-if __name__ == "__main__":
     LOGGER.debug("-"*47)
     LOGGER.info("Initializing...")
     LOGGER.debug("-"*47)
@@ -49,14 +43,23 @@ if __name__ == "__main__":
     # TODO Start updater as part of tools
 
     LOGGER.info("Initialisation complete.")
-    tools.eventbuilder.Event(sender_id="i_main",
-                             keyword="system.onstart").trigger()
+    tools.eventbuilder.eEvent(sender_id="i_main",
+                              keyword="system.onstart").trigger()
     tools.server.run()
 
-    tools.eventbuilder.Event(sender_id="i_main",
-                             keyword="system.onexit").trigger()
+    tools.eventbuilder.eEvent(sender_id="i_main",
+                              keyword="system.onexit").trigger()
 
     LOGGER.info("Exiting...")
+    threads = threading._active
+    msg = "Currently active threads:"
+    for t in threads:
+        msg += "\nName: {},\tDaemon: {},\talive:{}".format(
+            threads[t].getName(),
+            threads[t].daemon,
+            threads[t].is_alive()
+        )
+    LOGGER.warn(msg)
     # INPUT.join()
     # OUTPUT.join()
     tools.stop()

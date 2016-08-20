@@ -18,19 +18,19 @@ except ImportError:
 
 
 # application specific imports
-import context
-from core import subscribe_to
-from plugins.plugin import Device
-from tools import eventbuilder
+import samantha.context as context
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Device
+from samantha.tools import eventbuilder
 try:
-    import variables_private
+    import samantha.variables_private as variables_private
     PASSWORD = variables_private.fritzbox_password
 except (ImportError, AttributeError):
     variables_private = None
     PASSWORD = None
 
 
-__version__ = "1.0.11"
+__version__ = "1.0.12"
 
 
 # Initialize the logger

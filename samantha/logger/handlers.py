@@ -23,7 +23,7 @@ import requests
 # Try importing variables_private.py for the AutoRemoteHandler. If it fails,
 # the handler will be ignored later.
 try:
-    import variables_private
+    import samantha.variables_private as variables_private
 except ImportError:
     variables_private = None
 # The file variables_private.py is in my .gitignore - for good reasons.
@@ -34,7 +34,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.8"
+__version__ = "1.2.9"
 
 
 # Initialize the logger

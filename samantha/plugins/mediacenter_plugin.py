@@ -13,13 +13,13 @@ import logging
 # related third party imports
 
 # application specific imports
-import context
-from core import subscribe_to
-from tools import eventbuilder
-from plugins.plugin import Plugin
+import samantha.context as context
+from samantha.core import subscribe_to
+from samantha.tools import eventbuilder
+from samantha.plugins.plugin import Plugin
 
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

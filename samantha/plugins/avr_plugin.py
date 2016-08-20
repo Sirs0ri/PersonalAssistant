@@ -26,11 +26,11 @@ import traceback
 # related third party imports
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Device
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.9"
+__version__ = "1.6.10"
 
 
 # Initialize the logger

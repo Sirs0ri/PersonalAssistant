@@ -16,9 +16,9 @@ import logging
 import requests
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Plugin
-from tools.eventbuilder import Event
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin
+from samantha.tools.eventbuilder import eEvent
 
 
 def _init(curl):
@@ -38,7 +38,7 @@ def _init(curl):
     return url, header_dict
 
 try:
-    import variables_private
+    import samantha.variables_private as variables_private
     CURL = variables_private.fb_curl
 
 except (ImportError, AttributeError):
@@ -46,7 +46,7 @@ except (ImportError, AttributeError):
     CURL = None
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 # Initialize the logger

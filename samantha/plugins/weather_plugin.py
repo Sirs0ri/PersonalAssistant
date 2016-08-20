@@ -15,11 +15,11 @@ import time
 import requests
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Plugin
-from tools import eventbuilder
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin
+from samantha.tools import eventbuilder
 try:
-    import variables_private
+    import samantha.variables_private as variables_private
     SECRETS = {"id": variables_private.owm_location,
               "appid": variables_private.owm_key}
 except (ImportError, AttributeError):
@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.5"
 
 
 # Initialize the logger

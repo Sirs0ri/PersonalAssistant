@@ -21,20 +21,20 @@ triggered at 0:00, month on the 1st at 0:00, etc.
 
 # standard library imports
 import datetime
+import logging
 import threading
 import time
 
 # related third party imports
 
 # application specific imports
-import context
-from core import subscribe_to
-import logging
-from plugins.plugin import Plugin
-from tools import eventbuilder
+import samantha.context as context
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin
+from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 
 # Initialize the logger

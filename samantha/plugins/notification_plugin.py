@@ -17,17 +17,17 @@ import time
 import requests
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Plugin
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin
 try:
-    import variables_private
+    import samantha.variables_private as variables_private
     KEY = variables_private.ar_key
 except (ImportError, AttributeError):
     variables_private = None
     KEY = None
 
 
-__version__ = "1.3.12"
+__version__ = "1.3.13"
 
 
 # Initialize the logger

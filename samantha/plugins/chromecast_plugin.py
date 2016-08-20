@@ -26,12 +26,12 @@ import traceback
 import pychromecast
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Plugin
-from tools import eventbuilder
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin
+from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.6"
 
 
 # Initialize the logger

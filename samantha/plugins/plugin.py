@@ -15,10 +15,10 @@ import logging
 # related third party imports
 
 # application specific imports
-from core import subscribe_to
+from samantha.core import subscribe_to
 
 
-__version__ = "1.4.7"
+__version__ = "1.4.8"
 
 
 # Initialize the logger

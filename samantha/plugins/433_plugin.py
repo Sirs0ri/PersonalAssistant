@@ -19,11 +19,11 @@ except ImportError:
     pigpio = None
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Plugin, Device
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin, Device
 
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

@@ -35,10 +35,9 @@ import traceback
 # related third party imports
 
 # application specific imports
-import tools
 
 
-__version__ = "1.5.3"
+__version__ = "1.5.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
