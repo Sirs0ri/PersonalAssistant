@@ -18,7 +18,7 @@ from . import logger
 from . import tools
 
 
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 
 
 def run(debug=True):
@@ -54,7 +54,7 @@ def run(debug=True):
     threads = threading._active
     msg = "Currently active threads:"
     for t in threads:
-        msg += "\nName: {},\tDaemon: {},\talive:{}".format(
+        msg += "\nName: {}, \tDaemon: {}, \talive:{}".format(
             threads[t].getName(),
             threads[t].daemon,
             threads[t].is_alive()
