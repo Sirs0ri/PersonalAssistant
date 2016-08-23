@@ -18,19 +18,19 @@ except ImportError:
 
 
 # application specific imports
-import context
-from core import subscribe_to
-from plugins.plugin import Device
-from tools import eventbuilder
+import samantha.context as context
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Device
+from samantha.tools import eventbuilder
 try:
-    import variables_private
+    import samantha.variables_private as variables_private
     PASSWORD = variables_private.fritzbox_password
 except (ImportError, AttributeError):
     variables_private = None
     PASSWORD = None
 
 
-__version__ = "1.0.11"
+__version__ = "1.0.16"
 
 
 # Initialize the logger
@@ -40,37 +40,47 @@ LOGGER = logging.getLogger(__name__)
 def _get_hosts_info():
     # Mute requests' logging < WARN while getting data from the FritzBox.
     # It would otherwise produce roughly 150 messages within a second or two.
-    req_logger = logging.getLogger("requests.packages.urllib3.connectionpool")
-    req_logger_originallevel = req_logger.level
-    req_logger.setLevel(logging.WARN)
+    try:
+        req_logger = logging.getLogger("requests.packages.urllib3.connectionpool")
+        req_logger_originallevel = req_logger.level
+        req_logger.setLevel(logging.WARN)
 
-    # Update data from the FritzBox
-    devices_list = FRITZBOX.get_hosts_info()
+        # Update data from the FritzBox
+        devices_list = FRITZBOX.get_hosts_info()
 
-    # Reset requests' logging to its original level.
-    req_logger.setLevel(req_logger_originallevel)
-    return devices_list
+    except KeyError:
+        LOGGER.error("The credentials are invalid.")
+        devices_list = []
+
+    finally:
+
+        # Reset requests' logging to its original level.
+        req_logger.setLevel(req_logger_originallevel)
+        return devices_list
 
 
 authenticated = False
 
 if variables_private is None:
-    LOGGER.exception("Couldn't access the private variables.")
+    LOGGER.error("Couldn't access the private variables.")
 if PASSWORD is None:
-    LOGGER.exception("Couldn't access the password.")
+    LOGGER.error("Couldn't access the password.")
 
 if FritzHosts:
     try:
         FRITZBOX = FritzHosts(address="192.168.178.1",
                               user="Samantha",
                               password=PASSWORD)
-        _get_hosts_info()
-        authenticated = True
+
     except IOError:
-        LOGGER.exception("Couldn't connect to a fritzbox at the default "
+        LOGGER.error("Couldn't connect to a fritzbox at the default "
                          "address '192.168.178.1'!")
-    except KeyError:
-        LOGGER.exception("The credentials are invalid.")
+        FRITZBOX = None
+
+    if FRITZBOX is not None:
+        hosts = _get_hosts_info()
+        if hosts is not []:
+            authenticated = True
 
 PLUGIN = Device("FritzBox", authenticated, LOGGER, __file__)
 
@@ -80,7 +90,7 @@ DEVICES_DICT = context.get_children("network.devices", default={})
 def _status_update(device):
     status = "online" if int(device["status"]) else "offline"
     LOGGER.debug("Updating device %s", device["mac"])
-    eventbuilder.Event(
+    eventbuilder.eEvent(
         sender_id=PLUGIN.name,
         keyword="network.fritzbox.availability.{}.{}".format(
             status, device["name"]),
@@ -125,7 +135,7 @@ def update_devices(key, data):
             if c_device is None:
                 new += 1
                 LOGGER.debug("%s is a new device.", device["mac"])
-                eventbuilder.Event(
+                eventbuilder.eEvent(
                     sender_id=PLUGIN.name,
                     keyword="network.fritzbox.newdevice.{}".format(
                         device["name"]),

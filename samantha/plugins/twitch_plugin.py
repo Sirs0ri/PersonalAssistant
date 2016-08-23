@@ -2,7 +2,7 @@
 
 ###############################################################################
 #
-# TODO: [ ] Events when streams go offline
+# TODO: [ ]
 #
 ###############################################################################
 
@@ -16,12 +16,12 @@ import time
 import requests
 
 # application specific imports
-import context
-from core import subscribe_to
-from plugins.plugin import Plugin
-from tools import eventbuilder
+import samantha.context as context
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin
+from samantha.tools import eventbuilder
 try:
-    import variables_private
+    import samantha.variables_private as variables_private
     SECRETS = {
         "oauth_token": variables_private.twitch_oauth_token,
         "client_id": variables_private.twitch_client_id}
@@ -30,15 +30,15 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.12"
+__version__ = "1.3.16"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
 if variables_private is None:
-    LOGGER.exception("Couldn't access the private variables.")
+    LOGGER.error("Couldn't access the private variables.")
 if SECRETS is None:
-    LOGGER.exception("Couldn't access the API-Key and/or client-ID.")
+    LOGGER.error("Couldn't access the API-Key and/or client-ID.")
 
 PLUGIN = Plugin("Twitch", SECRETS is not None, LOGGER, __file__)
 
@@ -65,16 +65,17 @@ def check_followed_streams(key, data):
             time.sleep(2)
 
     if req is None:
-        LOGGER.exception("Connecting to Twitch failed three times in a row.")
+        LOGGER.error("Connecting to Twitch failed three times in a row.")
         return "Error: Connecting to Twitch failed three times in a row."
 
     # Replace null-fields with "null"-strings
     text = req.text.replace('null', '"null"')
     try:
         data = json.loads(text)
-    except ValueError:
+    except ValueError, e:
         # Thrown by json if parsing a string fails due to an invalid format.
-        LOGGER.exception("The call to Twitch's API returned invalid data.")
+        LOGGER.error("The call to Twitch's API returned invalid data. "
+                     "Error: %s Data: %s", e, text)
         return "Error: The call to Twitch's API returned invalid data."
     new_streamlist = {}
     # parse the data
@@ -94,7 +95,7 @@ def check_followed_streams(key, data):
                 # The stream came online since the last check
                 LOGGER.debug(u"'%s' is now online. Playing '%s'",
                              channelname, current_game)
-                eventbuilder.Event(
+                eventbuilder.eEvent(
                     sender_id=PLUGIN.name,
                     keyword="media.twitch.availability.online.{}".format(
                         channelname),
@@ -115,7 +116,7 @@ def check_followed_streams(key, data):
                     # The game changed
                     LOGGER.debug("'%s' is now playing '%s'",
                                  channelname, current_game)
-                    eventbuilder.Event(
+                    eventbuilder.eEvent(
                         sender_id=PLUGIN.name,
                         keyword="media.twitch.gamechange.{}".format(
                             channelname),
@@ -136,9 +137,9 @@ def check_followed_streams(key, data):
         if channeldata is not None:
             LOGGER.debug("'%s' is now offline.", channelname)
             key = "media.twitch.availability.offline.{}".format(channelname)
-            eventbuilder.Event(sender_id=PLUGIN.name,
-                               keyword=key,
-                               data=channeldata).trigger()
+            eventbuilder.eEvent(sender_id=PLUGIN.name,
+                                keyword=key,
+                                data=channeldata).trigger()
             context.set_property(
                 "media.twitch.{}".format(channelname), None)
 

@@ -13,12 +13,12 @@ import logging
 # related third party imports
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Plugin
-from tools import eventbuilder
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin
+from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.4"
+__version__ = "1.3.6"
 
 
 # Initialize the logger
@@ -38,8 +38,8 @@ def start_func(key, data):
 def test1(key, data):
     """Test various events."""
     for i in range(50):
-        eventbuilder.Event(sender_id=PLUGIN.name,
-                           keyword="wait").trigger()
+        eventbuilder.eEvent(sender_id=PLUGIN.name,
+                            keyword="wait").trigger()
     LOGGER.warn("Test1 successful!\n%s - %s", key, data)
     return "Test1 successful!\n%s - %s".format(key, data)
 

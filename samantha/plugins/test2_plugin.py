@@ -14,11 +14,11 @@ from threading import Timer
 # related third party imports
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Device
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)

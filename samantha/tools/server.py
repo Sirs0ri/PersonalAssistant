@@ -23,10 +23,10 @@ from autobahn.twisted.websocket import WebSocketServerProtocol, \
 from twisted.internet import reactor
 
 # application specific imports
-import eventbuilder
+from . import eventbuilder
 
 
-__version__ = "1.4.6"
+__version__ = "1.4.9"
 
 
 # Initialize the logger
@@ -206,9 +206,9 @@ class Server(WebSocketServerProtocol):
                 stop_server()
             else:
                 key, data = parse(payload)
-                eventbuilder.Event(sender_id=self.uid,
-                                   keyword=key,
-                                   data=data).trigger()
+                eventbuilder.eEvent(sender_id=self.uid,
+                                    keyword=key,
+                                    data=data).trigger()
 
 
 def _init(queue_in, queue_out):
@@ -225,6 +225,7 @@ def _init(queue_in, queue_out):
     reactor.listenTCP(19113, FACTORY)
 
     UDP_THREAD = UDPThread(name="udp_thread")
+    UDP_THREAD.daemon = True
 
     LOGGER.info("Initialisation complete.")
     return True

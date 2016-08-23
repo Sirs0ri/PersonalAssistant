@@ -20,17 +20,15 @@
 
 # standard library imports
 import logging
-import threading
-import time
 
 # related third party imports
 
 # application specific imports
-import eventbuilder
-import server
+from . import eventbuilder
+from . import server
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 
 
 # Initialize the logger

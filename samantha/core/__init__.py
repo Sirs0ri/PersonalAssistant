@@ -30,15 +30,14 @@ import os
 import Queue
 import threading
 import time
-import traceback
 
 # related third party imports
 
 # application specific imports
-import tools
+import samantha.tools as tools
 
 
-__version__ = "1.5.3"
+__version__ = "1.5.7"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -231,9 +230,9 @@ def stats_worker():
                           count_requests_total, count_commands_total,
                           success_rate_commands_total, count_functions_total,
                           success_rate_functions_total, failed_func_dict))
-            tools.eventbuilder.Event(sender_id=name,
-                                     keyword="notify.user",
-                                     data={"title": "Daily report",
+            tools.eventbuilder.eEvent(sender_id=name,
+                                      keyword="notify.user",
+                                      data={"title": "Daily report",
                                            "message": report}).trigger()
             success_functions = 0.0
             success_commands = 0.0
@@ -242,6 +241,22 @@ def stats_worker():
             count_requests = 0.0
             count_triggers = 0.0
         STATUS.task_done()
+
+
+def _execute_secure(_logger, _event, _func):
+    try:
+        _logger.debug("[UID: %s] Executing '%s.%s'.",
+                      _event.uid,
+                      _func.__module__,
+                      _func.__name__)
+        return ["{}.{}".format(_func.__module__, _func.__name__),
+                _func(key=_event.keyword, data=_event.data)]
+    except Exception as e:
+        _logger.exception(
+            "[UID: %s] Exception in user code:", _event.uid)
+        # logging.exception automatically prints the traceback!
+        return ["{}.{}".format(_func.__module__, _func.__name__),
+                "Error: " + str(e)]
 
 
 def worker():
@@ -269,48 +284,43 @@ def worker():
                 if not input.empty():
                     _func, _event = input.get()
                     queue_lock.release()
-                    try:
-                        _logger.debug("[UID: %s] Executing '%s.%s'.",
-                                      _event.uid,
-                                      _func.__module__,
-                                      _func.__name__)
-                        output.put(
-                            ["{}.{}".format(_func.__module__, _func.__name__),
-                             _func(key=_event.keyword, data=_event.data)])
-                    except Exception as e:
-                        _logger.exception(
-                            "[UID: %s] Exception in user code:\n%s",
-                            _event.uid,
-                            traceback.format_exc())
-                        output.put(
-                            ["{}.{}".format(_func.__module__, _func.__name__),
-                             "Error: " + str(e)])
+                    output.put(_execute_secure(_logger, _event, _func))
                 else:
                     queue_lock.release()
                     _logger.debug("Exiting.")
                     break
 
-        # results = {}
-        queue_lock.acquire()
+        funcs = []
+        results = {}
         for key_substring in event.parsed_kw_list:
             if key_substring in FUNC_KEYWORDS:
                 for func in FUNC_KEYWORDS[key_substring]:
-                    input.put([func, event])
+                    funcs.append([func, event])
+                    # input.put([func, event])
 
-        for i in range(min(thread_count, input.qsize())):
-            t = threading.Thread(target=_worker, name="_worker%d" % i)
-            t.start()
-            thread_list.append(t)
-
-        queue_lock.release()
-
-        for t in thread_list:
-            t.join()
-
-        results = {}
-        while not output.empty():
-            f_name, value = output.get()
+        if len(funcs) < 1:
+            results[name] = "Error: No matching plugin found."
+        elif len(funcs) == 1:
+            f_name, value = _execute_secure(logger, funcs[0][1], funcs[0][0])
             results[f_name] = value
+        else:
+            queue_lock.acquire()
+            for pair in funcs:
+                input.put(pair)
+
+            for i in range(min(thread_count, input.qsize())):
+                t = threading.Thread(target=_worker, name="_worker%d" % i)
+                t.start()
+                thread_list.append(t)
+
+            queue_lock.release()
+
+            for t in thread_list:
+                t.join()
+
+            while not output.empty():
+                f_name, value = output.get()
+                results[f_name] = value
 
         # results = [x for x in results if x]
         if not results:
@@ -434,8 +444,7 @@ def _init(queue_in, queue_out):
         # This leads to approx. X worker, X/2 sender and X/4 stat-threads.
         num_worker_threads = config.getint(__name__, "NUM_WORKER_THREADS")
     except ConfigParser.Error:
-        LOGGER.exception("Exception while reading the config:\n%s",
-                         traceback.format_exc())
+        LOGGER.exception("Exception while reading the config:")
         num_worker_threads = 2
 
     num_sender_threads = int(math.ceil(1.0 * num_worker_threads / 2))

@@ -20,11 +20,11 @@ except ImportError:
     pigpio = None
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Device
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Device
 
 
-__version__ = "1.3.5"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
@@ -38,7 +38,7 @@ if pigpio:
     PI = pigpio.pi("192.168.178.56")
 else:
     PI = None
-    LOGGER.exception(
+    LOGGER.error(
         "Could not import pigpio. Please follow the instructions on %s to "
         "install it manually.",
         "https://github.com/joan2937/pigpio/blob/master/README#L103")

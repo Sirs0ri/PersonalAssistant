@@ -16,18 +16,15 @@
 
 
 # standard library imports
-import datetime
 import logging
 import logging.handlers
 import os.path
-import time
-
 # related third party imports
 import requests
 
 # application specific imports
-import handlers
-from handlers import variables_private
+from . import handlers
+from .handlers import variables_private
 
 
 __version__ = "1.5.11"

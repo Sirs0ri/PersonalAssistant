@@ -3,7 +3,6 @@
 ###############################################################################
 #
 # TODO: [ ] Add a receiver to intercept commands from the remote
-# TODO: [ ] Check Dokumentation
 #
 ###############################################################################
 
@@ -19,11 +18,11 @@ except ImportError:
     pigpio = None
 
 # application specific imports
-from core import subscribe_to
-from plugins.plugin import Plugin, Device
+from samantha.core import subscribe_to
+from samantha.plugins.plugin import Plugin, Device
 
 
-__version__ = "1.0.5"
+__version__ = "1.0.8"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -32,8 +31,9 @@ LOGGER = logging.getLogger(__name__)
 class Transmitter(object):
     """
     A class to transmit the wireless codes sent by 433 MHz
-    wireless fobs.
+    wireless fobs. This class is taken 1:1 from:
     """
+    # TODO: ADDRESS!
 
     def __init__(self, pi, gpio, repeats=4, bits=24, gap=9000, t0=300, t1=900):
         """
@@ -144,7 +144,7 @@ if pigpio:
     PI = pigpio.pi("192.168.178.56")
 else:
     PI = None
-    LOGGER.exception(
+    LOGGER.error(
         "Could not import pigpio. Please follow the instructions on %s to "
         "install it manually.",
         "https://github.com/joan2937/pigpio/blob/master/README#L103")
