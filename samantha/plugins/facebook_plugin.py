@@ -2,11 +2,20 @@
 
 It hijacks an authentication-cookie which the user has to enter manually.
 Nomnomnom, Cookies!
+
+Problem: This cookie is only alive for about a week, after that it would have
+to be renewed. I'm too lazy to do that right now which is why I deactivated the
+plugin for now.
+
+Also, Facebook really doesn't like scraping their website and I don't want my
+account to be terminated.
 """
 
 ###############################################################################
 #
-# TODO: [ ]
+# TODO: [ ] renew the cookie that authenticates the session, or:
+# TODO: [ ] switch to a requests.session that'll be authenticated ca once a day
+# TODO: [ ] randomize requests to prevent the scraping from being detected.
 #
 ###############################################################################
 
@@ -36,13 +45,14 @@ except (ImportError, AttributeError):
     CURL = None
 
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-PLUGIN = Plugin("Facebook", CURL is not None, LOGGER, __file__)
+# PLUGIN = Plugin("Facebook", CURL is not None, LOGGER, __file__)
+PLUGIN = Plugin("Facebook", False, LOGGER, __file__)
 
 
 def _parse_curl(curl):
