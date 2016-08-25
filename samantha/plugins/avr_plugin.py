@@ -30,7 +30,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.13"
+__version__ = "1.6.14"
 
 
 # Initialize the logger
@@ -184,7 +184,7 @@ def chromecast_connection_change(key, data):
             data["display_name"])
 
 
-@subscribe_to("chromecast.playstate_change")
+@subscribe_to("chromecast.contenttype_change")
 def chromecast_playstate_change(key, data):
     """React to a change of the Chromecast's playstate."""
 

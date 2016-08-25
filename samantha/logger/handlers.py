@@ -12,6 +12,7 @@ readability or an AutoRemote-Handler that sends log messages to my phone.
 
 
 # standard library imports
+import copy
 import logging
 import logging.handlers
 import threading
@@ -35,7 +36,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.10"
+__version__ = "1.2.11"
 
 
 # Initialize the logger
@@ -135,6 +136,7 @@ class ColorStreamHandler(logging.StreamHandler):
         handled via the original StreamHandler.
         """
         fmt = self.formatter._fmt
+        _record = copy.copy(record)
         # Check if the levelname is even part of the current Formatter
         # If not, none of the transformations are necessary
         if "levelname" in fmt:
@@ -152,9 +154,9 @@ class ColorStreamHandler(logging.StreamHandler):
                     # Set a local variable to what the Formatter would have
                     # done. This is so that any changes to the string's length
                     # (e.g. exactly 8 with "%(levelname)-8s") are preserved.
-                    levelname = placeholder % {"levelname": record.levelname}
+                    levelname = placeholder % {"levelname": _record.levelname}
             # Replace the record's levelname with the modified version.
-            record.levelname = "\033[{attr}m{lvlname}\033[0m".format(
-                attr=colors[record.levelname],
+            _record.levelname = "\033[{attr}m{lvlname}\033[0m".format(
+                attr=colors[_record.levelname],
                 lvlname=levelname)
-        super(ColorStreamHandler, self).emit(record)
+        super(ColorStreamHandler, self).emit(_record)

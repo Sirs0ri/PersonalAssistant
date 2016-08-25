@@ -19,6 +19,8 @@
 import logging
 import logging.handlers
 import os.path
+import sys
+
 # related third party imports
 import requests
 
@@ -27,7 +29,7 @@ from . import handlers
 from .handlers import variables_private
 
 
-__version__ = "1.5.11"
+__version__ = "1.5.12"
 
 
 # Initialize the logger
@@ -74,7 +76,7 @@ def _init(debug):
 
     # Create and add a handler to store the log in a textfile.
     # Level = DEBUG
-    # Uses the full formater (see above)
+    # Uses the full formatter (see above)
     # Switches to a new file each day at midnight
 
     # Get the path that leads to the logs-folder
@@ -93,9 +95,33 @@ def _init(debug):
     file_handler.setFormatter(full_formatter)
     root.addHandler(file_handler)
 
+    # Create a handler that logs to the current commandline
+    # Level = DEBUG
+    # Uses the nice formatter (see above)
+    # Displays the error levels nicely and colorful :3
+
+    if "linux" in sys.platform:
+        console_handler = handlers.ColorStreamHandler()
+        if debug:
+            console_handler.setLevel(logging.DEBUG)
+        else:
+            console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(nice_formatter)
+        root.addHandler(console_handler)
+        LOGGER.debug("Added the ColorStreamHandler.")
+    else:
+        console_handler2 = logging.StreamHandler()
+        if debug:
+            console_handler2.setLevel(logging.DEBUG)
+        else:
+            console_handler2.setLevel(logging.INFO)
+        console_handler2.setFormatter(nice_formatter)
+        root.addHandler(console_handler2)
+        LOGGER.debug("Added the normal StreamHandler.")
+
     # Create and add a handler that sends errors to my phone via AutoRemote.
     # Level = WARN
-    # Uses the practical formater (see above)
+    # Uses the practical formatter (see above)
     # Used to display warnings (or worse) on my phone as notification
 
     # If the variables_private.py file doesn't exist, or doesn't contain the
@@ -111,19 +137,6 @@ def _init(debug):
                     "sure the file 'variables_private.py' exists inside the "
                     "/interface folder and that it contains the AR-key as a "
                     "variable called 'ar_key'.")
-
-    # Create a handler that logs to the current commandline
-    # Level = DEBUG
-    # Uses the nice formater (see above)
-    # Displays the error levels nicely and colorful :3
-
-    console_handler = handlers.ColorStreamHandler()
-    if debug:
-        console_handler.setLevel(logging.DEBUG)
-    else:
-        console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(nice_formatter)
-    root.addHandler(console_handler)
 
     LOGGER.info("All handlers were added successfully.")
     return True

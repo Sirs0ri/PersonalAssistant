@@ -26,7 +26,7 @@ from twisted.internet import reactor
 from . import eventbuilder
 
 
-__version__ = "1.4.9"
+__version__ = "1.5.0a1"
 
 
 # Initialize the logger
@@ -211,6 +211,39 @@ class Server(WebSocketServerProtocol):
                                     data=data).trigger()
 
 
+def _wait_for_server_ip():
+
+    # Create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.settimeout(15)
+
+    # Bind the socket to the port
+    server_address = ('', 10000)
+    LOGGER.debug('starting up on %s port %s',
+                 server_address[0],
+                 server_address[1])
+    sock.bind(server_address)
+    # expects (host, port) as arg, two brackets are on purpose
+    data = None
+
+    try:
+        LOGGER.debug('Waiting to receive message')
+        # TODO: This fails in bash if the port isn't explicitly opened
+        data, address = sock.recvfrom(4096)
+
+        LOGGER.debug('received %d bytes from %s: %s', len(data), address, data)
+
+    finally:
+        sock.close()
+
+        if data and data.split(":")[0] == "sam.ip.broadcast":
+            ip, port = address[0], int(data.split(":")[1])
+        else:
+            ip, port = None, None
+    return ip, port
+
 def _init(queue_in, queue_out):
     """Initialize the module."""
     global INPUT, OUTPUT, FACTORY, UDP_THREAD
@@ -223,6 +256,16 @@ def _init(queue_in, queue_out):
     FACTORY.protocol = Server
 
     reactor.listenTCP(19113, FACTORY)
+
+    LOGGER.info("Listening for remote instances of Samantha on the network.")
+    remote_address = _wait_for_server_ip()
+    if remote_address == (None, None):
+        LOGGER.info("I'm alone on the network.")
+    else:
+        LOGGER.info("Remote instance found at %s:%s",
+                    remote_address[0], remote_address[1])
+
+    time.sleep(5)
 
     UDP_THREAD = UDPThread(name="udp_thread")
     UDP_THREAD.daemon = True
