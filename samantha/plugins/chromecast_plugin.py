@@ -22,7 +22,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 
 # Initialize the logger
@@ -55,11 +55,14 @@ class Listener(object):
         if not status.player_state == self.player_state:
             self.player_state = status.player_state
             LOGGER.debug("New state: %s", self.player_state)
+            eventbuilder.eEvent(sender_id=self.name,
+                                keyword="chromecast.playstate_change",
+                                data=status.__dict__).trigger()
         if not status.content_type == self.content_type:
             self.content_type = status.content_type
             LOGGER.debug("New content_type: %s", self.content_type)
             eventbuilder.eEvent(sender_id=self.name,
-                                keyword="chromecast.playstate_change",
+                                keyword="chromecast.contenttype_change",
                                 data=status.__dict__).trigger()
 
     def new_cast_status(self, status):
