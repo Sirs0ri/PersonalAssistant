@@ -26,7 +26,7 @@ from twisted.internet import reactor
 from . import eventbuilder
 
 
-__version__ = "1.5.0a1"
+__version__ = "1.5.0a2"
 
 
 # Initialize the logger
@@ -234,6 +234,11 @@ def _wait_for_server_ip():
         data, address = sock.recvfrom(4096)
 
         LOGGER.debug('received %d bytes from %s: %s', len(data), address, data)
+
+    except socket.timeout:
+
+        data = None
+        address = None
 
     finally:
         sock.close()
