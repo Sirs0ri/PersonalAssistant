@@ -37,7 +37,7 @@ import time
 import samantha.tools as tools
 
 
-__version__ = "1.5.7"
+__version__ = "1.5.8"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -222,7 +222,7 @@ def stats_worker():
                       "<b>All Time (Uptime: {!s}):</b><br>"
                       "{:.0f} Triggers, {:.0f} Requests<br>"
                       "Processed commands: {:.0f} ({:.2f}% success)<br>"
-                      "Processed functions: {:.0f} ({:.2f}% success)<br>"
+                      "Processed functions: {:.0f} ({:.2f}% success)<br><br>"
                       "<b>Today's fails:</b> {}".format(
                           count_triggers, count_requests, count_commands,
                           success_rate_commands, count_functions,
@@ -233,7 +233,7 @@ def stats_worker():
             tools.eventbuilder.eEvent(sender_id=name,
                                       keyword="notify.user",
                                       data={"title": "Daily report",
-                                           "message": report}).trigger()
+                                            "message": report}).trigger()
             success_functions = 0.0
             success_commands = 0.0
             failed_functions = 0.0
