@@ -37,7 +37,7 @@ import time
 import samantha.tools as tools
 
 
-__version__ = "1.5.8"
+__version__ = "1.5.9"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -230,6 +230,8 @@ def stats_worker():
                           count_requests_total, count_commands_total,
                           success_rate_commands_total, count_functions_total,
                           success_rate_functions_total, failed_func_dict))
+            logger.debug("Daily report: %s",
+                         report.replace("<b>", "\n").replace("</b>", ""))
             tools.eventbuilder.eEvent(sender_id=name,
                                       keyword="notify.user",
                                       data={"title": "Daily report",
