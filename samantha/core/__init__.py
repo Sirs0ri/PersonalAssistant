@@ -37,7 +37,7 @@ import time
 import samantha.tools as tools
 
 
-__version__ = "1.5.9"
+__version__ = "1.5.10"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -231,7 +231,9 @@ def stats_worker():
                           success_rate_commands_total, count_functions_total,
                           success_rate_functions_total, failed_func_dict))
             logger.debug("Daily report: %s",
-                         report.replace("<b>", "\n").replace("</b>", ""))
+                         report.replace("<br>", "\n")
+                               .replace("<b>", "")
+                               .replace("</b>", ""))
             tools.eventbuilder.eEvent(sender_id=name,
                                       keyword="notify.user",
                                       data={"title": "Daily report",
@@ -349,7 +351,7 @@ def worker():
                     event.keyword)}
         else:
 
-            if event.keyword == "onstart":
+            if event.keyword == "system.onstart":
                 logger.info("The index now has %d entries.",
                             len(FUNC_KEYWORDS))
                 logger.debug("%s", FUNC_KEYWORDS.keys())
