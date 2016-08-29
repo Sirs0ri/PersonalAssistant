@@ -30,7 +30,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.14"
+__version__ = "1.6.15"
 
 
 # Initialize the logger
@@ -174,7 +174,7 @@ def chromecast_connection_change(key, data):
                                   [__name__ + ".sleeper"])
         SLEEPER.start()
         LOGGER.debug("Started the Sleeper with a delay of 120 seconds.")
-        return "No app conected, Started the Sleeper."
+        return "No app connected, Started the Sleeper."
     else:  # An app is connected to the Chromecast
         LOGGER.debug("'%s' connected to the Chromecast.",
                      data["display_name"])
