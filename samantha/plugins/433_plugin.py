@@ -21,7 +21,7 @@ except ImportError:
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin, Device
 
-__version__ = "1.0.9"
+__version__ = "1.0.10"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -181,7 +181,7 @@ def rl_turn_on(key, data):
     return "Reading Lamp turned on."
 
 
-@subscribe_to(["system.onexit", "time.time_of_day.day"])
+@subscribe_to("time.time_of_day.day")
 @READING_LAMP.turn_off
 def rl_turn_off(key, data):
     """Turn off the Reading-Lamp."""
@@ -196,7 +196,7 @@ def bl_turn_on(key, data):
     return "Bed Lamp turned on."
 
 
-@subscribe_to(["system.onexit", "time.time_of_day.day"])
+@subscribe_to("time.time_of_day.day")
 @BED_LAMP.turn_off
 def bl_turn_off(key, data):
     """Turn off the Bed-Lamp."""
@@ -211,12 +211,23 @@ def al_turn_on(key, data):
     return "Ambient Lamp turned on."
 
 
-@subscribe_to(["system.onexit", "time.time_of_day.day"])
+@subscribe_to("time.time_of_day.day")
 @AMBIENT_LAMP.turn_off
 def al_turn_off(key, data):
     """Turn off the Ambient-Lamp."""
     TRANSMITTER.send(5204)
     return "Ambient Lamp turned off."
+
+
+@subscribe_to("system.onexit")
+def exit(key, data):
+    rl_turn_off(key, data)
+    bl_turn_off(key, data)
+    al_turn_off(key, data)
+    TRANSMITTER.cancel()
+    PI.wave_clear()
+    PI.stop()
+
 
 # @subscribe_to("system.onstart")
 # def start_func(key, data):
