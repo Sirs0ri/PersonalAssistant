@@ -24,7 +24,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.3.8"
+__version__ = "1.3.9"
 
 
 # Initialize the logger
@@ -53,13 +53,36 @@ else:
     BLUE_PINS = []
     LOGGER.error("Could not connect to the RasPi at 192.168.178.56.")
 
+# PLUGIN = Device("LED", False, LOGGER, __file__, "light")
 PLUGIN = Device("LED", PI.connected, LOGGER, __file__, "light")
 
+BRIGHTNESS = 0.0
+R_COLOR = 0.0
+G_COLOR = 0.0
+B_COLOR = 0.0
 
 def _sleep(duration):
     """Sleep if the currently executed command is the newest one."""
     if not NEW_COMMAND.is_set():
         time.sleep(duration)
+
+
+# def dec2hex(dc):
+#     """Return the hex representation of the given number as string.
+#
+#     The dec-value can be an int, a float or a string representing a number.
+#     It'll be rounded if necessary.
+#     """
+#     return hex(int(round(float(dc))))[2:]
+#
+#
+# def hex2dec(hx):
+#     """Return the hex representation of the given number as string.
+#
+#     The dec-value can be an int, a float or a string representing a number.
+#     It'll be rounded if necessary.
+#     """
+#     return int(hx, 16)
 
 
 def _stop_previous_command():
@@ -70,6 +93,7 @@ def _stop_previous_command():
 
 
 def _set_pins(red=-1, green=-1, blue=-1):
+    global BRIGHTNESS, R_COLOR, G_COLOR, B_COLOR
     if 0 <= red <= 255 and not NEW_COMMAND.is_set():
         for pin in RED_PINS:
             PI.set_PWM_dutycycle(pin, red)
@@ -79,6 +103,15 @@ def _set_pins(red=-1, green=-1, blue=-1):
     if 0 <= blue <= 255 and not NEW_COMMAND.is_set():
         for pin in BLUE_PINS:
             PI.set_PWM_dutycycle(pin, blue)
+    red = red if 0 <= red <= 255 else R_COLOR
+    green = green if 0 <= green <= 255 else G_COLOR
+    blue = blue if 0 <= blue <= 255 else B_COLOR
+    BRIGHTNESS = max(red, green, blue) / 255.0
+    R_COLOR = float(red) / BRIGHTNESS
+    G_COLOR = float(green) / BRIGHTNESS
+    B_COLOR = float(blue) / BRIGHTNESS
+    LOGGER.warn("R: %d, G: %d, B: %d, Brightness: %d",
+                 R_COLOR, G_COLOR, B_COLOR, BRIGHTNESS)
 
 
 def _spread(steps, length=256, interpolator=None):
