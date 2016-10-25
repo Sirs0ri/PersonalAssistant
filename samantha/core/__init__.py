@@ -20,6 +20,7 @@
 
 # standard library imports
 from collections import Iterable
+from copy import copy
 import ConfigParser
 import datetime
 from functools import wraps
@@ -34,10 +35,10 @@ import time
 # related third party imports
 
 # application specific imports
-import samantha.tools as tools
+from samantha import tools
 
 
-__version__ = "1.6.0a1"
+__version__ = "1.6.0a2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -56,7 +57,24 @@ UIDS = {}
 LOGGER.debug("I was imported.")
 
 
-def get_uid(prefix):
+def get_index():
+    return copy(FUNC_KEYWORDS)
+
+
+def set_index(index):
+    global FUNC_KEYWORDS
+    FUNC_KEYWORDS = index
+    LOGGER.info("The index now has %d entries.",
+                len(FUNC_KEYWORDS))
+    LOGGER.debug("%s", FUNC_KEYWORDS.keys())
+
+
+def clear_index():
+    global FUNC_KEYWORDS
+    FUNC_KEYWORDS = {}
+
+
+def _get_uid(prefix):
     """Generate an incrementing UID for unknown plugins."""
     if prefix in UIDS:
         UIDS[prefix] += 1
@@ -104,7 +122,7 @@ def subscribe_to(keyword):
             if mod.PLUGIN.is_active:
                 if mod.PLUGIN.uid == "NO_UID":
                     LOGGER.debug("This is a new plugin..")
-                    uid = get_uid(mod.PLUGIN.plugin_type)
+                    uid = _get_uid(mod.PLUGIN.plugin_type)
                     mod.PLUGIN.uid = uid
                 else:
                     LOGGER.debug("This is an existing plugin.")
