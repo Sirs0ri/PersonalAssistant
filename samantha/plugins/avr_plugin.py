@@ -30,13 +30,22 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.15"
+__version__ = "1.6.16"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
 COMM_QUEUE = Queue.PriorityQueue()
+
+DEVICE_IP = "192.168.178.48"
+
+try:
+    telnet = telnetlib.Telnet(DEVICE_IP)
+    telnet.close()
+    ACTIVE = True
+except socket.error:
+    ACTIVE = False
 
 
 def _check_condition(condition, telnet, logger):
@@ -72,13 +81,13 @@ def _check_condition(condition, telnet, logger):
     return False
 
 
-def _send(command, device_ip, logger, condition=None, retries=3):
+def _send(command, logger, condition=None, retries=3):
     """Send a command to the connected AVR via Telnet."""
     if retries > 0:
         telnet = None
         while retries > 0:
             try:
-                telnet = telnetlib.Telnet(device_ip)
+                telnet = telnetlib.Telnet(DEVICE_IP)
                 break
             except socket.error:
                 logger.warn("AVR refused the connection. Retrying...")
@@ -105,7 +114,7 @@ def _send(command, device_ip, logger, condition=None, retries=3):
                      "couldn't be sent.", command)
 
 
-def worker(device_ip="192.168.178.48"):
+def worker():
     """Read and process commands from the COMM_QUEUE queue.
 
     Put results back into OUTPUT. This helps if 2 commands should be sent at
@@ -123,9 +132,9 @@ def worker(device_ip="192.168.178.48"):
         logger.debug("Waiting for a command.")
         command = COMM_QUEUE.get()
         if not isinstance(command, basestring) and isinstance(command, Iterable):
-            _send(command[0], device_ip, logger, command[1])
+            _send(command[0], DEVICE_IP, logger, command[1])
         else:
-            _send(command, device_ip, logger)
+            _send(command, DEVICE_IP, logger)
         COMM_QUEUE.task_done()
 
 
@@ -139,8 +148,7 @@ WORKER = threading.Thread(target=worker, name="worker")
 WORKER.daemon = True
 SLEEPER = None
 
-PLUGIN = Device("AVR", True, LOGGER, __file__)
-# TODO: Check if the AVR is available
+PLUGIN = Device("AVR", ACTIVE, LOGGER, __file__)
 
 @subscribe_to("system.onstart")
 def onstart(key, data):
