@@ -24,7 +24,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.3.9"
+__version__ = "1.3.10"
 
 
 # Initialize the logger
@@ -107,9 +107,14 @@ def _set_pins(red=-1, green=-1, blue=-1):
     green = green if 0 <= green <= 255 else G_COLOR
     blue = blue if 0 <= blue <= 255 else B_COLOR
     BRIGHTNESS = max(red, green, blue) / 255.0
-    R_COLOR = float(red) / BRIGHTNESS
-    G_COLOR = float(green) / BRIGHTNESS
-    B_COLOR = float(blue) / BRIGHTNESS
+    if BRIGHTNESS == 0:  # avoid a ZeroDivision error
+        R_COLOR = 0
+        G_COLOR = 0
+        B_COLOR = 0
+    else:
+        R_COLOR = float(red) / BRIGHTNESS
+        G_COLOR = float(green) / BRIGHTNESS
+        B_COLOR = float(blue) / BRIGHTNESS
     LOGGER.warn("R: %d, G: %d, B: %d, Brightness: %d",
                  R_COLOR, G_COLOR, B_COLOR, BRIGHTNESS)
 
