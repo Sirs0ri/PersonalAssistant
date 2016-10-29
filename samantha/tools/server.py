@@ -26,7 +26,7 @@ from twisted.internet import reactor
 from . import eventbuilder
 
 
-__version__ = "1.5.0a2"
+__version__ = "1.5.0a3"
 
 
 # Initialize the logger
@@ -269,8 +269,6 @@ def _init(queue_in, queue_out):
     else:
         LOGGER.info("Remote instance found at %s:%s",
                     remote_address[0], remote_address[1])
-
-    time.sleep(5)
 
     UDP_THREAD = UDPThread(name="udp_thread")
     UDP_THREAD.daemon = True

@@ -24,7 +24,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.9"
 
 
 # Initialize the logger
@@ -53,13 +53,36 @@ else:
     BLUE_PINS = []
     LOGGER.error("Could not connect to the RasPi at 192.168.178.56.")
 
+# PLUGIN = Device("LED", False, LOGGER, __file__, "light")
 PLUGIN = Device("LED", PI.connected, LOGGER, __file__, "light")
 
+BRIGHTNESS = 0.0
+R_COLOR = 0.0
+G_COLOR = 0.0
+B_COLOR = 0.0
 
 def _sleep(duration):
     """Sleep if the currently executed command is the newest one."""
     if not NEW_COMMAND.is_set():
         time.sleep(duration)
+
+
+# def dec2hex(dc):
+#     """Return the hex representation of the given number as string.
+#
+#     The dec-value can be an int, a float or a string representing a number.
+#     It'll be rounded if necessary.
+#     """
+#     return hex(int(round(float(dc))))[2:]
+#
+#
+# def hex2dec(hx):
+#     """Return the hex representation of the given number as string.
+#
+#     The dec-value can be an int, a float or a string representing a number.
+#     It'll be rounded if necessary.
+#     """
+#     return int(hx, 16)
 
 
 def _stop_previous_command():
@@ -70,6 +93,7 @@ def _stop_previous_command():
 
 
 def _set_pins(red=-1, green=-1, blue=-1):
+    global BRIGHTNESS, R_COLOR, G_COLOR, B_COLOR
     if 0 <= red <= 255 and not NEW_COMMAND.is_set():
         for pin in RED_PINS:
             PI.set_PWM_dutycycle(pin, red)
@@ -79,6 +103,15 @@ def _set_pins(red=-1, green=-1, blue=-1):
     if 0 <= blue <= 255 and not NEW_COMMAND.is_set():
         for pin in BLUE_PINS:
             PI.set_PWM_dutycycle(pin, blue)
+    red = red if 0 <= red <= 255 else R_COLOR
+    green = green if 0 <= green <= 255 else G_COLOR
+    blue = blue if 0 <= blue <= 255 else B_COLOR
+    BRIGHTNESS = max(red, green, blue) / 255.0
+    R_COLOR = float(red) / BRIGHTNESS
+    G_COLOR = float(green) / BRIGHTNESS
+    B_COLOR = float(blue) / BRIGHTNESS
+    LOGGER.warn("R: %d, G: %d, B: %d, Brightness: %d",
+                 R_COLOR, G_COLOR, B_COLOR, BRIGHTNESS)
 
 
 def _spread(steps, length=256, interpolator=None):
@@ -151,38 +184,48 @@ def _spread(steps, length=256, interpolator=None):
     return result
 
 
-def _crossfade(red=-1, green=-1, blue=-1, speed=1.0, interpolator=None):
+def _crossfade(red=-1, green=-1, blue=-1, speed=1.0,
+               brightness=1.0, interpolator=None):
     """Fade from the current color to another one."""
     if not NEW_COMMAND.is_set():
-        steps = int(256 * speed)
-        if 0 <= red <= 255:
-            red_is = PI.get_PWM_dutycycle(RED_PINS[0])
-            red_list = _spread((red - red_is), steps, interpolator)
-        if 0 <= green <= 255:
-            green_is = PI.get_PWM_dutycycle(GREEN_PINS[0])
-            green_list = _spread((green - green_is), steps, interpolator)
-        if 0 <= blue <= 255:
-            blue_is = PI.get_PWM_dutycycle(BLUE_PINS[0])
-            blue_list = _spread((blue - blue_is), steps, interpolator)
-        i = 0
-        if not (red_is == red and blue_is == blue and green_is == green):
-            # don't crossfade if none of the colors would change
-            while i < steps and not NEW_COMMAND.is_set():
-                if red_list[i] is not 0:
-                    red_is += red_list[i]
-                if green_list[i] is not 0:
-                    green_is += green_list[i]
-                if blue_list[i] is not 0:
-                    blue_is += blue_list[i]
-                _set_pins(red_is, green_is, blue_is)
-                i += 1
+        if speed > 0:
+            steps = int(256 * speed)
+            if 0 <= red <= 255:
+                red_is = PI.get_PWM_dutycycle(RED_PINS[0])
+                red_list = _spread((red - red_is), steps, interpolator)
+            if 0 <= green <= 255:
+                green_is = PI.get_PWM_dutycycle(GREEN_PINS[0])
+                green_list = _spread((green - green_is), steps, interpolator)
+            if 0 <= blue <= 255:
+                blue_is = PI.get_PWM_dutycycle(BLUE_PINS[0])
+                blue_list = _spread((blue - blue_is), steps, interpolator)
+            i = 0
+            if not (red_is == red and blue_is == blue and green_is == green):
+                # don't crossfade if none of the colors would change
+                while i < steps and not NEW_COMMAND.is_set():
+                    if red_list[i] is not 0:
+                        red_is += red_list[i]
+                    if green_list[i] is not 0:
+                        green_is += green_list[i]
+                    if blue_list[i] is not 0:
+                        blue_is += blue_list[i]
+                    _set_pins(red_is, green_is, blue_is)
+                    i += 1
+        else:
+            r = red if 0 <= red <= 255 else \
+                PI.get_PWM_dutycycle(RED_PINS[0])
+            g = green if 0 <= green <= 255 else \
+                PI.get_PWM_dutycycle(GREEN_PINS[0])
+            b = blue if 0 <= blue <= 255 else \
+                PI.get_PWM_dutycycle(BLUE_PINS[0])
+            _set_pins(red=r, green=g, blue=b)
 
 
 @subscribe_to("system.onstart")
 def start_func(key, data):
     """Test the LEDs during the 'onstart' event."""
     _stop_previous_command()
-    _set_pins(0, 0, 0)
+    _crossfade(red=0, green=0, blue=0, speed=0.0)
     _crossfade(red=255, green=0, blue=0, speed=0.2)
     _crossfade(red=0, green=255, blue=0, speed=0.2)
     _crossfade(red=0, green=0, blue=255, speed=0.2)
@@ -211,11 +254,11 @@ def strobe_func(key, data):
     _stop_previous_command()
 
     while not NEW_COMMAND.is_set():
-        _set_pins(red=255, green=0, blue=0)
+        _crossfade(red=255, green=0, blue=0, speed=0.0)
         _sleep(0.1)
-        _set_pins(red=0, green=255, blue=0)
+        _crossfade(red=0, green=255, blue=0, speed=0.0)
         _sleep(0.1)
-        _set_pins(red=0, green=0, blue=255)
+        _crossfade(red=0, green=0, blue=255, speed=0.0)
         _sleep(0.1)
     IDLE.set()
     return "The LEDs are now strobing."
@@ -225,26 +268,25 @@ def strobe_func(key, data):
 def test_interpolators(key, data):
     """Test the different interpolators."""
     _stop_previous_command()
-    _crossfade(0, 0, 0, 0.2)
-    _crossfade(255, 0, 0, interpolator="sqrt")
-    _set_pins(0, 0, 0)
+    _crossfade(red=0, green=0, blue=0, speed=0.2)
+    _crossfade(red=255, green=0, blue=0, interpolator="sqrt")
+    _crossfade(red=0, green=0, blue=0, speed=0.0)
     _sleep(0.5)
-    _set_pins(255, 0, 0)
-    _crossfade(0, 0, 0, interpolator="sqrt")
+    _crossfade(red=255, green=0, blue=0, speed=0.0)
+    _crossfade(red=0, green=0, blue=0, interpolator="sqrt")
     _sleep(0.5)
-    _crossfade(0, 255, 0, interpolator="linear")
-    _set_pins(0, 0, 0)
+    _crossfade(red=0, green=255, blue=0, interpolator="linear")
+    _crossfade(red=0, green=0, blue=0, speed=0.0)
     _sleep(0.5)
-    _set_pins(0, 255, 0)
-    _crossfade(0, 0, 0, interpolator="linear")
+    _crossfade(red=0, green=255, blue=0, speed=0.0)
+    _crossfade(red=0, green=0, blue=0, interpolator="linear")
     _sleep(0.5)
-    _crossfade(0, 0, 255, interpolator="squared")
-    _set_pins(0, 0, 0)
+    _crossfade(red=0, green=0, blue=255, interpolator="squared")
+    _crossfade(red=0, green=0, blue=0, speed=0.0)
     _sleep(0.5)
-    _set_pins(0, 0, 255)
-    _crossfade(0, 0, 0, interpolator="squared")
+    _crossfade(red=0, green=0, blue=255, speed=0.0)
+    _crossfade(red=0, green=0, blue=0, interpolator="squared")
     IDLE.set()
-    # _crossfade(255, 85, 17)
     return "Tested the LEDs."
 
 
@@ -252,7 +294,7 @@ def test_interpolators(key, data):
 def turn_on(key, data):
     """Turn on all lights."""
     _stop_previous_command()
-    _crossfade(255, 85, 17, 0.2)
+    _crossfade(red=255, green=85, blue=17, speed=0.2)
     IDLE.set()
     return "LEDs turned on."
 
@@ -261,7 +303,7 @@ def turn_on(key, data):
 def ambient(key, data):
     """Turn on light at 50% brightness."""
     _stop_previous_command()
-    _crossfade(51, 17, 3, 0.2)
+    _crossfade(red=51, green=17, blue=3, speed=0.2)
     IDLE.set()
     return "Set the lights to 20% brightness."
 
@@ -273,6 +315,7 @@ def ambient(key, data):
 def turn_off(key, data):
     """Turn off all lights."""
     _stop_previous_command()
-    _crossfade(0, 0, 0, 0.2)
+    _crossfade(red=0, green=0, blue=0, speed=0.2)
     IDLE.set()
+    PI.stop()
     return "LEDs turned off."

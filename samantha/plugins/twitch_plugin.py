@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.16"
+__version__ = "1.3.17"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -44,10 +44,28 @@ PLUGIN = Plugin("Twitch", SECRETS is not None, LOGGER, __file__)
 
 STREAM_LIST = context.get_children("media.twitch", default={})
 
+FAILS = 0
+# Fail-counter. Used to track consecutive fails of the plugin. Since the list
+# of streams is accessed every minute it's not too bad if ine of the checks
+# completely fails, as long as the following ones succeed again.
+# As soon as the failcounter reaches 3 the user will be notified, before that
+# he/she doesn't have to be bothered.
+
 
 @subscribe_to(["system.onstart", "time.schedule.min"])
 def check_followed_streams(key, data):
     """Check for new online streams on twitch.tv."""
+    global FAILS
+
+    def _fail(msg):
+        """Handle fails of the parent function. """
+        global FAILS
+        FAILS += 1  # raise the failcounter
+        if FAILS <= 3:
+            LOGGER.error("Contacting Twitch failed or returned invalid data on "
+                         "the last %d attempts. Current error: %s", FAILS, msg)
+        return msg
+
     # Make the http-request
     url = "https://api.twitch.tv/kraken/streams/followed"
     req = None
@@ -65,8 +83,8 @@ def check_followed_streams(key, data):
             time.sleep(2)
 
     if req is None:
-        LOGGER.error("Connecting to Twitch failed three times in a row.")
-        return "Error: Connecting to Twitch failed three times in a row."
+        LOGGER.warn("Connecting to Twitch failed three times in a row.")
+        return _fail("Warn: Connecting to Twitch failed three times in a row.")
 
     # Replace null-fields with "null"-strings
     text = req.text.replace('null', '"null"')
@@ -74,14 +92,15 @@ def check_followed_streams(key, data):
         data = json.loads(text)
     except ValueError, e:
         # Thrown by json if parsing a string fails due to an invalid format.
-        LOGGER.error("The call to Twitch's API returned invalid data. "
-                     "Error: %s Data: %s", e, text)
-        return "Error: The call to Twitch's API returned invalid data."
+        LOGGER.warn("The call to Twitch's API returned invalid data. "
+                    "Error: %s Data: %s", e, text)
+        return _fail("Warn: The call to Twitch's API returned invalid data.")
     new_streamlist = {}
     # parse the data
     if "streams" in data:
         # If so, streams are available
         data = data["streams"]
+        FAILS = 0  # reset the failcounter
         for item in data:
             # Get the account name (unique!) for the current item
             channelname = item["channel"]["name"] \
@@ -91,7 +110,7 @@ def check_followed_streams(key, data):
             # save the stream's data in a new list
             new_streamlist[channelname] = item
             if (channelname not in STREAM_LIST or
-                STREAM_LIST[channelname] is None):
+                    STREAM_LIST[channelname] is None):
                 # The stream came online since the last check
                 LOGGER.debug(u"'%s' is now online. Playing '%s'",
                              channelname, current_game)
@@ -128,7 +147,7 @@ def check_followed_streams(key, data):
                 del STREAM_LIST[channelname]
     else:
         LOGGER.warn("The data didn't include the 'streams' field.")
-        return "Error: The data didn't include the 'streams' field."
+        return _fail("Warn: The data didn't include the 'streams' field.")
 
     while len(STREAM_LIST) > 0:
         # STREAM_LIST now contains only those streams that were online

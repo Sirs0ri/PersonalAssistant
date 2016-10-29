@@ -20,6 +20,7 @@
 
 # standard library imports
 from collections import Iterable
+from copy import copy
 import ConfigParser
 import datetime
 from functools import wraps
@@ -34,10 +35,10 @@ import time
 # related third party imports
 
 # application specific imports
-import samantha.tools as tools
+from samantha import tools
 
 
-__version__ = "1.5.9"
+__version__ = "1.6.0a2"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -56,7 +57,24 @@ UIDS = {}
 LOGGER.debug("I was imported.")
 
 
-def get_uid(prefix):
+def get_index():
+    return copy(FUNC_KEYWORDS)
+
+
+def set_index(index):
+    global FUNC_KEYWORDS
+    FUNC_KEYWORDS = index
+    LOGGER.info("The index now has %d entries.",
+                len(FUNC_KEYWORDS))
+    LOGGER.debug("%s", FUNC_KEYWORDS.keys())
+
+
+def clear_index():
+    global FUNC_KEYWORDS
+    FUNC_KEYWORDS = {}
+
+
+def _get_uid(prefix):
     """Generate an incrementing UID for unknown plugins."""
     if prefix in UIDS:
         UIDS[prefix] += 1
@@ -66,17 +84,23 @@ def get_uid(prefix):
     return uid
 
 
-def _index(keyword, func):
+def _index(keyword, func, version):
     """Add a function to the index."""
     if not isinstance(keyword, basestring) and isinstance(keyword, Iterable):
         for key in keyword:
             if key not in FUNC_KEYWORDS:
                 FUNC_KEYWORDS[key] = []
-            FUNC_KEYWORDS[key].append(func)
+            entry = {"name": ".".join([func.__module__, func.__name__]),
+                     "version": version,
+                     "func": func}
+            FUNC_KEYWORDS[key].append(entry)
     else:
         if keyword not in FUNC_KEYWORDS:
             FUNC_KEYWORDS[keyword] = []
-        FUNC_KEYWORDS[keyword].append(func)
+        entry = {"name": ".".join([func.__module__, func.__name__]),
+                 "version": version,
+                 "func": func}
+        FUNC_KEYWORDS[keyword].append(entry)
     tools.eventbuilder.update_keywords(FUNC_KEYWORDS)
 
 
@@ -98,11 +122,11 @@ def subscribe_to(keyword):
             if mod.PLUGIN.is_active:
                 if mod.PLUGIN.uid == "NO_UID":
                     LOGGER.debug("This is a new plugin..")
-                    uid = get_uid(mod.PLUGIN.plugin_type)
+                    uid = _get_uid(mod.PLUGIN.plugin_type)
                     mod.PLUGIN.uid = uid
                 else:
                     LOGGER.debug("This is an existing plugin.")
-                _index(keyword, func)
+                _index(keyword, func, mod.__version__)
                 LOGGER.debug("'%s.%s' decorated successfully.",
                              func.__module__,
                              func.__name__)
@@ -110,7 +134,7 @@ def subscribe_to(keyword):
                 LOGGER.debug("This is an inactive plugin.")
         elif func.__module__ == subscribe_to.__module__:
             LOGGER.debug("This function is part of the core.")
-            _index(keyword, func)
+            _index(keyword, func, __version__)
         else:
             LOGGER.debug("This is an invalid plugin.")
 
@@ -231,7 +255,9 @@ def stats_worker():
                           success_rate_commands_total, count_functions_total,
                           success_rate_functions_total, failed_func_dict))
             logger.debug("Daily report: %s",
-                         report.replace("<b>", "\n").replace("</b>", ""))
+                         report.replace("<br>", "\n")
+                               .replace("<b>", "")
+                               .replace("</b>", ""))
             tools.eventbuilder.eEvent(sender_id=name,
                                       keyword="notify.user",
                                       data={"title": "Daily report",
@@ -297,7 +323,7 @@ def worker():
         for key_substring in event.parsed_kw_list:
             if key_substring in FUNC_KEYWORDS:
                 for func in FUNC_KEYWORDS[key_substring]:
-                    funcs.append([func, event])
+                    funcs.append([func["func"], event])
                     # input.put([func, event])
 
         if len(funcs) < 1:
@@ -349,10 +375,16 @@ def worker():
                     event.keyword)}
         else:
 
-            if event.keyword == "onstart":
+            if event.keyword == "system.onstart":
                 logger.info("The index now has %d entries.",
                             len(FUNC_KEYWORDS))
                 logger.debug("%s", FUNC_KEYWORDS.keys())
+                # funcs = {key: [{"name": f["name"],
+                #                 "version": f["version"],
+                #                 "func": str(f["func"])}
+                #                for f in FUNC_KEYWORDS[key]]
+                #          for key in FUNC_KEYWORDS.keys()}
+                # logger.debug("%s", json.dumps(funcs, sort_keys=True, indent=4))
 
             results = _process(event)
             event.result = results

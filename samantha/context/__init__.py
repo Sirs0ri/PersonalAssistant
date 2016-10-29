@@ -10,18 +10,18 @@
 # pylint: disable=global-statement
 #
 # TODO: [ ] finish initialize() and stop()
-# TODO: [ ]     Start a new context, then load the last one
+# TODO: [x]     Start a new context, then load the last one
 # TODO: [ ]     Start context-updater
 # TODO: [ ]         Checks if properties are expired
 # TODO: [ ]         Compares Context and rules
-# TODO: [ ] finish stop()
-# TODO: [ ]     Store the current context as JSON
+# TODO: [x] finish stop()
+# TODO: [x]     Store the current context as JSON
 # TODO: [ ] def import_from_file(path="data/context_private.json"):
 # TODO: [ ]     Load a previous context from JSON, then:
 # TODO: [ ]     Compare the property's TTLs to the current time and load only
 #               valide ones
-# TODO: [ ] def setProperty(property, value, ttl):
-# TODO: [ ] def getProperty(property):
+# TODO: [x] def setProperty(property, value, ttl):
+# TODO: [x] def getProperty(property):
 # TODO: [ ] def addRule(rule):
 #
 ###############################################################################
@@ -37,9 +37,10 @@ import os
 # related third party imports
 
 # application specific imports
+from samantha.tools import eventbuilder
 
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 
 # Initialize the logger
@@ -87,6 +88,12 @@ def set_property(attribute, value, default=None, ttl=None):
     data["_"] = value
     data["_default"] = default
     data["_ttl"] = ttl
+    eventbuilder.eEvent(sender_id=__name__,
+                        keyword="context.update.{}".format(attribute),
+                        data={"attribute": attribute,
+                              "value": value,
+                              "default": default,
+                              "ttl": ttl})
 
 
 def get_value(attribute, default=None):

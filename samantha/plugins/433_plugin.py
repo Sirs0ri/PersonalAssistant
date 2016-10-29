@@ -21,8 +21,7 @@ except ImportError:
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin, Device
 
-
-__version__ = "1.0.8"
+__version__ = "1.0.10"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -31,9 +30,10 @@ LOGGER = logging.getLogger(__name__)
 class Transmitter(object):
     """
     A class to transmit the wireless codes sent by 433 MHz
-    wireless fobs. This class is taken 1:1 from:
+    wireless fobs. This class is taken 1:1 from the '433MHz keyfob RX/TX'
+    example that can be found at
+    http://abyz.co.uk/rpi/pigpio/examples.html#Python%20code
     """
-    # TODO: ADDRESS!
 
     def __init__(self, pi, gpio, repeats=4, bits=24, gap=9000, t0=300, t1=900):
         """
@@ -126,7 +126,13 @@ class Transmitter(object):
 
         chain += [self._amble, 255, 1, self.repeats, 0]
 
-        self.pi.wave_chain(chain)
+        try:
+            self.pi.wave_chain(chain)
+        except ValueError:
+            LOGGER.error("The automatically assigned ID for this command "
+                         "exceeded 255 which caused this failure - it's later "
+                         "used as a byte. Please restart the device running "
+                         "the pigpio daemon ('pigpiod') to reset the IDs.")
 
         while self.pi.wave_tx_busy():
             time.sleep(0.1)
@@ -165,7 +171,7 @@ READING_LAMP = Device("Readinglamp", active, LOGGER, __file__,
 AMBIENT_LAMP = Device("Ambientlamp", active, LOGGER, __file__,
                       ["light", "433"])
 BED_LAMP = Device("Bedlamp", active, LOGGER, __file__,
-                      ["light", "433"])
+                  ["light", "433"])
 
 
 @READING_LAMP.turn_on
@@ -175,7 +181,7 @@ def rl_turn_on(key, data):
     return "Reading Lamp turned on."
 
 
-@subscribe_to(["system.onexit", "time.time_of_day.day"])
+@subscribe_to("time.time_of_day.day")
 @READING_LAMP.turn_off
 def rl_turn_off(key, data):
     """Turn off the Reading-Lamp."""
@@ -190,7 +196,7 @@ def bl_turn_on(key, data):
     return "Bed Lamp turned on."
 
 
-@subscribe_to(["system.onexit", "time.time_of_day.day"])
+@subscribe_to("time.time_of_day.day")
 @BED_LAMP.turn_off
 def bl_turn_off(key, data):
     """Turn off the Bed-Lamp."""
@@ -205,12 +211,23 @@ def al_turn_on(key, data):
     return "Ambient Lamp turned on."
 
 
-@subscribe_to(["system.onexit", "time.time_of_day.day"])
+@subscribe_to("time.time_of_day.day")
 @AMBIENT_LAMP.turn_off
 def al_turn_off(key, data):
     """Turn off the Ambient-Lamp."""
     TRANSMITTER.send(5204)
     return "Ambient Lamp turned off."
+
+
+@subscribe_to("system.onexit")
+def exit(key, data):
+    rl_turn_off(key, data)
+    bl_turn_off(key, data)
+    al_turn_off(key, data)
+    TRANSMITTER.cancel()
+    PI.wave_clear()
+    PI.stop()
+
 
 # @subscribe_to("system.onstart")
 # def start_func(key, data):

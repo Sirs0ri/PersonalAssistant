@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     PASSWORD = None
 
 
-__version__ = "1.0.16"
+__version__ = "1.0.17"
 
 
 # Initialize the logger
@@ -102,7 +102,7 @@ def _status_update(device):
 def update_devices(key, data):
     """Check for updated device-info."""
 
-    if key == "time.schedule.10s" and data[5] % 20 is not 0:
+    if key == "time.schedule.10s" and data[5] % 20 is not 10:
         return "Skipping this check since I'm only refreshing every 20 Sec."
 
     ignored_macs = ["00:80:77:F2:71:23", None]

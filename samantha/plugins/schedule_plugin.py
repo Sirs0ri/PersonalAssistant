@@ -34,7 +34,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.12"
+__version__ = "1.3.13"
 
 
 # Initialize the logger
@@ -71,6 +71,8 @@ def worker():
             eventbuilder.eEvent(sender_id=name,
                                 keyword=keyword,
                                 data=timelist).trigger()
+        logger.debug("SUNRISE: %s, SUNSET: %s, NOW: %s",
+                      SUNRISE, SUNSET, datetime_obj)
 
     # Initialisation
     while True:
@@ -142,21 +144,24 @@ def sun_times(key, data):
     """Update the times for sunset and -rise."""
     global SUNRISE, SUNSET
     result = ""
+    invalid = True
     if "sunrise" in data:
+        invalid = False
         sunrise = datetime.datetime.fromtimestamp(data["sunrise"])
         if SUNRISE is not sunrise:
             SUNRISE = sunrise
             LOGGER.debug("Updated Sunrise to %s",
                          SUNRISE.strftime('%Y-%m-%d %H:%M:%S'))
             result += "Sunrise updated successfully."
-    elif "sunset" in data:
+    if "sunset" in data:
+        invalid = False
         sunset = datetime.datetime.fromtimestamp(data["sunset"])
         if SUNSET is not sunset:
             SUNSET = sunset
             LOGGER.debug("Updated Sunset to %s",
                          SUNSET.strftime('%Y-%m-%d %H:%M:%S'))
             result += "Sunset updated successfully."
-    else:
+    if invalid:
         result = "Error: The data does not contain info about sunrise/-set."
     if result == "":
         result = "Sunrise/-set were already up to date."
