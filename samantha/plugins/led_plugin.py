@@ -24,7 +24,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 
 # Initialize the logger
@@ -60,6 +60,7 @@ BRIGHTNESS = 0.0
 R_COLOR = 0.0
 G_COLOR = 0.0
 B_COLOR = 0.0
+
 
 def _sleep(duration):
     """Sleep if the currently executed command is the newest one."""
@@ -115,8 +116,8 @@ def _set_pins(red=-1, green=-1, blue=-1):
         R_COLOR = float(red) / BRIGHTNESS
         G_COLOR = float(green) / BRIGHTNESS
         B_COLOR = float(blue) / BRIGHTNESS
-    LOGGER.warn("R: %d, G: %d, B: %d, Brightness: %d",
-                 R_COLOR, G_COLOR, B_COLOR, BRIGHTNESS)
+    # LOGGER.warn("R: %d, G: %d, B: %d, Brightness: %.2f",
+    #             R_COLOR, G_COLOR, B_COLOR, BRIGHTNESS)
 
 
 def _spread(steps, length=256, interpolator=None):
@@ -318,9 +319,12 @@ def ambient(key, data):
 @PLUGIN.turn_off
 @subscribe_to("system.onexit")
 def turn_off(key, data):
-    """Turn off all lights."""
+    """Turn off all lights and (if the system is exiting) release resources."""
     _stop_previous_command()
     _crossfade(red=0, green=0, blue=0, speed=0.2)
     IDLE.set()
-    PI.stop()
-    return "LEDs turned off."
+    result = "LEDs turned off"
+    if key == "system.onexit":
+        PI.stop()
+        result += " and resources released"
+    return result + "."
