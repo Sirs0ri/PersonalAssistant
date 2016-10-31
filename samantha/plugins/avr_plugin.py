@@ -30,7 +30,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.16"
+__version__ = "1.6.17"
 
 
 # Initialize the logger
@@ -131,10 +131,12 @@ def worker():
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for a command.")
         command = COMM_QUEUE.get()
-        if not isinstance(command, basestring) and isinstance(command, Iterable):
-            _send(command[0], DEVICE_IP, logger, command[1])
+        logger.warn("Processign command %s", command)
+        if (not isinstance(command, basestring) and
+                isinstance(command, Iterable)):
+            _send(command[0], logger, command[1])
         else:
-            _send(command, DEVICE_IP, logger)
+            _send(command, logger)
         COMM_QUEUE.task_done()
 
 
