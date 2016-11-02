@@ -19,7 +19,7 @@ from samantha.tools import eventbuilder
 from samantha.plugins.plugin import Plugin
 
 
-__version__ = "1.0.8"
+__version__ = "1.0.9"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -74,12 +74,9 @@ def update(key, data):
                     return "Ambient light turned on."
                 else:
                     # No app connected or video is paused
-                    eventbuilder.eEvent(  # Turn off ambient 433-light
+                    eventbuilder.eEvent(  # Turn off ambient light
                         sender_id=PLUGIN.name,
-                        keyword="turn.off.ambient.433").trigger()
-                    eventbuilder.eEvent(  # Set LEDs to max brightness
-                        sender_id=PLUGIN.name,
-                        keyword="turn.on.led").trigger()
+                        keyword="turn.off.ambient.light").trigger()
                     return "Ambient light turned off."
             else:
                 return "No video is playing. Not changing the light."

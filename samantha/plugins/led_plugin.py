@@ -24,7 +24,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.3.11"
+__version__ = "1.3.12"
 
 
 # Initialize the logger
@@ -87,6 +87,13 @@ def _sleep(duration):
 
 
 def _stop_previous_command():
+    """Stop the currently executed command.
+
+    While some functions here "do their thing" and then are done, some may run
+    in an endless loop (like the fade- or strobe-functions. This method makes
+    sure that the currently executed command is stopped before another one is
+    executed.
+    """
     NEW_COMMAND.set()
     IDLE.wait()
     NEW_COMMAND.clear()
@@ -227,6 +234,33 @@ def _crossfade(red=-1, green=-1, blue=-1, speed=1.0,
             _set_pins(red=r, green=g, blue=b)
 
 
+def _set_brightness(brightness):
+    """Set the LEDs to a given brightness."""
+    if not NEW_COMMAND.is_set():
+        brightness = (0.0 if brightness <= 0 else
+                      1.0 if brightness >= 1 else
+                      brightness)
+        LOGGER.debug("Setting the LEDs to %.2f%% brightness.", brightness*100)
+        r = int(R_COLOR * brightness)
+        g = int(G_COLOR * brightness)
+        b = int(B_COLOR * brightness)
+        _crossfade(red=r, green=g, blue=b, speed=0.2)
+
+
+@subscribe_to("set.led.brightness")
+def set_brightness(key, data):
+    """Set the LEDs to a given brightness.
+
+    The new value has to be in data["brightness"]. It can be any representation
+    of a number, since it'll be cast to a float anyways.
+    """
+    if "brightness" in data:
+        _stop_previous_command()
+        _set_brightness(float(data["brightness"]))
+        IDLE.set()
+        return "Set the LEDs to {0:.2f}% brightness.".format(BRIGHTNESS*100)
+
+
 @subscribe_to("system.onstart")
 def start_func(key, data):
     """Test the LEDs during the 'onstart' event."""
@@ -305,17 +339,51 @@ def turn_on(key, data):
     return "LEDs turned on."
 
 
-@subscribe_to(["turn.on.ambient.led", "turn.on.ambient.light"])
-def ambient(key, data):
-    """Turn on light at 50% brightness."""
+@subscribe_to("increase.led.brightness")
+def increase_brightness(key, data):
+    """Increase brightness by 10%."""
     _stop_previous_command()
-    _crossfade(red=51, green=17, blue=3, speed=0.2)
+    brightness = BRIGHTNESS + 0.2
+    brightness = (0.0 if brightness <= 0 else
+                  1.0 if brightness >= 1 else
+                  brightness)
+    _set_brightness(brightness)
+    IDLE.set()
+    return "Increased the LEDs to {0:.2f}% brightness.".format(BRIGHTNESS*100)
+
+
+@subscribe_to("decrease.led.brightness")
+def decrease_brightness(key, data):
+    """Decrease brightness by 10%."""
+    _stop_previous_command()
+    brightness = BRIGHTNESS - 0.2
+    brightness = (0.0 if brightness <= 0 else
+                  1.0 if brightness >= 1 else
+                  brightness)
+    _set_brightness(brightness)
+    IDLE.set()
+    return "Decreased the LEDs to {0:.2f}% brightness.".format(BRIGHTNESS*100)
+
+
+@subscribe_to(["turn.on.ambient.led", "turn.on.ambient.light"])
+def ambient_on(key, data):
+    """Turn on light at 20% brightness."""
+    _stop_previous_command()
+    _set_brightness(0.2)
     IDLE.set()
     return "Set the lights to 20% brightness."
 
 
-@subscribe_to(["turn.off.ambient.led", "turn.off.ambient.light",
-               "time.time_of_day.day"])
+@subscribe_to(["turn.off.ambient.led", "turn.off.ambient.light"])
+def ambient_off(key, data):
+    """Turn on light at 100% brightness."""
+    _stop_previous_command()
+    _set_brightness(1)
+    IDLE.set()
+    return "Set the lights to 100% brightness."
+
+
+@subscribe_to("time.time_of_day.day")
 @PLUGIN.turn_off
 @subscribe_to("system.onexit")
 def turn_off(key, data):
