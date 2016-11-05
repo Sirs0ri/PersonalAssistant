@@ -24,7 +24,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.3.12"
+__version__ = "1.4.0"
 
 
 # Initialize the logger
@@ -100,7 +100,12 @@ def _stop_previous_command():
     IDLE.clear()
 
 
-def _set_pins(red=-1, green=-1, blue=-1):
+def _set_pins(red=-1, green=-1, blue=-1, keepglobals=False):
+    """Set the LEDs to the values from the parameters.
+
+    This function will automatically update the globally stored values for the
+    colors (if not specified otherwise via keepglobals) and brightness.
+    """
     global BRIGHTNESS, R_COLOR, G_COLOR, B_COLOR
     if 0 <= red <= 255 and not NEW_COMMAND.is_set():
         for pin in RED_PINS:
@@ -114,17 +119,20 @@ def _set_pins(red=-1, green=-1, blue=-1):
     red = red if 0 <= red <= 255 else R_COLOR
     green = green if 0 <= green <= 255 else G_COLOR
     blue = blue if 0 <= blue <= 255 else B_COLOR
-    BRIGHTNESS = max(red, green, blue) / 255.0
-    if BRIGHTNESS == 0:  # avoid a ZeroDivision error
-        R_COLOR = 0
-        G_COLOR = 0
-        B_COLOR = 0
-    else:
-        R_COLOR = float(red) / BRIGHTNESS
-        G_COLOR = float(green) / BRIGHTNESS
-        B_COLOR = float(blue) / BRIGHTNESS
-    # LOGGER.warn("R: %d, G: %d, B: %d, Brightness: %.2f",
+    BRIGHTNESS = float(max(red, green, blue))
+    if not keepglobals:
+        if BRIGHTNESS == 0:  # avoid a ZeroDivision error
+            R_COLOR = 0
+            G_COLOR = 0
+            B_COLOR = 0
+        else:
+            R_COLOR = float(red * (255.0/BRIGHTNESS))
+            G_COLOR = float(green * (255.0/BRIGHTNESS))
+            B_COLOR = float(blue * (255.0/BRIGHTNESS))
+    # LOGGER.warn("R: %.2f, G: %.2f, B: %.2f, Brightness: %.2f",
     #             R_COLOR, G_COLOR, B_COLOR, BRIGHTNESS)
+    # LOGGER.info("R: %.2f, G: %.2f, B: %.2f, Brightness: %.2f",
+    #             red, green, blue, max(red, green, blue))
 
 
 def _spread(steps, length=256, interpolator=None):
@@ -198,72 +206,84 @@ def _spread(steps, length=256, interpolator=None):
 
 
 def _crossfade(red=-1, green=-1, blue=-1, speed=1.0,
-               brightness=1.0, interpolator=None):
+               brightnessonly=False, interpolator=None):
     """Fade from the current color to another one."""
     if not NEW_COMMAND.is_set():
+        red_is = PI.get_PWM_dutycycle(RED_PINS[0])
+        r_diff = 0 if red == -1 else red - red_is
+        green_is = PI.get_PWM_dutycycle(GREEN_PINS[0])
+        g_diff = 0 if green == -1 else green - green_is
+        blue_is = PI.get_PWM_dutycycle(BLUE_PINS[0])
+        b_diff = 0 if blue == -1 else blue - blue_is
         if speed > 0:
-            steps = int(256 * speed)
-            if 0 <= red <= 255:
-                red_is = PI.get_PWM_dutycycle(RED_PINS[0])
-                red_list = _spread((red - red_is), steps, interpolator)
-            if 0 <= green <= 255:
-                green_is = PI.get_PWM_dutycycle(GREEN_PINS[0])
-                green_list = _spread((green - green_is), steps, interpolator)
-            if 0 <= blue <= 255:
-                blue_is = PI.get_PWM_dutycycle(BLUE_PINS[0])
-                blue_list = _spread((blue - blue_is), steps, interpolator)
-            i = 0
-            if not (red_is == red and blue_is == blue and green_is == green):
-                # don't crossfade if none of the colors would change
-                while i < steps and not NEW_COMMAND.is_set():
-                    if red_list[i] is not 0:
-                        red_is += red_list[i]
-                    if green_list[i] is not 0:
-                        green_is += green_list[i]
-                    if blue_list[i] is not 0:
-                        blue_is += blue_list[i]
-                    _set_pins(red_is, green_is, blue_is)
-                    i += 1
+            steps = int(round(speed * max(
+                (math.fabs(diff) for diff in (r_diff, g_diff, b_diff))
+            )))
         else:
-            r = red if 0 <= red <= 255 else \
-                PI.get_PWM_dutycycle(RED_PINS[0])
-            g = green if 0 <= green <= 255 else \
-                PI.get_PWM_dutycycle(GREEN_PINS[0])
-            b = blue if 0 <= blue <= 255 else \
-                PI.get_PWM_dutycycle(BLUE_PINS[0])
-            _set_pins(red=r, green=g, blue=b)
+            steps = 1
+        red_list = _spread(r_diff, steps, interpolator)
+        green_list = _spread(g_diff, steps, interpolator)
+        blue_list = _spread(b_diff, steps, interpolator)
+
+        i = 0
+        while i < steps and not NEW_COMMAND.is_set():
+            # if red_list[i] is not 0:
+            red_is += red_list[i]
+            # if green_list[i] is not 0:
+            green_is += green_list[i]
+            # if blue_list[i] is not 0:
+            blue_is += blue_list[i]
+            _set_pins(red_is, green_is, blue_is, brightnessonly)
+            i += 1
 
 
-def _set_brightness(brightness):
-    """Set the LEDs to a given brightness."""
+def _set_brightness(brightness, speed=0.2):
+    """Set the LEDs to a given brightness between 0 and 255."""
     if not NEW_COMMAND.is_set():
-        brightness = (0.0 if brightness <= 0 else
-                      1.0 if brightness >= 1 else
+        LOGGER.debug("Current vals:\t%f,\t%f,\t%f,\t%f",
+                     R_COLOR, G_COLOR, B_COLOR, BRIGHTNESS)
+        brightness = (0 if brightness < 0 else
+                      255 if brightness > 255 else
                       brightness)
-        LOGGER.debug("Setting the LEDs to %.2f%% brightness.", brightness*100)
-        r = int(R_COLOR * brightness)
-        g = int(G_COLOR * brightness)
-        b = int(B_COLOR * brightness)
-        _crossfade(red=r, green=g, blue=b, speed=0.2)
+        LOGGER.debug("Setting the LEDs to %.2f%% brightness.",
+                     (brightness/255) * 100)
+        r = int(round(R_COLOR * brightness/255.0))
+        g = int(round(G_COLOR * brightness/255.0))
+        b = int(round(B_COLOR * brightness/255.0))
+        _crossfade(red=r, green=g, blue=b, speed=speed, brightnessonly=True)
+        LOGGER.debug("The new vals:\t%f,\t%f,\t%f,\t%f",
+                     R_COLOR, G_COLOR, B_COLOR, BRIGHTNESS)
 
 
-@subscribe_to("set.led.brightness")
-def set_brightness(key, data):
-    """Set the LEDs to a given brightness.
-
-    The new value has to be in data["brightness"]. It can be any representation
-    of a number, since it'll be cast to a float anyways.
-    """
-    if "brightness" in data:
-        _stop_previous_command()
-        _set_brightness(float(data["brightness"]))
-        IDLE.set()
-        return "Set the LEDs to {0:.2f}% brightness.".format(BRIGHTNESS*100)
+###############################################################################
+#
+# Registered functions
+#
+#   start_func
+#   turn_on
+#   turn_off
+#
+#   set_brightness
+#   increase_brightness
+#   decrease_brightness
+#   ambient_on (set brightness to 20%)
+#   ambient_off (set brightness to 100%)
+#
+#   fade_func
+#   strobe_func
+#   breathe_func
+#
+#   test_interpolators
+#
+###############################################################################
 
 
 @subscribe_to("system.onstart")
 def start_func(key, data):
-    """Test the LEDs during the 'onstart' event."""
+    """Test the LEDs during the 'onstart' event.
+
+    This function will transition from off to red to green to yellow to off.
+    """
     _stop_previous_command()
     _crossfade(red=0, green=0, blue=0, speed=0.0)
     _crossfade(red=255, green=0, blue=0, speed=0.2)
@@ -275,9 +295,104 @@ def start_func(key, data):
     return "Tested the LEDs."
 
 
+@PLUGIN.turn_on
+def turn_on(key, data):
+    """Turn on all lights."""
+    _stop_previous_command()
+    _crossfade(red=255, green=85, blue=17, speed=0.2)
+    IDLE.set()
+    return "LEDs turned on."
+
+
+@subscribe_to("time.time_of_day.day")
+@PLUGIN.turn_off
+@subscribe_to("system.onexit")
+def turn_off(key, data):
+    """Turn off all lights and (if the system is exiting) release resources."""
+    _stop_previous_command()
+    _crossfade(red=0, green=0, blue=0, speed=0.2)
+    IDLE.set()
+    result = "LEDs turned off"
+    if key == "system.onexit":
+        PI.stop()
+        result += " and resources released"
+    return result + "."
+
+
+@subscribe_to("set.led.brightness")
+def set_brightness(key, data):
+    """Set the LEDs to a given brightness.
+
+    The new value has to be in data["brightness"]. It can be any representation
+    of a number, since it'll be cast to a float anyways. Additionally, a speed-
+    parameter can be specified. It can be a value between 0 and 1, the default
+    is 0.2 (since that results in a nice quick, yet smooth transition).
+    """
+    if "brightness" in data:
+        _stop_previous_command()
+        if "speed" in data and 0 <= float(data["speed"]) <= 1:
+            speed = float(data["speed"])
+        else:
+            speed = 0.2
+        _set_brightness(float(data["brightness"]), speed)
+        IDLE.set()
+        return "Set the LEDs to {0:.2f}% brightness.".format(
+            (BRIGHTNESS/255) * 100)
+
+
+@subscribe_to("increase.led.brightness")
+def increase_brightness(key, data):
+    """Increase brightness by 10%."""
+    _stop_previous_command()
+    brightness = BRIGHTNESS + 25
+    brightness = (0 if brightness < 0 else
+                  255 if brightness > 255 else
+                  brightness)
+    _set_brightness(brightness)
+    IDLE.set()
+    return "Increased the LEDs to {0:.2f}% brightness.".format(
+            (BRIGHTNESS/255) * 100)
+
+
+@subscribe_to("decrease.led.brightness")
+def decrease_brightness(key, data):
+    """Decrease brightness by 10%."""
+    _stop_previous_command()
+    brightness = BRIGHTNESS - 25
+    brightness = (0 if brightness < 0 else
+                  255 if brightness > 255 else
+                  brightness)
+    _set_brightness(brightness)
+    IDLE.set()
+    return "Decreased the LEDs to {0:.2f}% brightness.".format(
+            (BRIGHTNESS/255) * 100)
+
+
+@subscribe_to(["turn.on.ambient.led", "turn.on.ambient.light"])
+def ambient_on(key, data):
+    """Turn on light at 20% brightness."""
+    _stop_previous_command()
+    _set_brightness(50)
+    IDLE.set()
+    return "Set the lights to 20% brightness."
+
+
+@subscribe_to(["turn.off.ambient.led", "turn.off.ambient.light"])
+def ambient_off(key, data):
+    """Turn on light at 100% brightness."""
+    _stop_previous_command()
+    _set_brightness(255)
+    IDLE.set()
+    return "Set the lights to 100% brightness."
+
+
 @subscribe_to("led.fade")
 def fade_func(key, data):
-    """Test the LEDs during the 'onstart' event."""
+    """Test the LEDs during the 'onstart' event.
+
+    To create a barely noticeably transition, the speed is kept at 1 instead of
+    the otherwise usual 0.2.
+    """
     _stop_previous_command()
 
     while not NEW_COMMAND.is_set():
@@ -304,7 +419,19 @@ def strobe_func(key, data):
     return "The LEDs are now strobing."
 
 
-@subscribe_to("led.test")
+@subscribe_to("led.breathe")
+def breathe_func(key, data):
+    """Test the LEDs during the 'onstart' event."""
+    _stop_previous_command()
+
+    while not NEW_COMMAND.is_set():
+        _set_brightness(brightness=150, speed=1.0)
+        _set_brightness(brightness=255, speed=1.0)
+    IDLE.set()
+    return "The LEDs are now breathing."
+
+
+@subscribe_to("led.test.interpolators")
 def test_interpolators(key, data):
     """Test the different interpolators."""
     _stop_previous_command()
@@ -328,71 +455,3 @@ def test_interpolators(key, data):
     _crossfade(red=0, green=0, blue=0, interpolator="squared")
     IDLE.set()
     return "Tested the LEDs."
-
-
-@PLUGIN.turn_on
-def turn_on(key, data):
-    """Turn on all lights."""
-    _stop_previous_command()
-    _crossfade(red=255, green=85, blue=17, speed=0.2)
-    IDLE.set()
-    return "LEDs turned on."
-
-
-@subscribe_to("increase.led.brightness")
-def increase_brightness(key, data):
-    """Increase brightness by 10%."""
-    _stop_previous_command()
-    brightness = BRIGHTNESS + 0.2
-    brightness = (0.0 if brightness <= 0 else
-                  1.0 if brightness >= 1 else
-                  brightness)
-    _set_brightness(brightness)
-    IDLE.set()
-    return "Increased the LEDs to {0:.2f}% brightness.".format(BRIGHTNESS*100)
-
-
-@subscribe_to("decrease.led.brightness")
-def decrease_brightness(key, data):
-    """Decrease brightness by 10%."""
-    _stop_previous_command()
-    brightness = BRIGHTNESS - 0.2
-    brightness = (0.0 if brightness <= 0 else
-                  1.0 if brightness >= 1 else
-                  brightness)
-    _set_brightness(brightness)
-    IDLE.set()
-    return "Decreased the LEDs to {0:.2f}% brightness.".format(BRIGHTNESS*100)
-
-
-@subscribe_to(["turn.on.ambient.led", "turn.on.ambient.light"])
-def ambient_on(key, data):
-    """Turn on light at 20% brightness."""
-    _stop_previous_command()
-    _set_brightness(0.2)
-    IDLE.set()
-    return "Set the lights to 20% brightness."
-
-
-@subscribe_to(["turn.off.ambient.led", "turn.off.ambient.light"])
-def ambient_off(key, data):
-    """Turn on light at 100% brightness."""
-    _stop_previous_command()
-    _set_brightness(1)
-    IDLE.set()
-    return "Set the lights to 100% brightness."
-
-
-@subscribe_to("time.time_of_day.day")
-@PLUGIN.turn_off
-@subscribe_to("system.onexit")
-def turn_off(key, data):
-    """Turn off all lights and (if the system is exiting) release resources."""
-    _stop_previous_command()
-    _crossfade(red=0, green=0, blue=0, speed=0.2)
-    IDLE.set()
-    result = "LEDs turned off"
-    if key == "system.onexit":
-        PI.stop()
-        result += " and resources released"
-    return result + "."
