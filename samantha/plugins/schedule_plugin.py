@@ -22,6 +22,7 @@ triggered at 0:00, month on the 1st at 0:00, etc.
 # standard library imports
 import datetime
 import logging
+import random
 import threading
 import time
 
@@ -34,7 +35,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.14"
+__version__ = "1.3.15"
 
 
 # Initialize the logger
@@ -89,7 +90,15 @@ def worker():
                             data=data,
                             ttl=ttl).trigger()
 
-    # Initialisation
+    # Initialize the two random events.
+    # They'll be triggered randomly once an hour/once a day. These two counters
+    # count down the seconds until the next event. They'll be reset to a random
+    # value every hour (day) between 0 and the number of seconds in an hour/day
+    # The default values are 120secs for the hourly event and 180 for the daily
+    # so that the two events are being triggered relatively soon after starting
+    rnd_hourly_counter = 120
+    rnd_daily_counter = 180
+
     while True:
         datetime_obj = datetime.datetime.now()
         timetuple = datetime_obj.timetuple()
@@ -108,6 +117,12 @@ def worker():
         # ..[8]: tm_isdst = -1
         """
         timelist = list(timetuple)
+        if rnd_hourly_counter == 0:
+            _trigger(keyword="time.schedule.hourly_rnd", data=timelist)
+        if rnd_daily_counter == 0:
+            _trigger(keyword="time.schedule.daily_rnd", data=timelist)
+        rnd_hourly_counter -= 1
+        rnd_daily_counter -= 1
         if timelist[5] in [0, 10, 20, 30, 40, 50]:
             _trigger(keyword="time.schedule.10s", data=timelist)
             if timelist[5] == 0:
@@ -118,9 +133,11 @@ def worker():
                 if timelist[4] == 0:
                     # Minutes = 0 -> New Hour
                     _trigger(keyword="time.schedule.hour", data=timelist)
+                    rnd_hourly_counter = random.randint(0, 3599)
                     if timelist[3] == 0:
                         # Hours = 0 -> New Day
                         _trigger(keyword="time.schedule.day", data=timelist)
+                        rnd_daily_counter = random.randint(0, 86399)
                         if timelist[2] == 1:
                             # Day of Month = 1 -> New Month
                             _trigger(keyword="time.schedule.mon",
