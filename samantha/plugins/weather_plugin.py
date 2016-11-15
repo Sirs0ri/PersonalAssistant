@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.10"
+__version__ = "1.3.11"
 
 
 # Initialize the logger
@@ -48,6 +48,7 @@ def check_weather(key, data):
     url = "http://api.openweathermap.org/data/2.5/weather"
     req = None
     tries = 0
+    errors = []
     while tries <= 3 and req is None:
         if tries > 0:
             LOGGER.debug("Retrying in 15 seconds.")
@@ -75,12 +76,17 @@ def check_weather(key, data):
                 requests.exceptions.Timeout), e:
             LOGGER.warn("Connecting to OWM failed on attempt %d. Error: %s",
                         tries, e)
+            errors.append(e.__repr__())
         except ValueError, e:
             LOGGER.warn("The requested data could not be processed "
                         "successfully. Error: %s", e)
+            errors.append(e.__repr__())
 
     if req is None:
         LOGGER.error("Connecting to OWM didn't return a valid result three "
-                     "times in a row.")
+                     "times in a row. Errors: %s", errors)
         return ("Error: Connecting to OWM didn't return a valid result three "
-                "times in a row.")
+                "times in a row. Errors: %s" % errors)
+    else:
+        LOGGER.error("Connecting to OWM failed three times in a row even "
+                     "though a connection was established. Errors: %s", errors)
