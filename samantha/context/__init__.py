@@ -39,9 +39,7 @@ import os
 # application specific imports
 from samantha.tools import eventbuilder
 
-
-__version__ = "1.0.3"
-
+__version__ = "1.0.4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -74,6 +72,7 @@ def set_property(attribute, value, default=None, ttl=None):
     path = attribute.split(".")
     data = CONTEXT
     current_path = ""
+    new_path = False
     for step in path:
         if step:
             if current_path:
@@ -81,6 +80,7 @@ def set_property(attribute, value, default=None, ttl=None):
             current_path += step
             if step not in data:
                 LOGGER.debug("Creating field %s", current_path)
+                new_path = True
                 data[step] = {"_": None, "_ttl": None}
             data = data[step]
 
@@ -88,8 +88,15 @@ def set_property(attribute, value, default=None, ttl=None):
     data["_"] = value
     data["_default"] = default
     data["_ttl"] = ttl
+    if new_path:
+        eventbuilder.eEvent(sender_id=__name__,
+                            keyword="context.new_path.{}".format(attribute),
+                            data={"attribute": attribute,
+                                  "value": value,
+                                  "default": default,
+                                  "ttl": ttl})
     eventbuilder.eEvent(sender_id=__name__,
-                        keyword="context.update.{}".format(attribute),
+                        keyword="context.change.{}".format(attribute),
                         data={"attribute": attribute,
                               "value": value,
                               "default": default,
