@@ -38,7 +38,7 @@ import time
 from samantha import tools
 
 
-__version__ = "1.6.0a2"
+__version__ = "1.6.0a3"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -125,7 +125,7 @@ def subscribe_to(keyword):
                     uid = _get_uid(mod.PLUGIN.plugin_type)
                     mod.PLUGIN.uid = uid
                 else:
-                    LOGGER.debug("This is an existing plugin.")
+                    LOGGER.debug("This is a known plugin.")
                 _index(keyword, func, mod.__version__)
                 LOGGER.debug("'%s.%s' decorated successfully.",
                              func.__module__,
