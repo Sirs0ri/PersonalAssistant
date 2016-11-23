@@ -38,7 +38,7 @@ import time
 from samantha import tools
 
 
-__version__ = "1.6.0a3"
+__version__ = "1.6.0a4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -49,6 +49,8 @@ INITIALIZED = False
 INPUT = None
 OUTPUT = None
 STATUS = Queue.PriorityQueue()
+
+LOCK = threading.Lock()
 
 FUNC_KEYWORDS = {}
 
@@ -359,7 +361,20 @@ def worker():
     while True:
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for an item.")
+        LOCK.acquire()
         event = INPUT.get()
+        if event.keyword == "system.onstart":
+            logger.info("The index now has %d entries.",
+                        len(FUNC_KEYWORDS))
+            logger.debug("%s", FUNC_KEYWORDS.keys())
+            # funcs = {key: [{"name": f["name"],
+            #                 "version": f["version"],
+            #                 "func": str(f["func"])}
+            #                for f in FUNC_KEYWORDS[key]]
+            #          for key in FUNC_KEYWORDS.keys()}
+            # logger.debug("%s", json.dumps(funcs, sort_keys=True, indent=4))
+        else:
+            LOCK.release()
 
         logger.debug("[UID: %s] Now processing '%s' from %s",
                      event.uid,
@@ -374,18 +389,6 @@ def worker():
                 name: "Error: The event '{}' expired and was skipped.".format(
                     event.keyword)}
         else:
-
-            if event.keyword == "system.onstart":
-                logger.info("The index now has %d entries.",
-                            len(FUNC_KEYWORDS))
-                logger.debug("%s", FUNC_KEYWORDS.keys())
-                # funcs = {key: [{"name": f["name"],
-                #                 "version": f["version"],
-                #                 "func": str(f["func"])}
-                #                for f in FUNC_KEYWORDS[key]]
-                #          for key in FUNC_KEYWORDS.keys()}
-                # logger.debug("%s", json.dumps(funcs, sort_keys=True, indent=4))
-
             results = _process(event)
             event.result = results
             logger.info("[UID: %s] Processing of '%s' successful. "
@@ -405,6 +408,8 @@ def worker():
 
         # Let the queue know that processing is complete
         INPUT.task_done()
+        if event.keyword == "system.onstart":
+            LOCK.release()
 
 
 def sender():
