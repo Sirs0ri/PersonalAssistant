@@ -9,6 +9,7 @@
 
 # standard library imports
 import logging
+import time
 
 # related third party imports
 
@@ -18,7 +19,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.6"
+__version__ = "1.3.7"
 
 
 # Initialize the logger
@@ -40,6 +41,7 @@ def test1(key, data):
     for i in range(50):
         eventbuilder.eEvent(sender_id=PLUGIN.name,
                             keyword="wait").trigger()
+    time.sleep(2)
     LOGGER.warn("Test1 successful!\n%s - %s", key, data)
     return "Test1 successful!\n%s - %s".format(key, data)
 
@@ -47,8 +49,18 @@ def test1(key, data):
 @subscribe_to("test.2")
 def test2(key, data):
     """Test the 'test.2' event."""
+    for i in range(50):
+        eventbuilder.eEvent(sender_id=PLUGIN.name,
+                            keyword="test.3").trigger()
     LOGGER.warn("Test2 successful!\n%s - %s", key, data)
-    return "Test1 successful!\n%s - %s".format(key, data)
+    return "Test2 successful!\n%s - %s".format(key, data)
+
+
+@subscribe_to("test.3")
+def test3(key, data):
+    """Test the 'test.3' event."""
+    LOGGER.warn("Test3 successful!\n%s - %s", key, data)
+    return "Test3 successful!\n%s - %s".format(key, data)
 
 
 @subscribe_to("system.onexit")
