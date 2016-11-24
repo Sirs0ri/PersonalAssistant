@@ -5,3 +5,4 @@ autobahn == 0.16.0
 autobahn_rce == 0.6.0.5
 Twisted == 16.4.1
 dill == 0.2.5
+webcolors == 1.5
