@@ -35,7 +35,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.15"
+__version__ = "1.3.16"
 
 
 # Initialize the logger
@@ -72,6 +72,49 @@ def worker():
             eventbuilder.eEvent(sender_id=name,
                                 keyword=keyword,
                                 data=timelist).trigger()
+
+        # calculate time between now and sunrise
+        if SUNRISE < datetime_obj:
+            # the sunrise is in the past
+            sunrise_pre_post = "post"
+            diff_sunrise = datetime_obj - SUNRISE
+        else:
+            # the sunrise is in the future
+            sunrise_pre_post = "pre"
+            diff_sunrise = SUNRISE - datetime_obj
+        if 0 < diff_sunrise.seconds % 300 < 59:
+            # the difference between now and the sunrise is a multiple of 5
+            # minutes (this check is executed every minute, thus I'm checking
+            # this in a way that the condition becomes true every 5th minute.
+            keyword_sunrise = "time.sunrise.{}.{}".format(
+                sunrise_pre_post,
+                diff_sunrise.seconds / 60)
+            LOGGER.warn("Triggering event '%s'!", keyword_sunrise)
+            eventbuilder.eEvent(sender_id=name,
+                                keyword=keyword_sunrise,
+                                data=timelist).trigger()
+
+        # calculate time between now and sunset
+        if SUNSET < datetime_obj:
+            # the sunset is in the past
+            sunset_pre_post = "post"
+            diff_sunset = datetime_obj - SUNSET
+        else:
+            # the sunset is in the future
+            sunset_pre_post = "pre"
+            diff_sunset = SUNSET - datetime_obj
+        if 0 < diff_sunset.seconds % 300 < 59:
+            # the difference between now and the sunset is a multiple of 5
+            # minutes (this check is executed every minute, thus I'm checking
+            # this in a way that the condition becomes true every 5th minute.
+            keyword_sunset = "time.sunset.{}.{}".format(
+                sunset_pre_post,
+                diff_sunset.seconds / 60)
+            LOGGER.warn("Triggering event '%s'!", keyword_sunset)
+            eventbuilder.eEvent(sender_id=name,
+                                keyword=keyword_sunset,
+                                data=timelist).trigger()
+
         logger.debug("SUNRISE: %s, SUNSET: %s, NOW: %s",
                      SUNRISE, SUNSET, datetime_obj)
 
