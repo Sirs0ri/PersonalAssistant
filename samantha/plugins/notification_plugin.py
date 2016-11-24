@@ -28,13 +28,13 @@ except (ImportError, AttributeError):
     KEY = None
 
 
-__version__ = "1.3.14"
+__version__ = "1.3.15"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-PLUGIN = Plugin("Notification", KEY is not None, LOGGER, __file__)
+PLUGIN = Plugin("Notify", KEY is not None, LOGGER, __file__)
 
 
 def _send_ar_message(message=None, files=None):
