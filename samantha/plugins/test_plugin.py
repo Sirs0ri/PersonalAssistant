@@ -41,7 +41,6 @@ def test1(key, data):
     for i in range(50):
         eventbuilder.eEvent(sender_id=PLUGIN.name,
                             keyword="wait").trigger()
-    time.sleep(2)
     LOGGER.warn("Test1 successful!\n%s - %s", key, data)
     return "Test1 successful!\n%s - %s".format(key, data)
 
@@ -52,6 +51,7 @@ def test2(key, data):
     for i in range(50):
         eventbuilder.eEvent(sender_id=PLUGIN.name,
                             keyword="test.3").trigger()
+    time.sleep(2)
     LOGGER.warn("Test2 successful!\n%s - %s", key, data)
     return "Test2 successful!\n%s - %s".format(key, data)
 
