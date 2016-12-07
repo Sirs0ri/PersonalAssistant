@@ -25,7 +25,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 
 # Initialize the logger
@@ -64,9 +64,10 @@ B_COLOR = 0.0
 
 
 def _sleep(duration):
-    """Sleep if the currently executed command is the newest one."""
-    if not NEW_COMMAND.is_set():
-        time.sleep(duration)
+    """Sleep while the currently executed command is the newest one."""
+    i = 0
+    while i < duration and not NEW_COMMAND.is_set():
+        time.sleep(1)
 
 
 # def dec2hex(dc):
@@ -421,6 +422,7 @@ def ambient_on(key, data):
 def ambient_off(key, data):
     """Turn on light at 100% brightness."""
     _stop_previous_command()
+    _sleep(1)
     _set_brightness(255)
     IDLE.set()
     return "Set the lights to 100% brightness."
