@@ -30,7 +30,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.17"
+__version__ = "1.3.18"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -62,7 +62,10 @@ def check_followed_streams(key, data):
         global FAILS
         FAILS += 1  # raise the failcounter
         if FAILS <= 3:
-            LOGGER.error("Contacting Twitch failed or returned invalid data on "
+            LOGGER.warn("Contacting Twitch failed/returned invalid data on "
+                        "the last %d attempts. Current error: %s", FAILS, msg)
+        else:
+            LOGGER.error("Contacting Twitch failed/returned invalid data on "
                          "the last %d attempts. Current error: %s", FAILS, msg)
         return msg
 
