@@ -1,7 +1,8 @@
 fritzconnection == 0.4.6
-PyChromecast == 0.7.6
-requests == 2.11.1
+PyChromecast == 0.7.7
+requests == 2.12.1
 autobahn == 0.16.0
 autobahn_rce == 0.6.0.5
 Twisted == 16.4.1
 dill == 0.2.5
+webcolors == 1.5

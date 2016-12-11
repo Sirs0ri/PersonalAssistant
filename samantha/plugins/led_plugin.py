@@ -18,13 +18,14 @@ try:
     import pigpio
 except ImportError:
     pigpio = None
+import webcolors
 
 # application specific imports
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.0"
+__version__ = "1.4.2"
 
 
 # Initialize the logger
@@ -63,9 +64,10 @@ B_COLOR = 0.0
 
 
 def _sleep(duration):
-    """Sleep if the currently executed command is the newest one."""
-    if not NEW_COMMAND.is_set():
-        time.sleep(duration)
+    """Sleep while the currently executed command is the newest one."""
+    i = 0
+    while i < duration and not NEW_COMMAND.is_set():
+        time.sleep(1)
 
 
 # def dec2hex(dc):
@@ -340,6 +342,45 @@ def set_brightness(key, data):
             (BRIGHTNESS/255) * 100)
 
 
+@subscribe_to("set.led.color")
+def set_brightness(key, data):
+    """Set the LEDs to a given color.
+
+    The new value has to be in data["color"]. It can be a hex-code (#RRGGBB or
+    #RGB) or the name of the color following CSS3 standards (
+    https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+    Additionally, a speed-parameter can be specified. It can be a value between
+    0 and 1, the default is 0.2 (since that results in a nice quick, yet smooth
+    transition).
+    """
+    if "color" in data:
+        color = data["color"]
+        LOGGER.warn("Setting color to %s", color)
+        if not isinstance(color, (str, unicode)):
+            return "Error: The specified color is not a string: {}"\
+                .format(color)
+        else:
+            try:
+                if "#" in color:
+                    red, green, blue = webcolors.hex_to_rgb(color)
+                else:
+                    red, green, blue = webcolors.name_to_rgb(color)
+            except ValueError:
+                return "Error: The specified color '{}' has an illegal format"\
+                    .format(color)
+
+            _stop_previous_command()
+            if "speed" in data and 0 <= float(data["speed"]) <= 1:
+                speed = float(data["speed"])
+            else:
+                speed = 0.2
+
+            _crossfade(red, green, blue, speed)
+            IDLE.set()
+            return "Set the LEDs to {}/{}.".format(
+                color, (red, green, blue))
+
+
 @subscribe_to("increase.led.brightness")
 def increase_brightness(key, data):
     """Increase brightness by 10%."""
@@ -381,6 +422,7 @@ def ambient_on(key, data):
 def ambient_off(key, data):
     """Turn on light at 100% brightness."""
     _stop_previous_command()
+    _sleep(1)
     _set_brightness(255)
     IDLE.set()
     return "Set the lights to 100% brightness."

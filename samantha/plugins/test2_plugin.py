@@ -18,12 +18,12 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-PLUGIN = Device("Test", True, LOGGER, __file__)
+PLUGIN = Device("Test", False, LOGGER, __file__)
 
 
 @subscribe_to("system.onstart")
