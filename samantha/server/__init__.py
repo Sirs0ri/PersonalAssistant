@@ -1,4 +1,4 @@
-"""Samantha's main module."""
+"""Samantha's server module."""
 
 
 # standard library imports
@@ -7,7 +7,6 @@
 
 # application specific imports
 
-__version__ = "1.0.0a1"
 
-def run(**kwargs):
-    print("running")
+__version__ = "1.0.0a1"
+print("I'm imported (server)")
