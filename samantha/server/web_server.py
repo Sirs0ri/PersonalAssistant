@@ -2,6 +2,7 @@
 
 
 # standard library imports
+import logging
 
 # related third party imports
 
@@ -10,4 +11,6 @@
 
 __version__ = "1.0.0a1"
 
-print("I'm imported (server.web_server)")
+LOGGER = logging.getLogger(__name__)
+
+LOGGER.info("I'm imported (server.web_server)")

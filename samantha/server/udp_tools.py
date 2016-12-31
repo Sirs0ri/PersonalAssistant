@@ -2,6 +2,7 @@
 
 
 # standard library imports
+import logging
 
 # related third party imports
 
@@ -9,7 +10,10 @@
 
 
 __version__ = "1.0.0a1"
-print("I'm imported (server.udp_tools)")
+
+LOGGER = logging.getLogger(__name__)
+
+LOGGER.info("I'm imported (server.udp_tools)")
 
 def check():
-    print("I'm checking")
+    LOGGER.info("I'm checking")
