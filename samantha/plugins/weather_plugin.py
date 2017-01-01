@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.11"
+__version__ = "1.3.12"
 
 
 # Initialize the logger
@@ -41,7 +41,7 @@ if SECRETS is None:
 PLUGIN = Plugin("Weather", SECRETS is not None, LOGGER, __file__)
 
 
-@subscribe_to(["system.onstart", "time.schedule.hour"])
+@subscribe_to(["system.onstart", "time.schedule.hourly_rnd"])
 def check_weather(key, data):
     """Check the weather."""
     LOGGER.debug("Checking the Weather..")
@@ -68,19 +68,19 @@ def check_weather(key, data):
                                         data=new_data[category]).trigger()
                 return "Weather updated successfully."
             else:
-                LOGGER.warn("The request returned the wrong status code: %s",
-                            req.status_code)
+                LOGGER.warning("The request returned the wrong status code: %s",
+                               req.status_code)
                 req = None
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
-                requests.exceptions.Timeout), e:
-            LOGGER.warn("Connecting to OWM failed on attempt %d. Error: %s",
-                        tries, e)
+                requests.exceptions.Timeout) as e:
+            LOGGER.warning("Connecting to OWM failed on attempt %d. Error: %s",
+                        tries, repr(e))
             errors.append(e.__repr__())
-        except ValueError, e:
-            LOGGER.warn("The requested data could not be processed "
-                        "successfully. Error: %s", e)
-            errors.append(e.__repr__())
+        except ValueError as e:
+            LOGGER.warning("The requested data could not be processed "
+                        "successfully. Error: %s", repr(e))
+            errors.append(repr(e))
 
     if req is None:
         LOGGER.error("Connecting to OWM didn't return a valid result three "
