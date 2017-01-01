@@ -15,5 +15,5 @@ LOGGER = logging.getLogger(__name__)
 
 LOGGER.info("I'm imported (server.udp_tools)")
 
-def check():
+def discover_servers():
     LOGGER.info("I'm checking")
