@@ -25,7 +25,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 
 # Initialize the logger
@@ -65,9 +65,12 @@ B_COLOR = 0.0
 
 def _sleep(duration):
     """Sleep while the currently executed command is the newest one."""
-    i = 0
-    while i < duration and not NEW_COMMAND.is_set():
-        time.sleep(1)
+    if duration >= 1:
+        i = 0
+        while i < duration and not NEW_COMMAND.is_set():
+            time.sleep(1)
+    else:
+        time.sleep(duration)
 
 
 # def dec2hex(dc):
