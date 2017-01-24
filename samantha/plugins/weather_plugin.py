@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.12"
+__version__ = "1.3.13"
 
 
 # Initialize the logger
@@ -71,6 +71,7 @@ def check_weather(key, data):
                 LOGGER.warning("The request returned the wrong status code: %s",
                                req.status_code)
                 req = None
+                errors.append("Wrong statuscode: {}".format(req.status_code))
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
                 requests.exceptions.Timeout) as e:
