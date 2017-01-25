@@ -70,8 +70,8 @@ def check_weather(key, data):
             else:
                 LOGGER.warning("The request returned the wrong status code: %s",
                                req.status_code)
-                req = None
                 errors.append("Wrong statuscode: {}".format(req.status_code))
+                req = None
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
                 requests.exceptions.Timeout) as e:
