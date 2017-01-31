@@ -27,7 +27,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.13"
+__version__ = "1.3.14"
 
 
 # Initialize the logger
@@ -51,8 +51,8 @@ def check_weather(key, data):
     errors = []
     while tries <= 3 and req is None:
         if tries > 0:
-            LOGGER.debug("Retrying in 15 seconds.")
-            time.sleep(15)
+            LOGGER.debug("Retrying in %d seconds.", 15*tries)
+            time.sleep(15 * tries)
         try:
             tries += 1
             req = requests.get(url, params=SECRETS, timeout=15)
