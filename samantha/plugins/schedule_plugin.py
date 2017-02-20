@@ -35,14 +35,14 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.16"
+__version__ = "1.3.17"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-SUNRISE = datetime.datetime.fromtimestamp(0)
-SUNSET = datetime.datetime.fromtimestamp(0)
+SUNRISE = datetime.datetime(1970, 1, 1)
+SUNSET = datetime.datetime(1970, 1, 1)
 
 PLUGIN = Plugin("Schedule", True, LOGGER, __file__)
 
@@ -53,10 +53,10 @@ def worker():
     logger = logging.getLogger(name)
     logger.debug("Started.")
 
-    def _check_daytime(datetime_obj, timelist):
-        if (SUNSET < SUNRISE < datetime_obj or
-                SUNRISE < datetime_obj < SUNSET or
-                datetime_obj < SUNSET < SUNRISE):
+    def _check_daytime(_datetime_obj, _timelist):
+        if (SUNSET < SUNRISE < _datetime_obj or
+                SUNRISE < _datetime_obj < SUNSET or
+                _datetime_obj < SUNSET < SUNRISE):
             # The sun has risen.
             time_of_day = "day"
         else:
@@ -71,17 +71,17 @@ def worker():
             keyword = "time.time_of_day.{}".format(time_of_day)
             eventbuilder.eEvent(sender_id=name,
                                 keyword=keyword,
-                                data=timelist).trigger()
+                                data=_timelist).trigger()
 
         # calculate time between now and sunrise
-        if SUNRISE < datetime_obj:
+        if SUNRISE < _datetime_obj:
             # the sunrise is in the past
             sunrise_pre_post = "post"
-            diff_sunrise = datetime_obj - SUNRISE
+            diff_sunrise = _datetime_obj - SUNRISE
         else:
             # the sunrise is in the future
             sunrise_pre_post = "pre"
-            diff_sunrise = SUNRISE - datetime_obj
+            diff_sunrise = SUNRISE - _datetime_obj
         if 0 < diff_sunrise.seconds % 300 < 59:
             # the difference between now and the sunrise is a multiple of 5
             # minutes (this check is executed every minute, thus I'm checking
@@ -89,20 +89,20 @@ def worker():
             keyword_sunrise = "time.sunrise.{}.{}".format(
                 sunrise_pre_post,
                 diff_sunrise.seconds / 60)
-            LOGGER.warn("Triggering event '%s'!", keyword_sunrise)
+            LOGGER.warning("Triggering event '%s'!", keyword_sunrise)
             eventbuilder.eEvent(sender_id=name,
                                 keyword=keyword_sunrise,
-                                data=timelist).trigger()
+                                data=_timelist).trigger()
 
         # calculate time between now and sunset
-        if SUNSET < datetime_obj:
+        if SUNSET < _datetime_obj:
             # the sunset is in the past
             sunset_pre_post = "post"
-            diff_sunset = datetime_obj - SUNSET
+            diff_sunset = _datetime_obj - SUNSET
         else:
             # the sunset is in the future
             sunset_pre_post = "pre"
-            diff_sunset = SUNSET - datetime_obj
+            diff_sunset = SUNSET - _datetime_obj
         if 0 < diff_sunset.seconds % 300 < 59:
             # the difference between now and the sunset is a multiple of 5
             # minutes (this check is executed every minute, thus I'm checking
@@ -110,13 +110,13 @@ def worker():
             keyword_sunset = "time.sunset.{}.{}".format(
                 sunset_pre_post,
                 diff_sunset.seconds / 60)
-            LOGGER.warn("Triggering event '%s'!", keyword_sunset)
+            LOGGER.warning("Triggering event '%s'!", keyword_sunset)
             eventbuilder.eEvent(sender_id=name,
                                 keyword=keyword_sunset,
-                                data=timelist).trigger()
+                                data=_timelist).trigger()
 
         logger.debug("SUNRISE: %s, SUNSET: %s, NOW: %s",
-                     SUNRISE, SUNSET, datetime_obj)
+                     SUNRISE, SUNSET, _datetime_obj)
 
     def _trigger(keyword, data):
         if "10s" in keyword:

@@ -18,7 +18,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.6"
+__version__ = "1.4.7"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -38,11 +38,11 @@ def test(key, data):
     """Test the 'test' event."""
     def function():
         """Print "Heyho!" and a bunch of ~ around."""
-        print "~"*30
-        print "Heyho! My command was {}.".format(key)
-        print data
-        print "~"*30
-    thread = Timer(interval=7.0, target=function)
+        print("~"*30)
+        print("Heyho! My command was {}.".format(key))
+        print(data)
+        print("~"*30)
+    thread = Timer(interval=7.0, function=function)
     thread.start()
     return "Processed the command {}.".format(key)
 

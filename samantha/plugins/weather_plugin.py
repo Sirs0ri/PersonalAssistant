@@ -21,13 +21,13 @@ from samantha.tools import eventbuilder
 try:
     import samantha.variables_private as variables_private
     SECRETS = {"id": variables_private.owm_location,
-              "appid": variables_private.owm_key}
+               "appid": variables_private.owm_key}
 except (ImportError, AttributeError):
     variables_private = None
     SECRETS = None
 
 
-__version__ = "1.3.14"
+__version__ = "1.3.15"
 
 
 # Initialize the logger
@@ -76,11 +76,11 @@ def check_weather(key, data):
                 requests.exceptions.SSLError,
                 requests.exceptions.Timeout) as e:
             LOGGER.warning("Connecting to OWM failed on attempt %d. Error: %s",
-                        tries, repr(e))
+                           tries, repr(e))
             errors.append(e.__repr__())
         except ValueError as e:
             LOGGER.warning("The requested data could not be processed "
-                        "successfully. Error: %s", repr(e))
+                           "successfully. Error: %s", repr(e))
             errors.append(repr(e))
 
     if req is None:

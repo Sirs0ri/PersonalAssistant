@@ -22,14 +22,14 @@ import os.path
 import sys
 
 # related third party imports
-import requests
+# import requests
 
 # application specific imports
 from . import handlers
 from .handlers import variables_private
 
 
-__version__ = "1.5.12"
+__version__ = "1.5.13"
 
 
 # Initialize the logger
@@ -51,10 +51,10 @@ def _init(debug):
 
     # STFU urllib3. For more info, see:
     # https://github.com/pypa/pip/issues/2681#issuecomment-92541888
-    requests.packages.urllib3.disable_warnings(
-        requests.packages.urllib3.exceptions.SNIMissingWarning)
-    requests.packages.urllib3.disable_warnings(
-        requests.packages.urllib3.exceptions.InsecurePlatformWarning)
+    # requests.packages.urllib3.disable_warnings(
+    #     requests.packages.urllib3.exceptions.SNIMissingWarning)
+    # requests.packages.urllib3.disable_warnings(
+    #     requests.packages.urllib3.exceptions.InsecurePlatformWarning)
 
     # Create the root-logger
     root = logging.getLogger()

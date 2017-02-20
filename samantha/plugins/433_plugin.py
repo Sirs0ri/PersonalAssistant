@@ -21,7 +21,7 @@ except ImportError:
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin, Device
 
-__version__ = "1.0.10"
+__version__ = "1.0.11"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -63,21 +63,18 @@ class Transmitter(object):
         """
         Generates the basic waveforms needed to transmit codes.
         """
-        wf = []
-        wf.append(pigpio.pulse(1 << self.gpio, 0, self.t0))
-        wf.append(pigpio.pulse(0, 1 << self.gpio, self.gap))
+        wf = [pigpio.pulse(1 << self.gpio, 0, self.t0),
+              pigpio.pulse(0, 1 << self.gpio, self.gap)]
         self.pi.wave_add_generic(wf)
         self._amble = self.pi.wave_create()
 
-        wf = []
-        wf.append(pigpio.pulse(1 << self.gpio, 0, self.t0))
-        wf.append(pigpio.pulse(0, 1 << self.gpio, self.t1))
+        wf = [pigpio.pulse(1 << self.gpio, 0, self.t0),
+              pigpio.pulse(0, 1 << self.gpio, self.t1)]
         self.pi.wave_add_generic(wf)
         self._wid0 = self.pi.wave_create()
 
-        wf = []
-        wf.append(pigpio.pulse(1 << self.gpio, 0, self.t1))
-        wf.append(pigpio.pulse(0, 1 << self.gpio, self.t0))
+        wf = [pigpio.pulse(1 << self.gpio, 0, self.t1),
+              pigpio.pulse(0, 1 << self.gpio, self.t0)]
         self.pi.wave_add_generic(wf)
         self._wid1 = self.pi.wave_create()
 
@@ -122,7 +119,7 @@ class Transmitter(object):
                 chain += [self._wid1]
             else:
                 chain += [self._wid0]
-            bit = bit >> 1
+            bit >>= 1
 
         chain += [self._amble, 255, 1, self.repeats, 0]
 
@@ -220,13 +217,14 @@ def al_turn_off(key, data):
 
 
 @subscribe_to("system.onexit")
-def exit(key, data):
+def exit_plugin(key, data):
     rl_turn_off(key, data)
     bl_turn_off(key, data)
     al_turn_off(key, data)
     TRANSMITTER.cancel()
     PI.wave_clear()
     PI.stop()
+    return "Exited and freed resources."
 
 
 # @subscribe_to("system.onstart")

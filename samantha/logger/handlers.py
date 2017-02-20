@@ -36,7 +36,7 @@ except ImportError:
 # (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.12"
+__version__ = "1.2.13"
 
 
 # Initialize the logger
@@ -78,8 +78,9 @@ class AutoRemoteHandler(logging.Handler):
                         requests.exceptions.SSLError,
                         requests.exceptions.Timeout) as e:
                     tries += 1
-                    logger.warning("Connecting to AutoRemote failed on attempt %d. "
-                                "Retrying in two seconds. Error: %s", tries, e)
+                    logger.warning("Connecting to AutoRemote failed on attempt "
+                                   "%d. Retrying in two seconds. Error: %s",
+                                   tries, e)
                     time.sleep(2)
 
         if (record.name == "logger.handlers" or
@@ -89,25 +90,26 @@ class AutoRemoteHandler(logging.Handler):
             # by pychromecast's socket_client that throws errors for
             # unimportant events
             LOGGER.warning("This error was either caused by this class "
-                        "or by a short DC from the Chromecast, it "
-                        "won't be sent via AutoRemote.")
+                           "or by a short DC from the Chromecast, it "
+                           "won't be sent via AutoRemote.")
         else:
             thread = threading.Thread(target=send_message)
             thread.daemon = True
             thread.start()
-            # while tries <= 3 and req is None:
-            #     try:
-            #         LOGGER.debug("Sending '%s(...)' via AR",
-            #                      # message)
-            #                      message[:50])
-            #         req = requests.post(url, payload, timeout=15, stream=False)
-            #     except (requests.exceptions.ConnectionError,
-            #             requests.exceptions.SSLError,
-            #             requests.exceptions.Timeout), e:
-            #         tries += 1
-            #         LOGGER.warn("Connecting to AutoRemote failed on attempt %d. "
-            #                     "Retrying in two seconds. Error: %s", tries, e)
-            #         time.sleep(2)
+#           while tries <= 3 and req is None:
+#               try:
+#                   LOGGER.debug("Sending '%s(...)' via AR",
+#                                # message)
+#                                message[:50])
+#                   req = requests.post(url, payload, timeout=15, stream=False)
+#               except (requests.exceptions.ConnectionError,
+#                       requests.exceptions.SSLError,
+#                       requests.exceptions.Timeout), e:
+#                   tries += 1
+#                   LOGGER.warning("Connecting to AutoRemote failed on attempt "
+#                                  "%d. Retrying in two seconds. Error: %s",
+#                                  tries, e)
+#                   time.sleep(2)
 
 
 class ColorStreamHandler(logging.StreamHandler):
@@ -135,11 +137,12 @@ class ColorStreamHandler(logging.StreamHandler):
         After transforming the string inside the given record, the printing is
         handled via the original StreamHandler.
         """
-        fmt = self.formatter._fmt
+        # fmt = self.formatter._fmt
+        fmt = getattr(self.formatter, "_fmt")
         _record = copy.copy(record)
         # Check if the levelname is even part of the current Formatter
         # If not, none of the transformations are necessary
-        if "levelname" in fmt:
+        if fmt and "levelname" in fmt:
             levelname = ""
             colors = {"DEBUG": "96",     # light cyan
                       "INFO": "97",      # white

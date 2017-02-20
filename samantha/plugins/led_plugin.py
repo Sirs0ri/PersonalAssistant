@@ -25,7 +25,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.3"
+__version__ = "1.4.4"
 
 
 # Initialize the logger
@@ -69,6 +69,7 @@ def _sleep(duration):
         i = 0
         while i < duration and not NEW_COMMAND.is_set():
             time.sleep(1)
+            i += 1
     else:
         time.sleep(duration)
 
@@ -200,6 +201,13 @@ def _spread(steps, length=256, interpolator=None):
         func = squared
     elif interpolator == "sqrt" or (interpolator is None and steps < 0):
         func = root
+    else:
+        if steps > 0:
+            func = squared
+        elif steps < 0:
+            func = root
+        else:
+            func = linear
 
     # Create a 'length' long list with evenly distributed items [0 ... 'steps']
     result = [func(x) for x in range(1, int(length)+1)]
@@ -358,8 +366,10 @@ def set_brightness(key, data):
     """
     if "color" in data:
         color = data["color"]
-        LOGGER.warn("Setting color to %s", color)
-        if not isinstance(color, (str, unicode)):
+        LOGGER.warning("Setting color to %s", color)
+        # if not isinstance(color, (str, unicode)):  # Python2
+        # Python3 doesn't distinguish between normal and unicode strings anymore
+        if not isinstance(color, str):
             return "Error: The specified color is not a string: {}"\
                 .format(color)
         else:

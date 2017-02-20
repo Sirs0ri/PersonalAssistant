@@ -39,7 +39,7 @@ import os
 # application specific imports
 from samantha.tools import eventbuilder
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -119,7 +119,7 @@ def get_value(attribute, default=None):
     if data:
         if data["_ttl"]:
             if data["_ttl"] < datetime.datetime.now():
-                LOGGER.warn("This attribute is expired")
+                LOGGER.warning("This attribute is expired")
                 return data["_default"]
         # LOGGER.debug("Returning %s.", data["_"])
         return data["_"]
@@ -174,6 +174,7 @@ def _init(queue_in, queue_out):
             CONTEXT = json.load(data_file)
         LOGGER.debug("Loaded the context successfully.")
     except IOError:
+        this_dir = None
         LOGGER.error("The context could not be found at %s", this_dir)
 
     LOGGER.info("Initialisation complete.")

@@ -23,7 +23,7 @@ import os.path
 # application specific imports
 
 
-__version__ = "1.2.4"
+__version__ = "1.2.5"
 
 
 # Initialize the logger
@@ -79,14 +79,14 @@ def _init(queue_in, queue_out):
                 if plugin_source.PLUGIN.is_active:
                     count += 1
                     if plugin_source.PLUGIN.plugin_type == "d":
-                        device_str += "\n\t%r" % (plugin_source.PLUGIN)
+                        device_str += "\n\t%r" % plugin_source.PLUGIN
                     else:
-                        plugin_str += "\n\t%r" % (plugin_source.PLUGIN)
+                        plugin_str += "\n\t%r" % plugin_source.PLUGIN
                     LOGGER.debug("%s is a valid plugin.", plugin_file)
                 else:
                     LOGGER.debug("%s is marked as inactive.", plugin_file)
             else:
-                LOGGER.warn("%s is missing the plugin-class!", plugin_file)
+                LOGGER.warning("%s is missing the plugin-class!", plugin_file)
         except ImportError:
             LOGGER.warn("%s couldn't be imported successfully!", plugin_file)
 

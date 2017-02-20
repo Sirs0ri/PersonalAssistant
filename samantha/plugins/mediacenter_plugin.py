@@ -19,7 +19,7 @@ from samantha.tools import eventbuilder
 from samantha.plugins.plugin import Plugin
 
 
-__version__ = "1.0.9"
+__version__ = "1.0.10"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -61,10 +61,10 @@ def update(key, data):
         return ("Error: Invalid Data. 'content_type', 'player_state' and "
                 "'display_name' were all missing or empty.")
     if updated:
-        if context.get_value("time.time_of_day") == "night":
-            if CC_CONTENT_TYPE and "audio" not in CC_CONTENT_TYPE:
-                # Ignore the updates while Audio is playing. This is only
-                # supposed to dim the lights while videos are playing.
+        if CC_CONTENT_TYPE and "audio" not in CC_CONTENT_TYPE:
+            # Ignore the updates while Audio is playing. This is only
+            # supposed to dim the lights while videos are playing.
+            if context.get_value("time.time_of_day") == "night":
                 if (CC_PLAYER_STATE in ["PLAYING", "BUFFERING"] and
                         CC_DISPLAY_NAME not in [None, "Backdrop"]):
                     # An app is playing video.
@@ -79,11 +79,11 @@ def update(key, data):
                         keyword="turn.off.ambient.light").trigger()
                     return "Ambient light turned off."
             else:
-                return "No video is playing. Not changing the light."
+                eventbuilder.eEvent(  # Turn off all light
+                    sender_id=PLUGIN.name,
+                    keyword="turn.off.light").trigger()
+                return "It's daytime. The light is supposed to stay off."
         else:
-            eventbuilder.eEvent(  # Turn off all light
-                sender_id=PLUGIN.name,
-                keyword="turn.off.light").trigger()
-            return "It's daytime. The light is supposed to stay off."
+            return "No video is playing. Not changing the light."
     else:
         return "No relevant information was updated. Not changing the light."
