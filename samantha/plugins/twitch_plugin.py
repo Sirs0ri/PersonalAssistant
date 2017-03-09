@@ -24,13 +24,15 @@ try:
     import samantha.variables_private as variables_private
     SECRETS = {
         "oauth_token": variables_private.twitch_oauth_token,
-        "client_id": variables_private.twitch_client_id}
+        "client_id": variables_private.twitch_client_id,
+        "api_version": 5
+    }
 except (ImportError, AttributeError):
     variables_private = None
     SECRETS = None
 
 
-__version__ = "1.3.18"
+__version__ = "1.3.19"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
