@@ -38,7 +38,7 @@ import time
 from samantha import tools
 
 
-__version__ = "1.6.0a5"
+__version__ = "1.6.0a6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -270,6 +270,7 @@ def stats_worker():
             failed_commands = 0.0
             count_requests = 0.0
             count_triggers = 0.0
+            failed_func_dict = {}
         STATUS.task_done()
 
 
