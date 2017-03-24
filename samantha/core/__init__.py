@@ -21,14 +21,14 @@
 # standard library imports
 from collections import Iterable
 from copy import copy
-import ConfigParser
+import configparser
 import datetime
 from functools import wraps
 import json
 import logging
 import math
 import os
-import Queue
+import queue
 import threading
 import time
 
@@ -38,7 +38,7 @@ import time
 from samantha import tools
 
 
-__version__ = "1.6.0a4"
+__version__ = "1.6.0a6"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ INITIALIZED = False
 
 INPUT = None
 OUTPUT = None
-STATUS = Queue.PriorityQueue()
+STATUS = queue.Queue()
 
 LOCK = threading.Lock()
 
@@ -88,7 +88,7 @@ def _get_uid(prefix):
 
 def _index(keyword, func, version):
     """Add a function to the index."""
-    if not isinstance(keyword, basestring) and isinstance(keyword, Iterable):
+    if not isinstance(keyword, str) and isinstance(keyword, Iterable):
         for key in keyword:
             if key not in FUNC_KEYWORDS:
                 FUNC_KEYWORDS[key] = []
@@ -164,11 +164,11 @@ def change_logger(key, data):
     root = logging.getLogger()
     if root.handlers[2].level == 10:
         root.handlers[2].setLevel(logging.INFO)
-        LOGGER.warn("Logging-Level set to INFO")
+        LOGGER.warning("Logging-Level set to INFO")
         return "Logging-Level set to INFO"
     else:
         root.handlers[2].setLevel(logging.DEBUG)
-        LOGGER.warn("Logging-Level set to DEBUG")
+        LOGGER.warning("Logging-Level set to DEBUG")
         return "Logging-Level set to DEBUG"
 
 
@@ -205,7 +205,7 @@ def stats_worker():
         else:
             count_triggers += 1
         processed = False
-        for func, result in event.result.iteritems():
+        for func, result in event.result.items():
             if (result is None or
                     (isinstance(result, bool) and result is False) or
                     (not isinstance(result, bool) and "Error: " in result)):
@@ -270,6 +270,7 @@ def stats_worker():
             failed_commands = 0.0
             count_requests = 0.0
             count_triggers = 0.0
+            failed_func_dict = {}
         STATUS.task_done()
 
 
@@ -292,16 +293,16 @@ def _execute_secure(_logger, _event, _func):
 def worker():
     """Read and process commands from the INPUT queue.
 
-    Puts results back into OUTPUT.
+    Puts processed_results back into OUTPUT.
     """
     # Get a new logger for each thread.
     # Used instead of the global LOGGER on purpose inside this function.
     name = __name__ + "." + threading.current_thread().name
     logger = logging.getLogger(name)
 
-    def _process(event):
-        input = Queue.PriorityQueue()
-        output = Queue.PriorityQueue()
+    def _process(processed_event):
+        input_queue = queue.Queue()
+        output_queue = queue.Queue()
         queue_lock = threading.Lock()
         thread_count = 2
         thread_list = []
@@ -311,34 +312,34 @@ def worker():
             _logger = logging.getLogger(_name)
             while True:
                 queue_lock.acquire()
-                if not input.empty():
-                    _func, _event = input.get()
+                if not input_queue.empty():
+                    _func, _event = input_queue.get()
                     queue_lock.release()
-                    output.put(_execute_secure(_logger, _event, _func))
+                    output_queue.put(_execute_secure(_logger, _event, _func))
                 else:
                     queue_lock.release()
                     _logger.debug("Exiting.")
                     break
 
         funcs = []
-        results = {}
-        for key_substring in event.parsed_kw_list:
+        processed_results = {}
+        for key_substring in processed_event.parsed_kw_list:
             if key_substring in FUNC_KEYWORDS:
                 for func in FUNC_KEYWORDS[key_substring]:
-                    funcs.append([func["func"], event])
-                    # input.put([func, event])
+                    funcs.append([func["func"], processed_event])
+                    # input_queue.put([func, event])
 
         if len(funcs) < 1:
-            results[name] = "Error: No matching plugin found."
+            processed_results[name] = "Error: No matching plugin found."
         elif len(funcs) == 1:
             f_name, value = _execute_secure(logger, funcs[0][1], funcs[0][0])
-            results[f_name] = value
+            processed_results[f_name] = value
         else:
             queue_lock.acquire()
             for pair in funcs:
-                input.put(pair)
+                input_queue.put(pair)
 
-            for i in range(min(thread_count, input.qsize())):
+            for i in range(min(thread_count, input_queue.qsize())):
                 t = threading.Thread(target=_worker, name="_worker%d" % i)
                 t.start()
                 thread_list.append(t)
@@ -348,15 +349,15 @@ def worker():
             for t in thread_list:
                 t.join()
 
-            while not output.empty():
-                f_name, value = output.get()
-                results[f_name] = value
+            while not output_queue.empty():
+                f_name, value = output_queue.get()
+                processed_results[f_name] = value
 
-        # results = [x for x in results if x]
-        if not results:
-            results[name] = "Error: No matching plugin found."
+        # processed_results = [x for x in processed_results if x]
+        if not processed_results:
+            processed_results[name] = "Error: No matching plugin found."
 
-        return results
+        return processed_results
 
     while True:
         # Wait until an item becomes available in INPUT
@@ -382,9 +383,9 @@ def worker():
                      event.sender_id)
 
         if event.expired:
-            logger.warn(
+            logger.warning(
                 "[UID: %s] The event '%s' is expired and will be skipped.",
-                    event.uid, event.keyword)
+                event.uid, event.keyword)
             event.result = {
                 name: "Error: The event '{}' expired and was skipped.".format(
                     event.keyword)}
@@ -445,7 +446,7 @@ def sender():
                 # Original message came from a service-plugin
                 logger.debug("Sending results to services isn't possible yet.")
             else:
-                logger.warn("Invalid UID: %s", message.sender_id)
+                logger.warning("Invalid UID: %s", message.sender_id)
         else:
             logger.debug("[UID: %s] Not sending the result back since the "
                          "event was a trigger.", message.uid)
@@ -476,13 +477,13 @@ def _init(queue_in, queue_out):
     else:
         path = this_dir.replace("core", "data")
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read("{path}/samantha.cfg".format(path=path))
 
     try:
         # This leads to approx. X worker, X/2 sender and X/4 stat-threads.
         num_worker_threads = config.getint(__name__, "NUM_WORKER_THREADS")
-    except ConfigParser.Error:
+    except configparser.Error:
         LOGGER.exception("Exception while reading the config:")
         num_worker_threads = 2
 
@@ -519,14 +520,14 @@ def stop():
     global INITIALIZED
 
     LOGGER.info("Exiting...")
-    LOGGER.warn("Waiting for INPUT to be emptied. It currently holds "
-                "%d items.", INPUT.qsize())
+    LOGGER.warning("Waiting for INPUT to be emptied. It currently holds "
+                   "%d items.", INPUT.qsize())
     INPUT.join()
-    LOGGER.warn("Waiting for OUTPUT to be emptied. It currently holds "
-                "%d items.", OUTPUT.qsize())
+    LOGGER.warning("Waiting for OUTPUT to be emptied. It currently holds "
+                   "%d items.", OUTPUT.qsize())
     OUTPUT.join()
-    LOGGER.warn("Waiting for STATUS to be emptied. It currently holds "
-                "%d items.", STATUS.qsize())
+    LOGGER.warning("Waiting for STATUS to be emptied. It currently holds "
+                   "%d items.", STATUS.qsize())
     STATUS.join()
 
     INITIALIZED = False

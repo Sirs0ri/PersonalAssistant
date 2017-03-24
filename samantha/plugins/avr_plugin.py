@@ -16,7 +16,7 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf
 # standard library imports
 from collections import Iterable
 import logging
-import Queue
+import queue
 import socket
 import telnetlib
 import threading
@@ -30,13 +30,13 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.17"
+__version__ = "1.6.18"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-COMM_QUEUE = Queue.PriorityQueue()
+COMM_QUEUE = queue.Queue()
 
 DEVICE_IP = "192.168.178.48"
 
@@ -48,7 +48,7 @@ except socket.error:
     ACTIVE = False
 
 
-def _check_condition(condition, telnet, logger):
+def _check_condition(condition, _telnet, logger):
     """Check if the given condition is met.
 
     Is must be in the format ["COMMAND=RESULT", Boolean]. Depending on the
@@ -61,13 +61,13 @@ def _check_condition(condition, telnet, logger):
         condition_must_match = condition[1]
         cond_comm, cond_val = condition[0].split("=")
 
-        telnet.read_very_eager()  # Clear the device's output
+        _telnet.read_very_eager()  # Clear the device's output
 
         # Send the command specified in the condition
-        telnet.write("{}\r".format(cond_comm))
+        _telnet.write("{}\r".format(cond_comm).encode("utf-8"))
 
-        output = telnet.read_some()  # Read the output
-        output = output.replace("\r", " ")
+        output = _telnet.read_some()  # Read the output
+        output = output.decode("utf-8").replace("\r", " ")
         logger.debug("Condition was: '%s'. Output was: '%s'",
                      condition, output)
 
@@ -75,7 +75,7 @@ def _check_condition(condition, telnet, logger):
             return True
 
     except ValueError:
-        logger.exception("Error while procesing the condition '%s'.",
+        logger.exception("Error while processing the condition '%s'.",
                          condition)
 
     return False
@@ -84,30 +84,30 @@ def _check_condition(condition, telnet, logger):
 def _send(command, logger, condition=None, retries=3):
     """Send a command to the connected AVR via Telnet."""
     if retries > 0:
-        telnet = None
+        _telnet = None
         while retries > 0:
             try:
-                telnet = telnetlib.Telnet(DEVICE_IP)
+                _telnet = telnetlib.Telnet(DEVICE_IP)
                 break
             except socket.error:
                 logger.warn("AVR refused the connection. Retrying...")
                 retries -= 1
                 time.sleep(1)
-        if telnet is None:
+        if _telnet is None:
             logger.error("AVR refused the connection. Is another "
-                             "device using the Telnet connection already?"
-                             "\n%s", traceback.format_exc())
+                         "device using the Telnet connection already?"
+                         "\n%s", traceback.format_exc())
         else:
-            if not _check_condition(condition, telnet, logger):
+            if not _check_condition(condition, _telnet, logger):
                 logger.debug("Not sending the command because the condition "
                              "'%s' is not fulfilled.", condition)
             else:
                 logger.debug("Sending command '%s'", command)
-                telnet.write("{}\r".format(command))
+                _telnet.write("{}\r".format(command).encode("utf-8"))
                 logger.debug("Successfully sent the command '%s'.", command)
 
             # Close the telnet connection in any case
-            telnet.close()
+            _telnet.close()
 
     else:
         logger.error("Maximium count of retries reached. The command '%s' "
@@ -131,9 +131,8 @@ def worker():
         # Wait until an item becomes available in INPUT
         logger.debug("Waiting for a command.")
         command = COMM_QUEUE.get()
-        logger.warn("Processign command %s", command)
-        if (not isinstance(command, basestring) and
-                isinstance(command, Iterable)):
+        logger.warning("Processing command %s", command)
+        if not isinstance(command, str) and isinstance(command, Iterable):
             _send(command[0], logger, command[1])
         else:
             _send(command, logger)
@@ -151,6 +150,7 @@ WORKER.daemon = True
 SLEEPER = None
 
 PLUGIN = Device("AVR", ACTIVE, LOGGER, __file__)
+
 
 @subscribe_to("system.onstart")
 def onstart(key, data):
@@ -173,12 +173,11 @@ def chromecast_connection_change(key, data):
         SLEEPER = None
         LOGGER.debug("Stopped the sleeper-thread.")
 
-
     # Check if the Chromecast is connected to an app
     if data["display_name"] in [None, "Backdrop"]:  # not connected
         LOGGER.debug("No app connected to the Chromecast. (%s)",
                      data["display_name"])
-        # Run the sleeper that turns off the AVR after 3 minutes
+        # Run the sleeper that turns off the AVR after 2 minutes
         SLEEPER = threading.Timer(120.0,
                                   turn_off_with_delay,
                                   [__name__ + ".sleeper"])
@@ -217,8 +216,8 @@ def stop(key, data):
     if SLEEPER:
         SLEEPER.cancel()
         SLEEPER.join()
-    LOGGER.warn("Waiting for COMM_QUEUE to be emptied. It currently holds "
-                "%d items.", COMM_QUEUE.qsize())
+    LOGGER.warning("Waiting for COMM_QUEUE to be emptied. It currently holds "
+                   "%d items.", COMM_QUEUE.qsize())
     COMM_QUEUE.join()
     LOGGER.info("Exited.")
     return "Exited."

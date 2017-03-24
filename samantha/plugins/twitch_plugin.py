@@ -24,13 +24,15 @@ try:
     import samantha.variables_private as variables_private
     SECRETS = {
         "oauth_token": variables_private.twitch_oauth_token,
-        "client_id": variables_private.twitch_client_id}
+        "client_id": variables_private.twitch_client_id,
+        "api_version": 5
+    }
 except (ImportError, AttributeError):
     variables_private = None
     SECRETS = None
 
 
-__version__ = "1.3.18"
+__version__ = "1.3.21"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -62,8 +64,9 @@ def check_followed_streams(key, data):
         global FAILS
         FAILS += 1  # raise the failcounter
         if FAILS <= 3:
-            LOGGER.warn("Contacting Twitch failed/returned invalid data on "
-                        "the last %d attempts. Current error: %s", FAILS, msg)
+            LOGGER.warning("Contacting Twitch failed/returned invalid data on "
+                           "the last %d attempts. Current error: %s",
+                           FAILS, msg)
         else:
             LOGGER.error("Contacting Twitch failed/returned invalid data on "
                          "the last %d attempts. Current error: %s", FAILS, msg)
@@ -80,23 +83,23 @@ def check_followed_streams(key, data):
             tries = 0
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
-                requests.exceptions.Timeout), e:
-            LOGGER.warn("Connecting to Twitch failed on attempt %d. "
-                        "Retrying in two seconds. Error: %s", tries, e)
+                requests.exceptions.Timeout) as e:
+            LOGGER.warning("Connecting to Twitch failed on attempt %d. "
+                           "Retrying in two seconds. Error: %s", tries, e)
             time.sleep(2)
 
     if req is None:
-        LOGGER.warn("Connecting to Twitch failed three times in a row.")
+        LOGGER.warning("Connecting to Twitch failed three times in a row.")
         return _fail("Warn: Connecting to Twitch failed three times in a row.")
 
     # Replace null-fields with "null"-strings
     text = req.text.replace('null', '"null"')
     try:
         data = json.loads(text)
-    except ValueError, e:
+    except ValueError as e:
         # Thrown by json if parsing a string fails due to an invalid format.
-        LOGGER.warn("The call to Twitch's API returned invalid data. "
-                    "Error: %s Data: %s", e, text)
+        LOGGER.warning("The call to Twitch's API returned invalid data. "
+                       "Error: %s Data: %s", e, text)
         return _fail("Warn: The call to Twitch's API returned invalid data.")
     new_streamlist = {}
     # parse the data
@@ -145,11 +148,12 @@ def check_followed_streams(key, data):
                         data=item).trigger()
                     context.set_property(
                         "media.twitch.{}".format(channelname), item)
-                # remove the channel from STREAM_LIST so that it can be
-                # refilled with the new data
-                del STREAM_LIST[channelname]
+                if channelname in STREAM_LIST:
+                    # refilled with the new data
+                    # remove the channel from STREAM_LIST so that it can be
+                    del STREAM_LIST[channelname]
     else:
-        LOGGER.warn("The data didn't include the 'streams' field.")
+        LOGGER.warning("The data didn't include the 'streams' field.")
         return _fail("Warn: The data didn't include the 'streams' field.")
 
     while len(STREAM_LIST) > 0:

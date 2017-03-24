@@ -22,7 +22,7 @@ account to be terminated.
 
 # standard library imports
 import re
-from HTMLParser import HTMLParser
+import html
 import logging
 from threading import Event as tEvent
 import time
@@ -45,7 +45,7 @@ except (ImportError, AttributeError):
     CURL = None
 
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 
 # Initialize the logger
@@ -91,9 +91,6 @@ PLUGIN_IS_ONLINE = tEvent()
 # Parse a command formatted for bash's cURL into URL and a dict of headers.
 URL, HEADER_DICT = _parse_curl(CURL)
 
-# Initialize the HTMLParser only once to be used later.
-UNESCAPE = HTMLParser().unescape
-
 CACHE = []
 
 
@@ -127,21 +124,22 @@ def check_pokes(key, data):
                     m = "Not retrying because the plugin is offline."
                 else:
                     m = "Retrying in two seconds."
-                LOGGER.warn("The request returned the wrong status code (%s) "
-                            "on attempt %d. %s", req.status_code, tries, m)
+                LOGGER.warning("The request returned the wrong status code "
+                               "(%s) on attempt %d. %s",
+                               req.status_code, tries, m)
                 req = None
                 time.sleep(2)
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.SSLError,
-                requests.exceptions.Timeout), e:
+                requests.exceptions.Timeout) as e:
             if tries == retries > 1:
                 m = "Reached the max. amount of retries."
             elif not PLUGIN_IS_ONLINE.is_set():
                 m = "Not retrying because the plugin is offline."
             else:
                 m = "Retrying in two seconds."
-            LOGGER.warn("Connecting to Facebook failed on attempt %d. "
-                        "%s Error: %s", tries, m, e)
+            LOGGER.warning("Connecting to Facebook failed on attempt %d. "
+                           "%s Error: %s", tries, m, e)
             req = None
             time.sleep(2)
 
@@ -156,35 +154,35 @@ def check_pokes(key, data):
     if matches:
         # pokes were found on the parsed webpage.
         for match in matches:
-            poke = {}
+            _poke = {}
 
             m = re.search((r'<a href="/[\s\S]*?">'
                            r'(?P<name>[\s\S]*?)</a>'
                            r'(?P<text>[\s\S]*?)</div>'),
                           match)
-            poke["text"] = m.group("name") + m.group("text")
-            poke["name"] = m.group("name")
+            _poke["text"] = m.group("name") + m.group("text")
+            _poke["name"] = m.group("name")
             m = re.search((r'<i class="img profpic"[\s\S]*?url\(&quot;'
                            r'(?P<imgurl>[\s\S]*?)&quot;\)'),
                           match)
-            poke["imgurl"] = UNESCAPE(m.group("imgurl"))
+            _poke["imgurl"] = html.unescape(m.group("imgurl"))
             m = re.search((r'<a class="_56bz _54k8 _56bs _56bu" href="'
                            r'(?P<pokeurl>[\s\S]*?)"'),
                           match)
-            poke["pokeurl"] = "https://m.facebook.com" + UNESCAPE(
+            _poke["pokeurl"] = "https://m.facebook.com" + html.unescape(
                 m.group("pokeurl"))
 
-            if poke["name"] not in CACHE:
-                LOGGER.debug(poke["text"])
+            if _poke["name"] not in CACHE:
+                LOGGER.debug(_poke["text"])
                 eEvent(sender_id=PLUGIN.name,
                        keyword="facebook.poked",
-                       data=poke).trigger()
+                       data=_poke).trigger()
                 new_count += 1
             else:
-                LOGGER.warn("This poke by %s is an old one.", poke["name"])
-            cache.append(poke["name"])
+                LOGGER.warning("This poke by %s is an old one.", _poke["name"])
+            cache.append(_poke["name"])
     else:
-        LOGGER.warn("No new pokes!")
+        LOGGER.warning("No new pokes!")
 
     CACHE = cache
 

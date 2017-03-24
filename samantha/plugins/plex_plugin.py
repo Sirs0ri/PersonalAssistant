@@ -25,7 +25,7 @@ from plexapi.server import PlexServer
 # application specific imports
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin
-from samantha.tools import eventbuilder
+# from samantha.tools import eventbuilder
 try:
     import samantha.variables_private as variables_private
     SECRETS = (variables_private.plex_username,
@@ -35,14 +35,13 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.0.0a3"
+__version__ = "1.0.0a4"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 logging.getLogger("plexapi").setLevel(logging.WARN)
 logging.getLogger("requests.packages.urllib3.connectionpool")\
     .setLevel(logging.WARN)
-
 
 
 def discover_local_servers():
@@ -56,7 +55,7 @@ def discover_local_servers():
     # Find all Plex servers on the network via Plex' 'GDM' protocol
     gdm_ip = '239.0.0.250'
     gdm_port = 32414
-    gdm_msg = 'M-SEARCH * HTTP/1.0'
+    gdm_msg = 'M-SEARCH * HTTP/1.0'.encode("utf-8")
     gdm_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     gdm_socket.settimeout(1.0)
     ttl = struct.pack('b', 1)
@@ -67,7 +66,7 @@ def discover_local_servers():
         while True:
             try:
                 data, server = gdm_socket.recvfrom(1024)
-                LOGGER.debug("Received data from %s:\%s", server, data)
+                LOGGER.debug("Received data from %s:\n%s", server, data)
                 result.append({'from': server, 'data': data})
             except socket.timeout:
                 break
@@ -81,8 +80,8 @@ def discover_local_servers():
             update = {'ip': response.get('from')[0]}
 
             # Check if we had a positive HTTP response
-            if "200 OK" in response.get('data'):
-                for each in response.get('data').split('\n'):
+            if "200 OK" in response.get('data').decode("utf-8"):
+                for each in response.get('data').decode("utf-8").split('\n'):
                     # decode response data
                     update['discovery'] = "auto"
 
@@ -92,8 +91,7 @@ def discover_local_servers():
                         update['uuid'] = each.split(':')[1].strip()
                     elif "Name:" in each:
                         update['serverName'] = each.split(':')[
-                            1].strip().decode(
-                            'utf-8', 'replace')  # store in utf-8
+                            1].strip()
                     elif "Port:" in each:
                         update['port'] = each.split(':')[1].strip()
                     elif "Updated-At:" in each:
@@ -120,7 +118,7 @@ def get_servers_from_account():
     if SECRETS is None:
         return {}
     try:
-        account = MyPlexAccount.signin(*SECRETS)
+        account = MyPlexAccount.signin(SECRETS[0], SECRETS[1])
         account_servers = {resource.clientIdentifier: resource
                            for resource in account.resources()
                            if "server" in resource.provides}
@@ -147,14 +145,14 @@ def localize_remote_servers(local_servers, remote_servers):
         LOGGER.debug("Checking if server %s is available via the Internet.",
                      remote_server_resource.name)
         remote_server = None
-        local_server = None
+        # local_server = None
         try:
             # Attempt connecting to the server
             remote_server = remote_server_resource.connect(ssl=True)
             LOGGER.debug("Success.")
         except NotFound:
-            LOGGER.warn("The server %s isn't available via the Internet",
-                        remote_server_resource.name)
+            LOGGER.warning("The server %s isn't available via the Internet",
+                           remote_server_resource.name)
 
         LOGGER.debug("Checking if server %s is available via LAN.",
                      remote_server_resource.name)
@@ -175,9 +173,9 @@ def localize_remote_servers(local_servers, remote_servers):
                              remote_server_resource.name,
                              baseurl)
             except NotFound:
-                LOGGER.warn("Couldn't connect to %s via %s.",
-                            remote_server_resource.name,
-                            baseurl)
+                LOGGER.warning("Couldn't connect to %s via %s.",
+                               remote_server_resource.name,
+                               baseurl)
                 if remote_server is not None:
                     remotely_available_servers.append(remote_server)
                 else:
@@ -196,13 +194,13 @@ def localize_remote_servers(local_servers, remote_servers):
                          remote_server_resource.name)
     for server_id in local_servers:
         this_server = local_servers[server_id]
-        LOGGER.warn("You don't seem to have access to the server %s "
-                    "(ID: %s) at %s:%s via your account. Please check "
-                    "your credentials.",
-                    this_server["serverName"],
-                    server_id,
-                    this_server["ip"],
-                    this_server["port"])
+        LOGGER.warning("You don't seem to have access to the server %s "
+                       "(ID: %s) at %s:%s via your account. Please check "
+                       "your credentials.",
+                       this_server["serverName"],
+                       server_id,
+                       this_server["ip"],
+                       this_server["port"])
 
     return locally_available_servers, remotely_available_servers
 

@@ -5,7 +5,7 @@ Calling this via 'python samantha' starts everything else."""
 
 # standard library imports
 import logging
-import Queue
+import queue
 import threading
 # related third party imports
 
@@ -18,7 +18,7 @@ from . import logger
 from . import tools
 
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 
 def run(debug=True):
@@ -31,8 +31,8 @@ def run(debug=True):
     LOGGER.info("Initializing...")
     LOGGER.debug("-"*47)
 
-    INPUT = Queue.PriorityQueue()
-    OUTPUT = Queue.PriorityQueue()
+    INPUT = queue.Queue()
+    OUTPUT = queue.Queue()
 
     context.initialize(INPUT, OUTPUT)
     core.initialize(INPUT, OUTPUT)
@@ -59,7 +59,7 @@ def run(debug=True):
             threads[t].daemon,
             threads[t].is_alive()
         )
-    LOGGER.warn(msg)
+    LOGGER.warning(msg)
     # INPUT.join()
     # OUTPUT.join()
     tools.stop()

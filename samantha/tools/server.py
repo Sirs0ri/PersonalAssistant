@@ -26,7 +26,7 @@ from twisted.internet import reactor
 from . import eventbuilder
 
 
-__version__ = "1.5.0a3"
+__version__ = "1.5.0a4"
 
 
 # Initialize the logger
@@ -104,7 +104,7 @@ class UDPThread(threading.Thread):
         """Basically the original __init__(), but expanded by the delay, as
         well as a logger."""
         super(UDPThread, self).__init__(*args, **kwargs)
-        self._stop = threading.Event()
+        self._stop_event = threading.Event()
         self.logger = logging.getLogger(__name__ + "." + self.name)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -127,12 +127,12 @@ class UDPThread(threading.Thread):
                 try:
                     # Send data
                     self.logger.debug("Sending '%s'", message)
-                    self.socket.sendto(message, server_address)
+                    self.socket.sendto(message.encode("utf-8"), server_address)
                     time.sleep(5)
                     retries = 0
                 except socket.error:
                     retries += 1
-                    self.logger.warn(
+                    self.logger.warning(
                         "Sending the message failed. Retrying in 5 sec.")
             if retries > 3:
                 self.logger.fatal("The socket couldn't establish a "
@@ -148,11 +148,11 @@ class UDPThread(threading.Thread):
         """Stop the delay. This won't stop the thread once the target-function
         is started!"""
         self.logger.debug("Exiting...")
-        self._stop.set()
+        self._stop_event.set()
 
     def stopped(self):
         """Return whether the Thread should still be running or not."""
-        return self._stop.isSet()
+        return self._stop_event.isSet()
 
 
 class Server(WebSocketServerProtocol):
@@ -175,9 +175,9 @@ class Server(WebSocketServerProtocol):
         # add this server-client-connection to the index
         INDEX[self.uid] = self
 
-    def onClose(self, wasClean, code, reason):
+    def onClose(self, was_clean, code, reason):
         """Handle a closed connection."""
-        super(Server, self).onClose(wasClean, code, reason)
+        super(Server, self).onClose(was_clean, code, reason)
         # self.sendClose()
         LOGGER.info("[UID: %s] WebSocket connection closed: '%s'",
                     self.uid, reason)
@@ -190,9 +190,9 @@ class Server(WebSocketServerProtocol):
                 self.uid)
             reactor.stop()
 
-    def onMessage(self, payload, isBinary):
+    def onMessage(self, payload, is_binary):
         """Handle a new incoming message."""
-        if isBinary:
+        if is_binary:
             LOGGER.debug("[UID: %s] Binary message received: %d bytes",
                          self.uid, len(payload))
         else:
@@ -227,6 +227,7 @@ def _wait_for_server_ip():
     sock.bind(server_address)
     # expects (host, port) as arg, two brackets are on purpose
     data = None
+    address = None
 
     try:
         LOGGER.debug('Waiting to receive message')
@@ -243,11 +244,12 @@ def _wait_for_server_ip():
     finally:
         sock.close()
 
-        if data and data.split(":")[0] == "sam.ip.broadcast":
-            ip, port = address[0], int(data.split(":")[1])
+        if data and address and data.decode("utf-8").split(":")[0] == "sam.ip.broadcast":
+            ip, port = address[0], int(data.decode("utf-8").split(":")[1])
         else:
             ip, port = None, None
     return ip, port
+
 
 def _init(queue_in, queue_out):
     """Initialize the module."""
@@ -290,8 +292,8 @@ def send_message(message):
         INDEX[message["sender_id"]].sendMessage(
             message["result"].encode('utf8'), False)
     else:
-        LOGGER.warn("There is no client with the UID %s!",
-                    message["sender_id"])
+        LOGGER.warning("There is no client with the UID %s!",
+                       message["sender_id"])
 
 
 def stop():

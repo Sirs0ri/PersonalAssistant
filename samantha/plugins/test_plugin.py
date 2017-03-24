@@ -19,7 +19,7 @@ from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
 
 
-__version__ = "1.3.7"
+__version__ = "1.3.8"
 
 
 # Initialize the logger
@@ -41,7 +41,7 @@ def test1(key, data):
     for i in range(50):
         eventbuilder.eEvent(sender_id=PLUGIN.name,
                             keyword="wait").trigger()
-    LOGGER.warn("Test1 successful!\n%s - %s", key, data)
+    LOGGER.warning("Test1 successful!\n%s - %s", key, data)
     return "Test1 successful!\n%s - %s".format(key, data)
 
 
@@ -52,14 +52,14 @@ def test2(key, data):
         eventbuilder.eEvent(sender_id=PLUGIN.name,
                             keyword="test.3").trigger()
     time.sleep(2)
-    LOGGER.warn("Test2 successful!\n%s - %s", key, data)
+    LOGGER.warning("Test2 successful!\n%s - %s", key, data)
     return "Test2 successful!\n%s - %s".format(key, data)
 
 
 @subscribe_to("test.3")
 def test3(key, data):
     """Test the 'test.3' event."""
-    LOGGER.warn("Test3 successful!\n%s - %s", key, data)
+    LOGGER.warning("Test3 successful!\n%s - %s", key, data)
     return "Test3 successful!\n%s - %s".format(key, data)
 
 

@@ -28,7 +28,7 @@ except (ImportError, AttributeError):
     KEY = None
 
 
-__version__ = "1.3.15"
+__version__ = "1.3.16"
 
 
 # Initialize the logger
@@ -45,7 +45,7 @@ def _send_ar_message(message=None, files=None):
     if message:
         payload["message"] = message
     if files:
-        if not isinstance(files, basestring) and isinstance(files, Iterable):
+        if not isinstance(files, str) and isinstance(files, Iterable):
             files = [str(x) for x in files]
             payload["files"] = ",".join(files)
         else:
@@ -64,10 +64,10 @@ def _send_ar_message(message=None, files=None):
                 success.set()
             except (requests.exceptions.ConnectionError,
                     requests.exceptions.SSLError,
-                    requests.exceptions.Timeout), e:
+                    requests.exceptions.Timeout) as e:
                 tries += 1
-                logger.warn("Connecting to AutoRemote failed on attempt %d. "
-                            "Retrying in two seconds. Error: %s", tries, e)
+                logger.warning("Connecting to AutoRemote failed on attempt %d. "
+                               "Retrying in two seconds. Error: %s", tries, e)
                 time.sleep(2)
 
     thread = threading.Thread(target=send_message)
@@ -76,7 +76,6 @@ def _send_ar_message(message=None, files=None):
     if success.is_set():
         return "Message sent successfully."
     return "Error: Connecting to AutoRemote failed repeatedly."
-
 
     # req = None
     # tries = 0
@@ -144,7 +143,7 @@ def notify_fritz_availability(key, data):
 
 @subscribe_to("*.fritzbox.newdevice.*")
 def notify_fritz_newdevice(key, data):
-    """Notifiy the user about new devices in the network."""
+    """Notify the user about new devices in the network."""
     message = "logging=:=Samantha=:={} {} joined the network.".format(
         datetime.now().strftime("%H:%M"), data["name"])
     return _send_ar_message(message)
@@ -152,7 +151,7 @@ def notify_fritz_newdevice(key, data):
 
 @subscribe_to("notify.user")
 def notify_user(key, data):
-    """Notifiy the user about new devices in the network."""
+    """Notify the user about new devices in the network."""
     message = "logging=:={}=:={}".format(
         data["title"], data["message"])
     return _send_ar_message(message)
@@ -160,7 +159,7 @@ def notify_user(key, data):
 
 @subscribe_to("time.time_of_day.*")
 def notify_timeofday(key, data):
-    """Notifiy the user about the sunset/rise for debugging purposes."""
+    """Notify the user about the sunset/rise for debugging purposes."""
     if ".day" in key:
         time_of_day = "day"
     elif ".night" in key:
