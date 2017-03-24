@@ -32,7 +32,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.20"
+__version__ = "1.3.21"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -148,9 +148,10 @@ def check_followed_streams(key, data):
                         data=item).trigger()
                     context.set_property(
                         "media.twitch.{}".format(channelname), item)
-                # remove the channel from STREAM_LIST so that it can be
-                # refilled with the new data
-                del STREAM_LIST[channelname]
+                if channelname in STREAM_LIST:
+                    # refilled with the new data
+                    # remove the channel from STREAM_LIST so that it can be
+                    del STREAM_LIST[channelname]
     else:
         LOGGER.warning("The data didn't include the 'streams' field.")
         return _fail("Warn: The data didn't include the 'streams' field.")
