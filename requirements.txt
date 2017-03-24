@@ -1,8 +1,8 @@
 fritzconnection==0.6.3
 pigpio==1.35
 PlexAPI==2.0.2
-PyChromecast==0.8.0
+PyChromecast==0.8.1
 requests==2.13.0
 Twisted==17.1.0
 webcolors==1.7
-autobahn==0.17.1
+autobahn==0.17.2
