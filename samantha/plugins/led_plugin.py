@@ -8,6 +8,7 @@
 
 
 # standard library imports
+import datetime
 import logging
 import math
 import threading
@@ -25,7 +26,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 
 
 # Initialize the logger
@@ -62,6 +63,8 @@ R_COLOR = 0.0
 G_COLOR = 0.0
 B_COLOR = 0.0
 
+SYNC_STEPS = []
+
 
 def _sleep(duration):
     """Sleep while the currently executed command is the newest one."""
@@ -72,6 +75,38 @@ def _sleep(duration):
             i += 1
     else:
         time.sleep(duration)
+
+
+def _fill_sync_steps():
+    global SYNC_STEPS
+    
+    r = 255
+    g = 0
+    b = 0
+    
+    SYNC_STEPS = []
+    temp_list = []
+    
+    for i in range(0, 255, 1):
+        g = i
+        temp_list.append((r, g, b))
+    for i in range(255, 0, -1):
+        r = i
+        temp_list.append((r, g, b))
+    for i in range(0, 255, 1):
+        b = i
+        temp_list.append((r, g, b))
+    for i in range(255, 0, -1):
+        g = i
+        temp_list.append((r, g, b))
+    for i in range(0, 255, 1):
+        r = i
+        temp_list.append((r, g, b))
+    for i in range(255, 0, -1):
+        b = i
+        temp_list.append((r, g, b))
+    
+    SYNC_STEPS = temp_list
 
 
 # def dec2hex(dc):
@@ -343,7 +378,7 @@ def set_brightness(key, data):
     """
     if "brightness" in data:
         _stop_previous_command()
-        if "speed" in data and 0 <= float(data["speed"]) <= 1:
+        if "speed" in data and 0.0 <= float(data["speed"]) <= 1.0:
             speed = float(data["speed"])
         else:
             speed = 0.2
@@ -383,7 +418,7 @@ def set_brightness(key, data):
                     .format(color)
 
             _stop_previous_command()
-            if "speed" in data and 0 <= float(data["speed"]) <= 1:
+            if "speed" in data and 0.0 <= float(data["speed"]) <= 1.0:
                 speed = float(data["speed"])
             else:
                 speed = 0.2
@@ -441,21 +476,64 @@ def ambient_off(key, data):
     return "Set the lights to 100% brightness."
 
 
-@subscribe_to("led.fade")
+@subscribe_to("led.fade_legacy")
 def fade_func(key, data):
     """Test the LEDs during the 'onstart' event.
 
     To create a barely noticeably transition, the speed is kept at 1 instead of
     the otherwise usual 0.2.
     """
+    def fade_worker():
+        while not NEW_COMMAND.is_set():
+            _crossfade(red=255, green=0, blue=0)
+            _crossfade(red=0, green=255, blue=0)
+            _crossfade(red=0, green=0, blue=255)
+        IDLE.set()
+    
     _stop_previous_command()
 
-    while not NEW_COMMAND.is_set():
-        _crossfade(red=255, green=0, blue=0)
-        _crossfade(red=0, green=255, blue=0)
-        _crossfade(red=0, green=0, blue=255)
-    IDLE.set()
+    t = threading.Thread(target=fade_worker)
+    t.start()
+    
     return "The LEDs are now fading."
+
+
+@subscribe_to("led.fade")
+def fadesync_func(key, data):
+    """Test the LEDs during the 'onstart' event.
+
+    To create a barely noticeably transition, the speed is kept at 1 instead of
+    the otherwise usual 0.2.
+    """
+    def fadesync_worker(start_at=0):
+        current_step = start_at
+        while not NEW_COMMAND.is_set():
+            dt = datetime.datetime.utcnow().timestamp()
+            next_step = int(dt * 5)
+            if next_step > current_step:
+                current_step = next_step % len(SYNC_STEPS)
+                r, g, b = SYNC_STEPS[current_step]
+                _set_pins(r, g, b)
+            time.sleep(0.05)
+        IDLE.set()
+        
+    _stop_previous_command()
+    
+    if not SYNC_STEPS:
+        _fill_sync_steps()
+
+    # Get the step in the list to start with, for 5 sec in the future
+    timestamp_now = datetime.datetime.utcnow().timestamp()
+    timestamp_start = int((timestamp_now + 3) * 5)
+    step_start = timestamp_start % len(SYNC_STEPS)
+    r, g, b = SYNC_STEPS[step_start]
+    _crossfade(r, g, b, 0.2)
+
+    t = threading.Thread(target=fadesync_worker,
+                         kwargs={"start_at": timestamp_start})
+    t.start()
+
+    return "The LEDs are now fading synchronized."
 
 
 @subscribe_to("led.strobe")
