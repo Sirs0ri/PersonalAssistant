@@ -9,14 +9,26 @@ http://assets.denon.com/documentmaster/de/avr3313ci_protocol_v02.pdf
 ###############################################################################
 #
 # TODO: [ ] get IP from config/router
+# TODO: [X] build commands from base class:
+#   DO, WHILE_DO, IF_DO
+#   com.execute(), depending on ^^^
+# TODO: [ ] Test old commands:
+# TODO: [ ]     turn_off_with_delay
+# TODO: [ ]     chromecast_connection_change
+# TODO: [ ]     chromecast_playstate_change
+# TODO: [ ] Docstrings
+# TODO: [ ] Mute
+# TODO: [ ] profile.night command
 #
 ###############################################################################
 
 
 # standard library imports
 from collections import Iterable
+from enum import Enum
 import logging
 import queue
+import re
 import socket
 import telnetlib
 import threading
@@ -30,7 +42,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.6.18"
+__version__ = "1.7a1"
 
 
 # Initialize the logger
@@ -46,6 +58,111 @@ try:
     ACTIVE = True
 except socket.error:
     ACTIVE = False
+
+
+class CommandType(Enum):
+    DO = 1
+    WHILE_DO = 2
+    IF_DO = 3
+
+
+class TelnetConnection:
+    def __init__(self, retries=3):
+        self.connection_retries = retries
+        self._telnet = None
+        
+    def _connect(self):
+        self._telnet = None
+        while self.connection_retries > 0:
+            # Try establishing a telnet connection
+            try:
+                self._telnet = telnetlib.Telnet(DEVICE_IP)
+                return True  # Connection successful
+            except socket.error:
+                LOGGER.warning("AVR refused the connection. Retrying...")
+                self.connection_retries -= 1
+                time.sleep(1)
+        if self._telnet is None:
+            LOGGER.error("AVR refused the connection. Is another "
+                         "device using the Telnet connection already?"
+                         "\n%s", traceback.format_exc())
+            return False
+    
+    def _disconnect(self):
+        if self._telnet:
+            self._telnet.close()
+            
+    def _execute_command(self, command):
+        """Send a command to the connected AVR via Telnet."""
+        output = ""
+        if self._connect():
+            LOGGER.debug("Sending command '%s'", command)
+            self._telnet.write("{}\r".format(command).encode("utf-8"))
+            LOGGER.debug("Successfully sent the command '%s'.", command)
+            output = self._telnet.read_some()  # Read the output
+            output = output.decode("utf-8").replace("\r", " ")
+        else:
+            LOGGER.error("Couldn't send the command %s since the SVR refused "
+                         "to connect.", command)
+        self._disconnect()  # Disconnect either way
+        return output.strip()
+        
+
+class Condition(TelnetConnection):
+    def __init__(self, command=None, expectation=None,
+                 must_match=True, retries=3):
+        super().__init__(retries)
+        self.command = command
+        self.expectation = expectation
+        self.must_match = must_match
+    
+    def check(self):
+        if not self.command:
+            return self.expectation
+        else:
+            result = self._execute_command(self.command)
+            matches = result == self.expectation
+            LOGGER.debug("Condition was: '%s'. Comparing to: '%s'. "
+                         "Matches: %s. Should match: %s.",
+                         self.expectation, result,
+                         matches, self.must_match)
+            return matches == self.must_match
+
+
+class Command(TelnetConnection):
+    def __init__(self, command, type=CommandType.DO,
+                 condition=Condition(expectation=True), retries=3):
+        super().__init__(retries)
+        self.command = command
+        self.type = type
+        self.condition = condition
+
+    def execute(self):
+        while self.condition.check():
+            self._execute_command(self.command)
+            if self.type is not CommandType.WHILE_DO:
+                break
+
+
+class SmoothVolumeCommand(Command):
+    def __init__(self, target_volume, retries=3):
+        target_volume = int(target_volume)
+        self.target_volume = (0 if target_volume < 0 else
+                              98 if target_volume > 98 else
+                              target_volume)
+        condition = Condition("MV?", "MV{}".format(self.target_volume), False)
+        super().__init__(None, CommandType.WHILE_DO, condition, retries)
+        
+    def _parse(self, result):
+        match = re.match(r"MV(?P<vol>\d{2})(?P<dec>\d?)", result)
+        if int(match.group("vol")) < self.target_volume:
+            self.command = "MVUP"
+        else:
+            self.command = "MVDOWN"
+   
+    def execute(self):
+        self._parse(self._execute_command("MV?"))
+        super().execute()
 
 
 def _check_condition(condition, _telnet, logger):
@@ -90,7 +207,7 @@ def _send(command, logger, condition=None, retries=3):
                 _telnet = telnetlib.Telnet(DEVICE_IP)
                 break
             except socket.error:
-                logger.warn("AVR refused the connection. Retrying...")
+                logger.warning("AVR refused the connection. Retrying...")
                 retries -= 1
                 time.sleep(1)
         if _telnet is None:
@@ -132,10 +249,7 @@ def worker():
         logger.debug("Waiting for a command.")
         command = COMM_QUEUE.get()
         logger.warning("Processing command %s", command)
-        if not isinstance(command, str) and isinstance(command, Iterable):
-            _send(command[0], logger, command[1])
-        else:
-            _send(command, logger)
+        command.execute()
         COMM_QUEUE.task_done()
 
 
@@ -143,7 +257,9 @@ def turn_off_with_delay(name="sleeper"):
     """Turn the AVR off."""
     logger = logging.getLogger(name)
     logger.debug("Sending the command to shut down the AVR.")
-    COMM_QUEUE.put(["ZMOFF", ["SI?=SIMPLAY", True]])
+    condition = Condition("SI?", "SIMPLAY", True)
+    command = Command(command="ZMOFF", condition=condition)
+    COMM_QUEUE.put(command)
 
 WORKER = threading.Thread(target=worker, name="worker")
 WORKER.daemon = True
@@ -158,6 +274,12 @@ def onstart(key, data):
     LOGGER.debug("Starting the worker")
     WORKER.start()
     return "Worker started successfully."
+
+@subscribe_to("set.avr.volume")
+def set_vol(key, data):
+    if "volume" in data:
+        command = SmoothVolumeCommand(data["volume"])
+        COMM_QUEUE.put(command)
 
 
 @subscribe_to("chromecast.connection_change")
@@ -187,8 +309,13 @@ def chromecast_connection_change(key, data):
     else:  # An app is connected to the Chromecast
         LOGGER.debug("'%s' connected to the Chromecast.",
                      data["display_name"])
-        COMM_QUEUE.put(["ZMON", ["ZM?=ZMON", False]])
-        COMM_QUEUE.put(["SIMPLAY", ["SI?=SIMPLAY", False]])
+        condition_is_off = Condition("ZM?", "ZMON", False)
+        command_on = Command("ZMON", condition=condition_is_off)
+        COMM_QUEUE.put(command_on)
+        condition_input_not_play = Condition("SI?", "SIMPLAY", False)
+        command_switch_input_play = Command("SIMPLAY",
+                                            condition=condition_input_not_play)
+        COMM_QUEUE.put(command_switch_input_play)
         return "Handled connecting of {} to the Chromecast.".format(
             data["display_name"])
 
@@ -199,12 +326,13 @@ def chromecast_playstate_change(key, data):
 
     # Set the audio mode depending on what kind of content is playing
     if data["content_type"] is not None:
-        command = ("MSSTEREO" if "audio" in data["content_type"] else
+        comm_text = ("MSSTEREO" if "audio" in data["content_type"] else
                    "MSDOLBY DIGITAL")
         # Prefer stereo audio for music, surround for everything else
-        condition = "MS?={}".format(command.split(" ")[0])
-        COMM_QUEUE.put([command, [condition, False]])
-        return "Set he audio mode to {}.".format(command)
+        condition = Condition("MS?", comm_text.split(" ")[0])
+        command = Command(comm_text, condition=condition)
+        COMM_QUEUE.put(command)
+        return "Set he audio mode to {}.".format(comm_text)
     else:
         return "Invalid content-type. Looks like no app is currently connected."
 
