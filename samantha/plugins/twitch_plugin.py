@@ -32,7 +32,7 @@ except (ImportError, AttributeError):
     SECRETS = None
 
 
-__version__ = "1.3.21"
+__version__ = "1.3.22"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -154,7 +154,7 @@ def check_followed_streams(key, data):
                     del STREAM_LIST[channelname]
     else:
         LOGGER.warning("The data didn't include the 'streams' field.")
-        return _fail("Warn: The data didn't include the 'streams' field.")
+        return _fail("Warn: The data didn't include the 'streams' field: %s" % data)
 
     while len(STREAM_LIST) > 0:
         # STREAM_LIST now contains only those streams that were online
