@@ -12,6 +12,7 @@ readability or an AutoRemote-Handler that sends log messages to my phone.
 
 
 # standard library imports
+import configparser
 import copy
 import logging
 import logging.handlers
@@ -22,25 +23,31 @@ import time
 import requests
 
 # application specific imports
-# Try importing variables_private.py for the AutoRemoteHandler. If it fails,
-# the handler will be ignored later.
-try:
-    import samantha.variables_private as variables_private
-except ImportError:
-    variables_private = None
-# The file variables_private.py is in my .gitignore - for good reasons.
-# It includes private API-Keys that I don't want online. However, if you want
-# to be able to send AutoRemote-Messages (see: http://joaoapps.com/autoremote/
-# for certain log entries, create that file inside the '/samantha' folder and
-# add an entry called 'ar_key' for your private AutoRemote key
-# (eg. "ar_key = 'YOUR_KEY_HERE'").
 
 
-__version__ = "1.2.13"
+__version__ = "1.3.0"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
+
+config = configparser.ConfigParser()
+# The file variables_private.ini is in my .gitignore - for good reasons.
+# It includes private API-Keys that I don't want online. However, if you want
+# to be able to send AutoRemote-Messages (see: http://joaoapps.com/autoremote)
+# for certain log entries, create that file inside the '/samantha' folder and
+# add an entry called 'api_key' for your private AutoRemote key in the section
+# [autoremote], eg.:
+# [autoremote]
+# api_key = YOUR_KEY_HERE
+if config.read("variables_private.ini"):
+    # this should be ['variables_private.ini'] if the config was found
+    autoremote_config = config["autoremote"]
+    KEY = autoremote_config.get("api_key")
+else:
+    LOGGER.warning("No config found! Are you sure the file %s exists?",
+                   "samantha/variables_private.ini")
+    KEY = None
 
 
 class AutoRemoteHandler(logging.Handler):
@@ -61,7 +68,7 @@ class AutoRemoteHandler(logging.Handler):
         logging.getLogger("requests").setLevel(logging.WARNING)
         message = self.format(record)
         url = "https://autoremotejoaomgcd.appspot.com/sendmessage"
-        payload = {'key': variables_private.ar_key,
+        payload = {'key': KEY,
                    'message': "logging=:=Samantha=:=" + message}
 
         def send_message():

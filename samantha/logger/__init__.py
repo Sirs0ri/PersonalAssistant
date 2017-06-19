@@ -16,6 +16,7 @@
 
 
 # standard library imports
+import configparser
 import logging
 import logging.handlers
 import os.path
@@ -26,10 +27,9 @@ import sys
 
 # application specific imports
 from . import handlers
-from .handlers import variables_private
 
 
-__version__ = "1.5.13"
+__version__ = "1.6.0"
 
 
 # Initialize the logger
@@ -46,7 +46,7 @@ def _init(debug):
 
     Add a streamhandler, a TimedRotatingFileHandler and
     a custom AutoRemoteHandler. The latter one will be added only, if an API-
-    Key is defined inside the file 'variables_private.py'.
+    Key is defined inside the file 'variables_private.ini'.
     """
 
     # STFU urllib3. For more info, see:
@@ -124,19 +124,21 @@ def _init(debug):
     # Uses the practical formatter (see above)
     # Used to display warnings (or worse) on my phone as notification
 
-    # If the variables_private.py file doesn't exist, or doesn't contain the
+    # If the variables_private.ini file doesn't exist, or doesn't contain the
     # key, the handler won't be added.
-    if variables_private and hasattr(variables_private, "ar_key"):
+    config = configparser.ConfigParser()
+    if (config.read("variables_private.ini")
+            and config["autoremote"].get("api_key")):
         autoremote_handler = handlers.AutoRemoteHandler()
         # Set Handler to forward only important messages - WARN or higher
         autoremote_handler.setLevel(logging.ERROR)
         autoremote_handler.setFormatter(practical_formatter)
         root.addHandler(autoremote_handler)
     else:
-        LOGGER.warn("The AutoRemoteHandler couldn't be started. Please make "
-                    "sure the file 'variables_private.py' exists inside the "
-                    "/interface folder and that it contains the AR-key as a "
-                    "variable called 'ar_key'.")
+        LOGGER.warn("The AutoRemote-Handler couldn't be started. Please make "
+                    "sure the file 'variables_private.ini' exists inside the "
+                    "/samantha folder and that it contains the AR-key in the "
+                    "section [autoremote] as item 'api_key'.")
 
     LOGGER.info("All handlers were added successfully.")
     return True

@@ -13,6 +13,7 @@
 
 
 # standard library imports
+import configparser
 import logging
 import socket
 import struct
@@ -26,22 +27,27 @@ from plexapi.server import PlexServer
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin
 # from samantha.tools import eventbuilder
-try:
-    import samantha.variables_private as variables_private
-    SECRETS = (variables_private.plex_username,
-               variables_private.plex_password)
-except (ImportError, AttributeError):
-    variables_private = None
-    SECRETS = None
 
 
-__version__ = "1.0.0a4"
+__version__ = "1.0.0a5"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 logging.getLogger("plexapi").setLevel(logging.WARN)
 logging.getLogger("requests.packages.urllib3.connectionpool")\
     .setLevel(logging.WARN)
+
+# TODO Wrap this in a function and make it callable via event
+config = configparser.ConfigParser()
+if config.read("variables_private.ini"):
+    # this should be ['variables_private.ini'] if the config was found
+    plex_config = config["plex"]
+    SECRETS = (plex_config.get("username"),
+               plex_config.get("password", raw=True))
+else:
+    LOGGER.warning("No config found! Are you sure the file %s exists?",
+                   "samantha/variables_private.ini")
+    SECRETS = None
 
 
 def discover_local_servers():

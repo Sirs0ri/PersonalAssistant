@@ -8,6 +8,7 @@
 
 
 # standard library imports
+import configparser
 import json
 import logging
 import time
@@ -20,27 +21,28 @@ import samantha.context as context
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin
 from samantha.tools import eventbuilder
-try:
-    import samantha.variables_private as variables_private
-    SECRETS = {
-        "oauth_token": variables_private.twitch_oauth_token,
-        "client_id": variables_private.twitch_client_id,
-        "api_version": 5
-    }
-except (ImportError, AttributeError):
-    variables_private = None
-    SECRETS = None
 
 
-__version__ = "1.3.22"
+__version__ = "1.4.0a1"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 
-if variables_private is None:
-    LOGGER.error("Couldn't access the private variables.")
-if SECRETS is None:
-    LOGGER.error("Couldn't access the API-Key and/or client-ID.")
+# TODO Wrap this in a function and make it callable via event
+config = configparser.ConfigParser()
+if config.read("variables_private.ini"):
+    # this should be ['variables_private.ini'] if the config was found
+    twitch_config = config["twitch"]
+    SECRETS = {
+        "oauth_token": twitch_config.get("oauth_token"),
+        "client_id": twitch_config.get("client_id"),
+        "api_version": twitch_config.getint("api_version")
+    }
+else:
+    LOGGER.warning("No config found! Are you sure the file %s exists?",
+                   "samantha/variables_private.ini")
+    SECRETS = None
+
 
 PLUGIN = Plugin("Twitch", SECRETS is not None, LOGGER, __file__)
 

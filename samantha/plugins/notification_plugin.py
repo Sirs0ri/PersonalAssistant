@@ -9,6 +9,7 @@
 
 # standard library imports
 from collections import Iterable
+import configparser
 from datetime import datetime
 import logging
 import threading
@@ -20,19 +21,25 @@ import requests
 # application specific imports
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Plugin
-try:
-    import samantha.variables_private as variables_private
-    KEY = variables_private.ar_key
-except (ImportError, AttributeError):
-    variables_private = None
-    KEY = None
 
 
-__version__ = "1.3.16"
+__version__ = "1.4.0a1"
 
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
+
+# TODO Wrap this in a function and make it callable via event
+config = configparser.ConfigParser()
+if config.read("variables_private.ini"):
+    # this should be ['variables_private.ini'] if the config was found
+    autoremote_config = config["autoremote"]
+    KEY = autoremote_config.get("api_key")
+else:
+    LOGGER.warning("No config found! Are you sure the file %s exists?",
+                   "samantha/variables_private.ini")
+    KEY = None
+
 
 PLUGIN = Plugin("Notify", KEY is not None, LOGGER, __file__)
 

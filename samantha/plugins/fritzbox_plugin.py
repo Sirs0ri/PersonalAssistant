@@ -8,6 +8,7 @@
 
 
 # standard library imports
+import configparser
 import logging
 
 # related third party imports
@@ -22,15 +23,9 @@ import samantha.context as context
 from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 from samantha.tools import eventbuilder
-try:
-    import samantha.variables_private as variables_private
-    PASSWORD = variables_private.fritzbox_password
-except (ImportError, AttributeError):
-    variables_private = None
-    PASSWORD = None
 
 
-__version__ = "1.0.18"
+__version__ = "1.1.0a1"
 
 
 # Initialize the logger
@@ -59,18 +54,25 @@ def _get_hosts_info():
         req_logger.setLevel(req_logger_originallevel)
         return devices_list
 
+# TODO Wrap this in a function and make it callable via event
+config = configparser.ConfigParser()
+if config.read("variables_private.ini"):
+    # this should be ['variables_private.ini'] if the config was found
+    fritzbox_config = config["fritzbox"]
+    USER = fritzbox_config.get("username")
+    PASSWORD = fritzbox_config.get("password")
+    ADDRESS = fritzbox_config.get("address")
+else:
+    LOGGER.warning("No config found! Are you sure the file %s exists?",
+                   "samantha/variables_private.ini")
+    PASSWORD = None
 
 authenticated = False
 
-if variables_private is None:
-    LOGGER.error("Couldn't access the private variables.")
-if PASSWORD is None:
-    LOGGER.error("Couldn't access the password.")
-
 if FritzHosts:
     try:
-        FRITZBOX = FritzHosts(address="192.168.178.1",
-                              user="Samantha",
+        FRITZBOX = FritzHosts(address=ADDRESS,
+                              user=USER,
                               password=PASSWORD)
 
     except IOError:
