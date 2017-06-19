@@ -38,7 +38,7 @@ import time
 from samantha import tools
 
 
-__version__ = "1.6.0a6"
+__version__ = "1.6.0a7"
 
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
@@ -227,7 +227,7 @@ def stats_worker():
             failed_commands_total += failed_commands
             count_requests_total += count_requests
             count_triggers_total += count_triggers
-            uptime = str(datetime.datetime.now() - boot_time).split(".")[0]
+            # uptime = str(datetime.datetime.now() - boot_time).split(".")[0]
             count_commands = success_commands + failed_commands
             success_rate_commands = success_commands / count_commands * 100.0
             count_functions = success_functions + failed_functions
@@ -245,18 +245,18 @@ def stats_worker():
                       "{:.0f} Triggers, {:.0f} Requests<br>"
                       "Processed commands: {:.0f} ({:.2f}% success)<br>"
                       "Processed functions: {:.0f} ({:.2f}% success)<br><br>"
-                      "<b>All Time (Uptime: {!s}):</b><br>"
+                      "<b>All Time:</b><br>"
                       "{:.0f} Triggers, {:.0f} Requests<br>"
                       "Processed commands: {:.0f} ({:.2f}% success)<br>"
                       "Processed functions: {:.0f} ({:.2f}% success)<br><br>"
                       "<b>Today's fails:</b> {}".format(
                           count_triggers, count_requests, count_commands,
                           success_rate_commands, count_functions,
-                          success_rate_functions, uptime, count_triggers_total,
+                          success_rate_functions, count_triggers_total,
                           count_requests_total, count_commands_total,
                           success_rate_commands_total, count_functions_total,
                           success_rate_functions_total, failed_func_dict))
-            logger.debug("Daily report: %s",
+            logger.debug("Daily report: %s ",
                          report.replace("<br>", "\n")
                                .replace("<b>", "")
                                .replace("</b>", ""))
