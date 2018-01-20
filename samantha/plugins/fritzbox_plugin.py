@@ -54,6 +54,7 @@ def _get_hosts_info():
         req_logger.setLevel(req_logger_originallevel)
         return devices_list
 
+
 # TODO Wrap this in a function and make it callable via event
 config = configparser.ConfigParser()
 if config.read("variables_private.ini"):
