@@ -34,8 +34,7 @@ __version__ = "1.0.0a5"
 # Initialize the logger
 LOGGER = logging.getLogger(__name__)
 logging.getLogger("plexapi").setLevel(logging.WARN)
-logging.getLogger("requests.packages.urllib3.connectionpool")\
-    .setLevel(logging.WARN)
+logging.getLogger("urllib3.connectionpool").setLevel(logging.WARN)
 
 # TODO Wrap this in a function and make it callable via event
 config = configparser.ConfigParser()
@@ -124,7 +123,7 @@ def get_servers_from_account():
     if SECRETS is None:
         return {}
     try:
-        account = MyPlexAccount.signin(SECRETS[0], SECRETS[1])
+        account = MyPlexAccount(username=SECRETS[0], password=SECRETS[1])
         account_servers = {resource.clientIdentifier: resource
                            for resource in account.resources()
                            if "server" in resource.provides}

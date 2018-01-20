@@ -35,9 +35,9 @@ LOGGER = logging.getLogger(__name__)
 def _get_hosts_info():
     # Mute requests' logging < WARN while getting data from the FritzBox.
     # It would otherwise produce roughly 150 messages within a second or two.
-    req_logger = logging.getLogger("requests.packages.urllib3.connectionpool")
+    req_logger = logging.getLogger("urllib3.connectionpool")
     req_logger_originallevel = req_logger.level
-    req_logger.setLevel(logging.WARN)
+    req_logger.setLevel(logging.WARNING)
     devices_list = []
     try:
         
