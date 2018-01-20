@@ -26,7 +26,7 @@ from samantha.core import subscribe_to
 from samantha.plugins.plugin import Device
 
 
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 
 
 # Initialize the logger
@@ -35,6 +35,8 @@ LOGGER = logging.getLogger(__name__)
 NEW_COMMAND = threading.Event()
 IDLE = threading.Event()
 IDLE.set()
+
+connected = False
 
 if pigpio:
     PI = pigpio.pi("192.168.178.56")
@@ -49,6 +51,7 @@ if PI is not None and PI.connected:
     RED_PINS = [12, 25]
     GREEN_PINS = [20, 23]
     BLUE_PINS = [21, 18]
+    connected = True
 else:
     RED_PINS = []
     GREEN_PINS = []
@@ -56,7 +59,7 @@ else:
     LOGGER.error("Could not connect to the RasPi at 192.168.178.56.")
 
 # PLUGIN = Device("LED", False, LOGGER, __file__, "light")
-PLUGIN = Device("LED", PI.connected, LOGGER, __file__, "light")
+PLUGIN = Device("LED", connected, LOGGER, __file__, "light")
 
 BRIGHTNESS = 0.0
 R_COLOR = 0.0
@@ -333,11 +336,15 @@ def start_func(key, data):
     This function will transition from off to red to green to yellow to off.
     """
     _stop_previous_command()
-    _crossfade(red=0, green=0, blue=0, speed=0.0)
-    _crossfade(red=255, green=0, blue=0, speed=0.2)
-    _crossfade(red=0, green=255, blue=0, speed=0.2)
-    _crossfade(red=0, green=0, blue=255, speed=0.2)
-    _crossfade(red=0, green=0, blue=0, speed=0.2)
+    _set_pins(red=0, green=0, blue=0)
+    time.sleep(0.5)
+    _set_pins(red=255, green=0, blue=0)
+    time.sleep(0.5)
+    _set_pins(red=0, green=255, blue=0)
+    time.sleep(0.5)
+    _set_pins(red=0, green=0, blue=255)
+    time.sleep(0.5)
+    _set_pins(red=0, green=0, blue=0)
     IDLE.set()
     # _crossfade(255, 85, 17)
     return "Tested the LEDs."
