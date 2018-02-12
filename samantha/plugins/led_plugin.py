@@ -529,7 +529,7 @@ def fadesync_func(key, data):
     if not SYNC_STEPS:
         _fill_sync_steps()
 
-    # Get the step in the list to start with, for 5 sec in the future
+    # Get the step in the list to start with, for 3 sec in the future
     timestamp_now = datetime.datetime.utcnow().timestamp()
     timestamp_start = int((timestamp_now + 3) * 5)
     step_start = timestamp_start % len(SYNC_STEPS)
