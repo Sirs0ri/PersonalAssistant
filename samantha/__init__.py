@@ -21,7 +21,7 @@ from . import tools
 __version__ = "1.5.2"
 
 
-def run(debug=True):
+def run(debug=True, plugin_filter=None):
 
     # Initialize the logger
     logger.initialize(debug)
@@ -36,7 +36,7 @@ def run(debug=True):
 
     context.initialize(INPUT, OUTPUT)
     core.initialize(INPUT, OUTPUT)
-    plugins.initialize(INPUT, OUTPUT)
+    plugins.initialize(INPUT, OUTPUT, plugin_filter)
     tools.initialize(INPUT, OUTPUT)
 
     # TODO load the context

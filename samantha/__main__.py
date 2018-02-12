@@ -15,4 +15,17 @@ if "--debug" in sys.argv or "-D" in sys.argv:
     DEBUG = True
 else:
     DEBUG = False
-samantha.run(DEBUG)
+
+plugin_filter = None
+
+if "--plugins" in sys.argv:
+    value_index = sys.argv.index("--plugins") + 1
+    if len(sys.argv) > value_index:
+        plugin_filter = sys.argv[value_index]
+
+if "-P" in sys.argv:
+    value_index = sys.argv.index("-P") + 1
+    if len(sys.argv) > value_index:
+        plugin_filter = sys.argv[value_index]
+
+samantha.run(DEBUG, plugin_filter)

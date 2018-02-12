@@ -48,7 +48,7 @@ def get_uid():
     return uid
 
 
-def _init(queue_in, queue_out):
+def _init(queue_in, queue_out, plugin_filter="*_plugin.py"):
     """Initialize the module."""
     global INPUT, OUTPUT
 
@@ -59,7 +59,7 @@ def _init(queue_in, queue_out):
     # initialize all plugins
     LOGGER.debug("Searching for plugins...")
     this_dir = os.path.split(__file__)[0]  # ..[1] would be the filename
-    files = glob.glob("{}/*_plugin.py".format(this_dir))
+    files = glob.glob("{}/{}".format(this_dir, plugin_filter))
     LOGGER.debug("%d possible plugins found.", len(files))
 
     plugin_str = ""
@@ -107,10 +107,12 @@ def stop():
     return True
 
 
-def initialize(queue_in, queue_out):
+def initialize(queue_in, queue_out, plugin_filter):
     """Initialize the module when not yet initialized."""
     global INITIALIZED
     if not INITIALIZED:
-        INITIALIZED = _init(queue_in, queue_out)
+        if plugin_filter is None:
+            plugin_filter = "*_plugin.py"
+        INITIALIZED = _init(queue_in, queue_out, plugin_filter=plugin_filter)
     else:
         LOGGER.info("Already initialized!")
