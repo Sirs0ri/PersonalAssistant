@@ -6,3 +6,4 @@ requests==2.18.4
 Twisted==17.9.0
 webcolors==1.7
 autobahn==17.10.1
+flux_led==0.21
