@@ -102,17 +102,25 @@ class Device(Plugin):
         super(Device, self).__init__(name, active, logger, file_path, "d")
 
     def turn_on(self, func):
-        @subscribe_to(self.power_on_keywords)
-        @wraps(func)
-        def function(*args, **kwargs):
-            return func(*args, **kwargs)
 
-        return function
+        if self.is_active:
+            @subscribe_to(self.power_on_keywords)
+            @wraps(func)
+            def function(*args, **kwargs):
+                return func(*args, **kwargs)
+
+            return function
+        self.logger.debug("Not decorating %s because this device is inactive.",
+                          func.__name__)
+        return func
 
     def turn_off(self, func):
-        @subscribe_to(self.power_off_keywords)
-        @wraps(func)
-        def function(*args, **kwargs):
-            return func(*args, **kwargs)
 
-        return function
+        if self.is_active:
+            @subscribe_to(self.power_off_keywords)
+            @wraps(func)
+            def function(*args, **kwargs):
+                return func(*args, **kwargs)
+
+            return function
+        return func
